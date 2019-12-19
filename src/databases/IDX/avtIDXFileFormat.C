@@ -893,7 +893,16 @@ avtIDXFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md,
     if(timeIndex.size() == 0)
       createTimeIndex();
 
-    md->SetCycles( logTimeIndex); //cycles );
+    std::vector<int> cycles;
+    cycles.resize(GetNTimesteps());
+
+    for (int ti=0;ti<(int)cycles.size();ti++)
+        cycles[ti] = ti;
+
+    if(timeIndex.size() == 0)
+      createTimeIndex();
+
+    md->SetCycles( cycles ); // use incremental numbers instead of actual logical indices for cycles (Uintah requirement)
     md->SetTimes( timeIndex );
     //md->SetMustRepopulateOnStateChange(true);
 
