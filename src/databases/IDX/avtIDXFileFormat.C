@@ -860,7 +860,7 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
     mesh->name = mesh_name;
 
     int low[3],high[3];
-    input_patches.getBounds(low,high,"CC_Mesh");
+    input_patches.getBounds(low,high,"CC_Mesh", true);
 
     debug4 << "global low " << low[0] << ","<< low[1]<<","<< low[2] <<std::endl;
     debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
@@ -894,6 +894,16 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
   
     mesh->numBlocks = totalPatches;
 
+    ////
+    mesh->blockOrigin = 0;
+    mesh->cellOrigin = 1;
+    mesh->spatialDimension = dim;
+    mesh->topologicalDimension = dim;
+    mesh->blockTitle = "blocks";
+    mesh->blockPieceName = "piece";//%06d";
+    mesh->groupPieceName = "global_index";
+
+/*
     for (int i = 0; i < mesh->numBlocks; i++) 
     {
         char tmpName[64];
@@ -920,7 +930,7 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
     mesh->maxSpatialExtents[1] = box_max[1];
     mesh->minSpatialExtents[2] = box_min[2];
     mesh->maxSpatialExtents[2] = box_max[2];
-
+*/
     // int low[3], high[3];
     // level_info.getBounds(low, high, "Particle_Mesh");
     int logical[3];
