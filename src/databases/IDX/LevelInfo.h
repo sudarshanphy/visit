@@ -50,6 +50,7 @@ public:
     if (type.find("SFCZ")!=std::string::npos) return SFCZ;
     if (type.find("CC")  !=std::string::npos) return CC;
     if (type.find("NC")  !=std::string::npos) return NC;
+    if (type.find("Particle")  !=std::string::npos) return CC; // treat Particle as CC grid for bounds purposes only!
     return UNKNOWN;
   }
 

@@ -860,7 +860,7 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
     mesh->name = mesh_name;
 
     int low[3],high[3];
-    input_patches.getBounds(low,high,"CC_Mesh", true);
+    input_patches.getBounds(low,high,mesh_name, true);
 
     debug4 << "global low " << low[0] << ","<< low[1]<<","<< low[2] <<std::endl;
     debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
@@ -1217,7 +1217,7 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
         //double* p = (double*)data;
         
         double* tp = points->GetPoint(i); //&p[i*3];
-        printf("p %f %f %f\n", tp[0],tp[1],tp[2]);
+        //printf("p %f %f %f\n", tp[0],tp[1],tp[2]);
         ugrid->InsertNextCell(VTK_VERTEX, 1, &onevertex); 
       } 
 
@@ -1610,7 +1610,7 @@ vtkDataArray* avtIDXFileFormat::queryToVtk(int timestate, int domain, const char
     Box my_box;
     int low[3];
     int high[3];
-    level_info.patchInfo[domain].getBounds(low,high, mesh_name, use_extracells);
+    level_info.patchInfo[domain].getBounds(low,high, mesh_name, use_extracells || reader->isParticle());
 
     debug5 << "read data " << level_info.patchInfo[domain].toString();
     for(int k=0; k<3; k++)
@@ -1628,7 +1628,18 @@ vtkDataArray* avtIDXFileFormat::queryToVtk(int timestate, int domain, const char
         my_box.p2[k] = high[k];
     }
 
-    unsigned char* data = reader->getData(my_box, timestate, varname);
+    unsigned char* data = NULL;
+
+    if(!reader->isParticle())
+        data = reader->getData(my_box, timestate, varname);
+    else
+        data = reader->getParticleData(my_box, timestate, varname); // need to add physical box
+
+    // for(int i = 0; i < reader->getParticleCount(); ++i)
+    // {
+    //     double tp = ((double*)data)[i];
+    //     printf("p %f \n", tp);
+    // }
 
     debug5 << rank << ": read data done" << std::endl;
 #if 0
@@ -1662,8 +1673,15 @@ vtkDataArray* avtIDXFileFormat::queryToVtk(int timestate, int domain, const char
     for(int k=0; k<3; k++)
         my_bounds [k] = high[k]-low[k]+1;
 
-    int ztuples = (dim == 2) ? 1 : (my_bounds[2]);
-    long long ntuples = (my_bounds[0])*(my_bounds[1])*ztuples;
+    long long ntuples = 0;
+
+    if(!reader->isParticle())
+    {
+        int ztuples = (dim == 2) ? 1 : (my_bounds[2]);
+        long long ntuples = (my_bounds[0])*(my_bounds[1])*ztuples;
+    }
+    else
+        ntuples = reader->getParticleCount();
 
     int ncomponents = 1;
     bool isVector = field.isVector;

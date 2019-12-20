@@ -244,13 +244,16 @@ void print_point(char* what, PIDX_physical_point p){
 
 unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int timestate, const char* varname)
 {
+    if (rank == 0) debug5 << "-----PIDXIO getParticleData " << rank <<std::endl;
+
     int variable_index = -1;
 
     for(int i=0; i<fields.size(); i++)
         if(strcmp(fields[i].name.c_str(),varname) == 0 && strlen(fields[i].name.c_str()) == strlen(varname))
             variable_index = i;
 
-    printf("reading index %d\n", variable_index);
+        //debug5 <<
+    printf("reading variable index %d\n", variable_index);
 
     init_mpi();
     PIDX_access pidx_access;
@@ -298,18 +301,7 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
     ret = PIDX_get_current_variable(pidx_file, &variable);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_current_variable");
 
-    int bits_per_sample = 0;
-    ret = PIDX_default_bits_per_datatype(variable->type_name, &bits_per_sample);
-    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_default_bytes_per_datatype");
-
-    int v_per_sample = 0;
-    PIDX_values_per_datatype(variable->type_name, &v_per_sample, &bits_per_sample);
-
-    size_t this_size = (size_t)(local_size[0] * local_size[1] * local_size[2]);
-
     unsigned char* data = NULL;
-    // void *data = malloc((size_t)((bits_per_sample/8) * this_size * v_per_sample));//variable->values_per_sample);
-    // memset(data, 0, ((size_t)(bits_per_sample/8) * this_size * v_per_sample));
 
     uint64_t particle_count = 0; 
 
