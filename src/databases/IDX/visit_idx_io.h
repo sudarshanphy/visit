@@ -31,6 +31,11 @@ public:
   
   virtual unsigned char* getData(const VisitIDXIO::Box box,
                                  const int timestate, const char* varname) = 0;
+
+  unsigned char* getParticleData(const VisitIDXIO::Box box,
+                                 const int timestate, const char* varname){
+    return NULL;
+  }
   
   inline std::vector<double> getTimes() const{
     return tsteps;
@@ -64,6 +69,14 @@ public:
       return curr_field;
   }
 
+  inline bool isParticle() const{
+    return particle_dataset;
+  }
+
+  inline uint64_t getParticleCount() const{
+    return particle_count;
+  }
+
   inline bool isCompressed() const{
     return compressed_dataset;
   }
@@ -81,6 +94,8 @@ protected:
   VisitIDXIO::Field curr_field;
   double logic_to_physic[16];
   bool compressed_dataset;
+  bool particle_dataset;
+  uint64_t particle_count;
 };
 
 

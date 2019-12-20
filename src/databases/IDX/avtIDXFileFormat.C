@@ -42,7 +42,6 @@
 #include <avtStructuredDomainBoundaries.h>
 #include <avtVariableCache.h>
 #include <avtParallel.h>
-#include <avtDatabaseMetaData.h>
 #include <avtMultiresSelection.h>
 #include <avtStructuredDomainNesting.h>
 #include <avtCallback.h>
@@ -50,6 +49,7 @@
 #include <DBOptionsAttributes.h>
 #include <Expression.h>
 
+#include <InvalidFilesException.h>
 #include <InvalidVariableException.h>
 
 #ifdef _WIN32
@@ -410,8 +410,17 @@ void avtIDXFileFormat::createBoxes()
         int high[3];
         int eCells[6] = {0,0,0,0,0,0};
         use_extracells = false;
-        grid_type = "CC";
-        mesh_name = "CC_Mesh";
+
+        if(!reader->isParticle())
+        {
+            grid_type = "CC";
+            mesh_name = "CC_Mesh";
+        }
+        else
+        {
+            mesh_name = "Particle_Mesh";
+            grid_type = "Particle";
+        }
 
         debug1 << "Disabling extra cells (no Uintah)" << std::endl;
 
@@ -602,8 +611,6 @@ avtIDXFileFormat::avtIDXFileFormat(const char *filename, DBOptionsAttributes* at
     else if(dataset_filename.substr(folder_point+1,2).compare("CC")==0)
         grid_type = "CC";
 
-    mesh_name = grid_type+"_Mesh";
-
     if(is_gidx)
     {
         debug4 << "Using GIDX file" << std::endl;
@@ -660,6 +667,8 @@ avtIDXFileFormat::avtIDXFileFormat(const char *filename, DBOptionsAttributes* at
             return;
         }
     }
+
+    mesh_name = grid_type+"_Mesh";
 
     dim = reader->getDimension(); //<ctc> //NOTE: it doesn't work like we want. Instead, when a slice (or box) is added, the full data is read from disk then cropped to the desired subregion. Thus, I/O is never avoided.
 
@@ -735,39 +744,37 @@ avtIDXFileFormat::FreeUpResources(void)
 }
 
 
-//bool avtIDXFileFormat::CanCacheVariable(const char *var)
-//{
-//    return false;
-//}
-
-// ****************************************************************************
-//  Method: avtIDXFileFormat::PopulateDatabaseMetaData
-//
-//  Purpose:
-//      This database meta-data object is like a table of contents for the
-//      file.  By populating it, you are telling the rest of VisIt what
-//      information it can request from you.
-//
-//  Programmer: spetruzza, bremer5
-//  Creation:   Mon Dec 10 15:06:44 PST 2012
-//
-// ****************************************************************************
-
 void
-avtIDXFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md,
-  int timestate) 
+avtIDXFileFormat::CreateGridMesh(avtMeshMetaData *mesh, avtDatabaseMetaData *md)
 {
-    debug5 << rank << ": Meta data" << std::endl;
-
-    ActivateTimestep(timestate);
-
-    md->ClearMeshes();
-    md->ClearScalars(); 
-    md->ClearVectors();
-    md->ClearLabels();
-
-    avtMeshMetaData *mesh = new avtMeshMetaData;
     mesh->name = mesh_name;
+
+    int low[3],high[3];
+    input_patches.getBounds(low,high,mesh_name,use_extracells);
+
+    debug4 << "global low " << low[0] << ","<< low[1]<<","<< low[2] <<std::endl;
+    debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
+
+    //this can be done once for everything because the spatial range is the same for all meshes
+    double box_min[3] = { input_patches.anchor[0] + low[0] * input_patches.spacing[0],
+                          input_patches.anchor[1] + low[1] * input_patches.spacing[1],
+                          input_patches.anchor[2] + low[2] * input_patches.spacing[2] };
+    double box_max[3] = { input_patches.anchor[0] + high[0] * input_patches.spacing[0],
+                          input_patches.anchor[1] + high[1] * input_patches.spacing[1],
+                          input_patches.anchor[2] + high[2] * input_patches.spacing[2] };
+    {
+        debug5 << "Dimensions " << dim <<std::endl;
+        char* debug_str = new char[1024];
+        sprintf(debug_str, "anchor %f %f %f spacing %f %f %f\n",input_patches.anchor[0],input_patches.anchor[1],input_patches.anchor[2], input_patches.spacing[0],input_patches.spacing[1],input_patches.spacing[2]);
+        debug5 << debug_str;
+        sprintf(debug_str, "global log %d %d %d - %d %d %d\n", low[0],low[1],low[2],high[0],high[1],high[2]);
+        debug5 << debug_str;
+
+        sprintf(debug_str, "global phy %f %f %f - %f %f %f\n", box_min[0],box_min[1],box_min[2],box_max[0],box_max[1],box_max[2]);
+        debug5 << debug_str;
+
+        delete [] debug_str;
+    }
 
 #if USE_AMR    
     mesh->meshType = AVT_AMR_MESH;
@@ -824,37 +831,10 @@ avtIDXFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md,
     mesh->blockPieceName = "piece";//%06d";
     mesh->groupPieceName = "global_index";
 #endif
-  
-    int low[3],high[3];
-    input_patches.getBounds(low,high,mesh_name,use_extracells);
-
-    debug4 << "global low " << low[0] << ","<< low[1]<<","<< low[2] <<std::endl;
-    debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
-
-    //this can be done once for everything because the spatial range is the same for all meshes
-    double box_min[3] = { input_patches.anchor[0] + low[0] * input_patches.spacing[0],
-                          input_patches.anchor[1] + low[1] * input_patches.spacing[1],
-                          input_patches.anchor[2] + low[2] * input_patches.spacing[2] };
-    double box_max[3] = { input_patches.anchor[0] + high[0] * input_patches.spacing[0],
-                          input_patches.anchor[1] + high[1] * input_patches.spacing[1],
-                          input_patches.anchor[2] + high[2] * input_patches.spacing[2] };
-    {
-        debug5 << "Dimensions " << dim <<std::endl;
-        char* debug_str = new char[1024];
-        sprintf(debug_str, "anchor %f %f %f spacing %f %f %f\n",input_patches.anchor[0],input_patches.anchor[1],input_patches.anchor[2], input_patches.spacing[0],input_patches.spacing[1],input_patches.spacing[2]);
-        debug5 << debug_str;
-        sprintf(debug_str, "global log %d %d %d - %d %d %d\n", low[0],low[1],low[2],high[0],high[1],high[2]);
-        debug5 << debug_str;
-
-        sprintf(debug_str, "global phy %f %f %f - %f %f %f\n", box_min[0],box_min[1],box_min[2],box_max[0],box_max[1],box_max[2]);
-        debug5 << debug_str;
-
-        delete [] debug_str;
-    }
 
     int logical[3];
     for (int i=0; i<3; i++)
-        logical[i] = high[i]-low[i];
+      logical[i] = high[i]-low[i];
 
     mesh->hasSpatialExtents = true; 
     mesh->minSpatialExtents[0] = box_min[0];
@@ -872,6 +852,131 @@ avtIDXFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md,
     md->Add(mesh);
 
     md->AddDefaultSILRestrictionDescription(std::string("!TurnOnAll"));
+}
+
+void
+avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData *md)
+{
+    mesh->name = mesh_name;
+
+    int low[3],high[3];
+    input_patches.getBounds(low,high,"CC_Mesh");
+
+    debug4 << "global low " << low[0] << ","<< low[1]<<","<< low[2] <<std::endl;
+    debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
+
+    //TODO use real phy value 
+    double box_min[3] = {double(low[0]),double(low[1]),double(low[2])}; 
+                          
+    double box_max[3] = {double(high[0]),double(high[1]),double(high[2])}; 
+
+    {
+        debug5 << "Dimensions " << dim <<std::endl;
+        char* debug_str = new char[1024];
+        sprintf(debug_str, "global log %d %d %d - %d %d %d\n", low[0],low[1],low[2],high[0],high[1],high[2]);
+        cout << debug_str;
+
+        sprintf(debug_str, "global phy %f %f %f - %f %f %f\n", box_min[0],box_min[1],box_min[2],box_max[0],box_max[1],box_max[2]);
+        cout << debug_str;
+
+        delete [] debug_str;
+    }
+
+    mesh->meshType = AVT_POINT_MESH;
+    mesh->topologicalDimension = 0;
+    mesh->spatialDimension = dim;
+
+    int totalPatches = level_info.patchInfo.size();
+    int numLevels = 1;
+
+    std::vector<int> groupIds(totalPatches);
+    std::vector<std::string> pieceNames(totalPatches);
+  
+    mesh->numBlocks = totalPatches;
+
+    for (int i = 0; i < mesh->numBlocks; i++) 
+    {
+        char tmpName[64];
+        int level = 0; // only 1 level
+        int local_patch = i;
+        sprintf(tmpName,"level%d, patch%d", level, local_patch);
+
+        //printf("Setting id %d = %d name %s\n", i, level, tmpName);
+        groupIds[i] = level;
+        pieceNames[i] = tmpName;
+    }
+    
+    mesh->blockTitle = "patches";
+    mesh->blockPieceName = "patch";
+    mesh->numGroups = numLevels;
+    mesh->groupTitle = "levels";
+    mesh->groupPieceName = "level";
+    mesh->blockNames = pieceNames;
+
+    mesh->hasSpatialExtents = true; 
+    mesh->minSpatialExtents[0] = box_min[0];
+    mesh->maxSpatialExtents[0] = box_max[0];
+    mesh->minSpatialExtents[1] = box_min[1];
+    mesh->maxSpatialExtents[1] = box_max[1];
+    mesh->minSpatialExtents[2] = box_min[2];
+    mesh->maxSpatialExtents[2] = box_max[2];
+
+    // int low[3], high[3];
+    // level_info.getBounds(low, high, "Particle_Mesh");
+    int logical[3];
+    for (int i=0; i<3; ++i)
+      logical[i] = high[i]-low[i];
+
+    mesh->hasLogicalBounds = true;
+    mesh->logicalBounds[0] = logical[0];
+    mesh->logicalBounds[1] = logical[1];
+    mesh->logicalBounds[2] = logical[2];
+
+    //md->AddGroupInformation(numLevels, totalPatches, groupIds);
+
+    md->Add(mesh); 
+
+    //addMeshNodeRankSIL( md, mesh_name );
+}
+
+//bool avtIDXFileFormat::CanCacheVariable(const char *var)
+//{
+//    return false;
+//}
+
+// ****************************************************************************
+//  Method: avtIDXFileFormat::PopulateDatabaseMetaData
+//
+//  Purpose:
+//      This database meta-data object is like a table of contents for the
+//      file.  By populating it, you are telling the rest of VisIt what
+//      information it can request from you.
+//
+//  Programmer: spetruzza, bremer5
+//  Creation:   Mon Dec 10 15:06:44 PST 2012
+//
+// ****************************************************************************
+
+void
+avtIDXFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md,
+  int timestate) 
+{
+    debug5 << rank << ": Meta data" << std::endl;
+
+    ActivateTimestep(timestate);
+
+    md->ClearMeshes();
+    md->ClearScalars(); 
+    md->ClearVectors();
+    md->ClearLabels();
+
+    avtMeshMetaData *mesh = new avtMeshMetaData;
+
+    if(!reader->isParticle())
+        CreateGridMesh(mesh, md);
+    else 
+        CreateParticleMesh(mesh, md);
+
     md->SetCyclesAreAccurate(true);
 
     const std::vector<Field>& fields = reader->getFields();
@@ -1009,6 +1114,174 @@ void avtIDXFileFormat::computeDomainBoundaries(const char* meshname, int timesta
 //#endif
 }
 
+vtkDataSet *
+avtIDXFileFormat::GetMesh(int timestate, int domain, const char *meshname)
+{
+    debug5 << rank << ": start getMesh "<< meshname << " domain " << domain << std::endl;
+
+    if(!reader->isParticle())
+        return GetGridMesh(timestate, domain, meshname);
+    else
+        return GetParticleMesh(timestate, domain, meshname);
+}
+
+#if 0 
+void avtIDXFileFormat::addMeshNodeRankSIL( avtDatabaseMetaData *md,
+                                         std::string mesh )
+{
+  // Add a SIL for subsettng via the nodes and ranks.
+  const unsigned int nRanksPerGroup = nProcs / 10;
+  const unsigned int nRanks = nProcs;
+  const unsigned int nNodes = nRanksPerGroup > 5 ? nProcs/nRanksPerGroup : 1;
+  
+  int rank_enum_id[nRanks];
+  int node_enum_id[nNodes];
+  
+  std::string enum_name = std::string("Ranks/") + mesh;
+  
+  avtScalarMetaData *smd =
+    new avtScalarMetaData(enum_name, mesh, AVT_ZONECENT );
+  
+  smd->SetEnumerationType(avtScalarMetaData::ByValue);
+  smd->hideFromGUI = true;
+  
+  for( unsigned int i=0; i<nRanks; ++i ) {
+    char msg[12];
+    sprintf( msg, "Rank_%04d", i );
+    rank_enum_id[i] = smd->AddEnumNameValue( msg, i);
+  }
+  
+  if( nNodes > 1 ) {
+    
+    for( unsigned int i=0, j=1; i<nNodes; ++i, ++j ) {
+      char msg[12];
+      sprintf( msg, "Ranks_%04d_%04d", i*nRanksPerGroup, j*nRanksPerGroup-1 );
+      node_enum_id[i] = smd->AddEnumNameValue( msg, nRanks+i);
+    }
+    
+    for( unsigned int i=0; i<nRanks; ++i ) {
+      smd->AddEnumGraphEdge(node_enum_id[i/nRanksPerGroup], rank_enum_id[i], "Ranks" );
+    }
+  }
+  
+  md->Add(smd);
+}
+#endif
+
+vtkDataSet *
+avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshname)
+{
+    int glow[3], ghigh[3];
+
+    level_info.getBounds(glow,ghigh,"CC_Mesh",use_extracells);
+
+    //TODO use patches or global size info to make box
+    VisitIDXIO::Box my_box;
+    for(int k=0; k<3; k++)
+    {
+        my_box.p1[k] = 0;
+        my_box.p2[k] = 64;
+    }
+    unsigned char* data = reader->getParticleData(my_box, timestate, "position");
+
+    uint64_t num = reader->getParticleCount();
+      // Create the vtkPoints object and copy points into it.
+      vtkDoubleArray *doubleArray = vtkDoubleArray::New();
+      doubleArray->SetNumberOfComponents(dim);
+      doubleArray->SetArray((double*)data, num*dim, 0);
+      
+      vtkPoints *points = vtkPoints::New();
+      points->SetData(doubleArray);
+      doubleArray->Delete();
+      
+      // Create a vtkUnstructuredGrid to contain the point cells. 
+      vtkUnstructuredGrid *ugrid = vtkUnstructuredGrid::New(); 
+      ugrid->SetPoints(points); 
+      points->Delete(); 
+      ugrid->Allocate(num); 
+      vtkIdType onevertex; 
+
+      for(int i = 0; i < num; ++i)
+      {
+        onevertex = i; 
+        //double* p = (double*)data;
+        
+        double* tp = points->GetPoint(i); //&p[i*3];
+        printf("p %f %f %f\n", tp[0],tp[1],tp[2]);
+        ugrid->InsertNextCell(VTK_VERTEX, 1, &onevertex); 
+      } 
+
+      // Try to retrieve existing cache ref
+      void_ref_ptr vrTmp =
+        cache->GetVoidRef(meshname, AUXILIARY_DATA_GLOBAL_NODE_IDS,
+                          timestate, domain);
+
+      vtkDataArray *pID = NULL;
+    
+      if (*vrTmp == NULL)
+      {
+        // Add global node ids to facilitate point cloud usage basically
+        // same as GetVar(timestate, domain, "particleID");
+        // int matlNo = -1;
+        // if (matl.compare("*") != 0)
+        //   matlNo = atoi(matl.c_str());
+
+        //debug5<<"\t(*getParticleData)...\n";
+
+        // get id info
+
+        unsigned char* data_id = reader->getParticleData(my_box, timestate, "id");
+          //pd = (*getParticleData)(archive, grid, level, local_patch,
+          //                        "p.particleID", matlNo, timestate);
+      
+        //debug5 << "got particle data: "<<pd<<"\n";
+        if (data_id)
+        {
+          //vtkIntArray *rv = vtkIntArray::New();
+          vtkLongArray *rv = vtkLongArray::New();
+          //debug5<<"\tSetNumberOfComponents("<<pd->components<<")...\n";
+          rv->SetNumberOfComponents(1);
+
+          //debug5<<"\tSetArray...\n";
+          rv->SetArray((long*)data_id, num, 0);
+
+          pID = rv;
+
+          // for(int i = 0; i < num; ++i)
+          // {
+          //   onevertex = i; 
+          //   //double* p = (double*)data;
+            
+          //   int tp = rv->Get(i); //&p[i*3];
+          //   printf("id %ld \n", tp);
+            
+          // } 
+        }
+
+        //debug5<<"read particleID ("<<pID<<")\n";
+        if (pID)
+        {
+          //debug5<<"adding global node ids from particleID\n";
+          pID->SetName("avtGlobalNodeId");
+          void_ref_ptr vr = void_ref_ptr( pID , avtVariableCache::DestructVTKObject );
+          cache->CacheVoidRef( meshname, AUXILIARY_DATA_GLOBAL_NODE_IDS,
+                               timestate, domain, vr);
+          
+          //make sure it worked
+          void_ref_ptr vrTmp =
+            cache->GetVoidRef(meshname, AUXILIARY_DATA_GLOBAL_NODE_IDS,
+                              timestate, domain);
+          
+          if (*vrTmp == NULL || *vrTmp != *vr)
+            throw InvalidFilesException("failed to register uda particle global node");
+        }
+      }
+      
+      // visitTimer->StopTimer(t1, "avtUintahFileFormat::GetMesh() Particle Grid");
+      
+      return ugrid;
+      
+}
 
 // ****************************************************************************
 //  Method: avtIDXFileFormat::GetMesh
@@ -1033,11 +1306,8 @@ void avtIDXFileFormat::computeDomainBoundaries(const char* meshname, int timesta
 // ****************************************************************************
 
 vtkDataSet *
-avtIDXFileFormat::GetMesh(int timestate, int domain, const char *meshname)
+avtIDXFileFormat::GetGridMesh(int timestate, int domain, const char *meshname)
 {
-    debug5 << rank << ": start getMesh "<< meshname << " domain " << domain << std::endl;
-
-    Box slice_box;
     vtkRectilinearGrid *rgrid = vtkRectilinearGrid::New();
 
 #if USE_AMR

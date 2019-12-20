@@ -10,6 +10,7 @@
 #define AVT_IDX_FILE_FORMAT_H
 
 #include <avtMTMDFileFormat.h>
+#include <avtDatabaseMetaData.h>
 
 #include <vector>
 #include <DBOptionsAttributes.h>
@@ -67,6 +68,12 @@ class avtIDXFileFormat : public avtMTMDFileFormat
     virtual vtkDataArray  *GetVar(int, int, const char *);
     //virtual vtkDataArray  *GetVar(int timestate, const char *varname);
     virtual vtkDataArray  *GetVectorVar(int, int, const char *);
+
+    vtkDataSet* GetGridMesh(int timestate, int domain, const char *meshname);
+    vtkDataSet* GetParticleMesh(int timestate, int domain, const char *meshname);
+
+    void CreateGridMesh(avtMeshMetaData *mesh, avtDatabaseMetaData *md);
+    void CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData *md);
 
     virtual void           GetCycles(std::vector<int> &);
     virtual void           GetTimes(std::vector<double> &);

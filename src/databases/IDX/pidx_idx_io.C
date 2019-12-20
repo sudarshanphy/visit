@@ -124,6 +124,17 @@ bool PIDXIO::openDataset(const String filename)
     ret = PIDX_serial_file_open(filename.c_str(), PIDX_MODE_RDONLY, global_size, &pidx_file);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_file_open");
 
+    PIDX_io_type io_type;
+    PIDX_get_io_mode(pidx_file, &io_type);
+    particle_dataset = io_type > PIDX_RAW_IO; // is dataset particle or grid
+
+    if(particle_dataset){
+        ret = PIDX_get_particle_number(pidx_file, &particle_count);
+        if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_particle_number");
+
+        printf("FOUND %lld PARTICLES\n", particle_count);
+    }
+
     (global_size[2] > 1) ? dims = 3 : dims = 2;
 
     for(int i=0; i < dims; i++)
@@ -220,6 +231,105 @@ bool PIDXIO::openDataset(const String filename)
     return true;
 }
 
+void print_point(char* what, PIDX_physical_point p){
+    printf("%s ", what);
+  for(int k=0; k<3; k++)
+  {
+        printf("%f ",p[k]);
+   }
+
+   printf("\n");
+
+}
+
+unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int timestate, const char* varname)
+{
+    int variable_index = -1;
+
+    for(int i=0; i<fields.size(); i++)
+        if(strcmp(fields[i].name.c_str(),varname) == 0 && strlen(fields[i].name.c_str()) == strlen(varname))
+            variable_index = i;
+
+    printf("reading index %d\n", variable_index);
+
+    init_mpi();
+    PIDX_access pidx_access;
+    PIDX_create_access(&pidx_access);
+    PIDX_set_mpi_access(pidx_access, PIDX_MPI_COMM);
+    int ret = 0;
+
+    PIDX_set_point(local_offset, box.p1[0], box.p1[1], box.p1[2]);
+    PIDX_set_point(local_size, (box.p2[0]-box.p1[0]+1), (box.p2[1]-box.p1[1]+1),(box.p2[2]-box.p1[2]+1));
+
+    PIDX_physical_point physical_local_offset;
+    PIDX_physical_point physical_local_size;
+
+    double physical_local_box_offset[3] = {box.p1[0], box.p1[1], box.p1[2]};
+    double physical_local_box_size[3] = {(box.p2[0]-box.p1[0]+1), (box.p2[1]-box.p1[1]+1),(box.p2[2]-box.p1[2]+1)};
+
+    PIDX_set_physical_point(physical_local_offset, physical_local_box_offset[0], physical_local_box_offset[1], physical_local_box_offset[2]);
+    PIDX_set_physical_point(physical_local_size, physical_local_box_size[0], physical_local_box_size[1], physical_local_box_size[2]);
+
+    print_point("physical_local_offset",physical_local_offset);
+    print_point("physical_local_size",physical_local_size);
+
+    ret = PIDX_file_open(input_filename.c_str(), PIDX_MODE_RDONLY, pidx_access, global_size, &pidx_file);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_file_open");
+    
+    int variable_count;
+    ret = PIDX_get_variable_count(pidx_file, &variable_count);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_set_variable_count");
+
+    if (variable_index >= variable_count) terminate_with_error_msg("Variable index more than variable count\n");
+
+    ret = PIDX_set_current_time_step(pidx_file, timestate);
+    if (ret != PIDX_success) 
+    {
+        fprintf(stderr, "ERROR: PIDX_set_current_time_step\n");
+        //terminate_with_error_msg("PIDX_set_current_time_step");
+        return NULL;
+    }
+
+    PIDX_variable variable;
+
+    ret = PIDX_set_current_variable_index(pidx_file, variable_index);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_set_current_variable_index");
+
+    ret = PIDX_get_current_variable(pidx_file, &variable);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_current_variable");
+
+    int bits_per_sample = 0;
+    ret = PIDX_default_bits_per_datatype(variable->type_name, &bits_per_sample);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_default_bytes_per_datatype");
+
+    int v_per_sample = 0;
+    PIDX_values_per_datatype(variable->type_name, &v_per_sample, &bits_per_sample);
+
+    size_t this_size = (size_t)(local_size[0] * local_size[1] * local_size[2]);
+
+    unsigned char* data = NULL;
+    // void *data = malloc((size_t)((bits_per_sample/8) * this_size * v_per_sample));//variable->values_per_sample);
+    // memset(data, 0, ((size_t)(bits_per_sample/8) * this_size * v_per_sample));
+
+    uint64_t particle_count = 0; 
+
+    // Read the data into a local buffer (data) in row major order
+    ret = PIDX_variable_read_particle_data_layout(variable, physical_local_offset, physical_local_size,
+        (void**)&data, &particle_count, PIDX_row_major);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_variable_read_particle_data_layout");
+
+    ret = PIDX_close(pidx_file);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_close");
+
+    ret = PIDX_close_access(pidx_access);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_close_access");
+
+    printf("PARTICLE COUNT %lld\n", particle_count);
+    return (unsigned char*)data;
+
+}
+
+
 unsigned char* PIDXIO::getData(const VisitIDXIO::Box box, const int timestate, const char* varname)
 {
     if (rank == 0) debug5 << "-----PIDXIO getData " << rank <<std::endl;
@@ -257,7 +367,7 @@ unsigned char* PIDXIO::getData(const VisitIDXIO::Box box, const int timestate, c
     PIDX_set_mpi_access(pidx_access, PIDX_MPI_COMM);
 
     ret = PIDX_file_open(input_filename.c_str(), PIDX_MODE_RDONLY, pidx_access, global_size, &pidx_file);
-    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_file_create");
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_file_open");
 
     int variable_count,time_step_count;
     //ret = PIDX_get_dims(pidx_file, global_size);

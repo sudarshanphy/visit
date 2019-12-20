@@ -35,6 +35,8 @@ public:
     bool openDataset(const std::string filename);
     
     unsigned char* getData(const VisitIDXIO::Box box, const int timestate, const char* varname);
+    unsigned char* getParticleData(const VisitIDXIO::Box box, const int timestate, const char* varname);
+    uint64_t getParticleDataCount();
     
     std::vector<int> getGlobalSize();
 
