@@ -332,7 +332,7 @@ void avtIDXFileFormat::domainDecomposition()
 #endif
 
     level_info.patchInfo=newboxes;
-#if 0
+#if 1
   if(rank == 0){ 
    std::cout<< "Total number of boxes/domains: " << level_info.patchInfo.size() << std::endl<< std::flush;
    std::cout << "----------Boxes----------" << std::endl<< std::flush;
@@ -370,7 +370,7 @@ void avtIDXFileFormat::createBoxes()
                 break;
             }
         }
-    closedir (dir);
+        closedir (dir);
     } else {
         debug4 << "No .ups file found" << std::endl;
     }
@@ -391,7 +391,7 @@ void avtIDXFileFormat::createBoxes()
 
         if (!parser->Parse()){
             debug4 << "Single-box mode" << std::endl;
-      }
+        }
     }else
     {
         uintah_metadata = true;
@@ -866,9 +866,8 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
     debug4 << "global high " << high[0] << ","<< high[1]<<","<< high[2] <<std::endl;
 
     //TODO use real phy value 
-    double box_min[3] = {double(low[0]),double(low[1]),double(low[2])}; 
-                          
-    double box_max[3] = {double(high[0]),double(high[1]),double(high[2])}; 
+    double box_min[3] = {double(low[0]),double(low[1]),double(low[2])};
+    double box_max[3] = {double(high[0]),double(high[1]),double(high[2])};
 
     {
         debug5 << "Dimensions " << dim <<std::endl;
@@ -893,46 +892,14 @@ avtIDXFileFormat::CreateParticleMesh(avtMeshMetaData *mesh, avtDatabaseMetaData 
     std::vector<std::string> pieceNames(totalPatches);
   
     mesh->numBlocks = totalPatches;
-
-    ////
     mesh->blockOrigin = 0;
     mesh->cellOrigin = 1;
     mesh->spatialDimension = dim;
     mesh->topologicalDimension = dim;
     mesh->blockTitle = "blocks";
-    mesh->blockPieceName = "piece";//%06d";
+    mesh->blockPieceName = "piece%06d";
     mesh->groupPieceName = "global_index";
 
-/*
-    for (int i = 0; i < mesh->numBlocks; i++) 
-    {
-        char tmpName[64];
-        int level = 0; // only 1 level
-        int local_patch = i;
-        sprintf(tmpName,"level%d, patch%d", level, local_patch);
-
-        //printf("Setting id %d = %d name %s\n", i, level, tmpName);
-        groupIds[i] = level;
-        pieceNames[i] = tmpName;
-    }
-    
-    mesh->blockTitle = "patches";
-    mesh->blockPieceName = "patch";
-    mesh->numGroups = numLevels;
-    mesh->groupTitle = "levels";
-    mesh->groupPieceName = "level";
-    mesh->blockNames = pieceNames;
-
-    mesh->hasSpatialExtents = true; 
-    mesh->minSpatialExtents[0] = box_min[0];
-    mesh->maxSpatialExtents[0] = box_max[0];
-    mesh->minSpatialExtents[1] = box_min[1];
-    mesh->maxSpatialExtents[1] = box_max[1];
-    mesh->minSpatialExtents[2] = box_min[2];
-    mesh->maxSpatialExtents[2] = box_max[2];
-*/
-    // int low[3], high[3];
-    // level_info.getBounds(low, high, "Particle_Mesh");
     int logical[3];
     for (int i=0; i<3; ++i)
       logical[i] = high[i]-low[i];
@@ -1189,10 +1156,13 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
     VisitIDXIO::Box my_box;
     for(int k=0; k<3; k++)
     {
-        my_box.p1[k] = 0;
-        my_box.p2[k] = 64;
+        my_box.p1[k] = glow[k];
+        my_box.p2[k] = ghigh[k];
     }
-    unsigned char* data = reader->getParticleData(my_box, timestate, "position");
+
+    // TODO find out which variable is the position (now use the first field as position)
+
+    unsigned char* data = reader->getParticleData(my_box, logTimeIndex[0], reader->getFields()[0].name.c_str()); 
 
     uint64_t num = reader->getParticleCount();
       // Create the vtkPoints object and copy points into it.
@@ -1220,7 +1190,7 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
         //printf("p %f %f %f\n", tp[0],tp[1],tp[2]);
         ugrid->InsertNextCell(VTK_VERTEX, 1, &onevertex); 
       } 
-
+#if 0 
       // Try to retrieve existing cache ref
       void_ref_ptr vrTmp =
         cache->GetVoidRef(meshname, AUXILIARY_DATA_GLOBAL_NODE_IDS,
@@ -1288,7 +1258,7 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
       }
       
       // visitTimer->StopTimer(t1, "avtUintahFileFormat::GetMesh() Particle Grid");
-      
+#endif
       return ugrid;
       
 }
@@ -1613,6 +1583,7 @@ vtkDataArray* avtIDXFileFormat::queryToVtk(int timestate, int domain, const char
     level_info.patchInfo[domain].getBounds(low,high, mesh_name, use_extracells || reader->isParticle());
 
     debug5 << "read data " << level_info.patchInfo[domain].toString();
+     cout << "read data " << level_info.patchInfo[domain].toString();
     for(int k=0; k<3; k++)
     {
         if(uintah_metadata)

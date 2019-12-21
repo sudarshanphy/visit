@@ -252,6 +252,10 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
         if(strcmp(fields[i].name.c_str(),varname) == 0 && strlen(fields[i].name.c_str()) == strlen(varname))
             variable_index = i;
 
+    if(variable_index < 0){
+        fprintf(stderr, "ERROR: PIDX variable %s not found\n", varname);
+        return NULL;
+    }
         //debug5 <<
     printf("reading variable index %d\n", variable_index);
 
