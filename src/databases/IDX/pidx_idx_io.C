@@ -153,6 +153,9 @@ bool PIDXIO::openDataset(const String filename)
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_first_tstep");
     ret = PIDX_get_last_time_step(pidx_file, &last_tstep);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_last_tstep");
+    ret = PIDX_get_particles_position_variable_index(pidx_file, &position_index);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_particle_position_index");
+    
 
 #ifdef PARALELL  
     MPI_Bcast(&first_tstep, 1, MPI_INT, 0, PIDX_MPI_COMM);
@@ -257,7 +260,9 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
         return NULL;
     }
         //debug5 <<
-    printf("reading variable index %d\n", variable_index);
+    printf("reading variable index %d time %d\n", variable_index, timestate);
+
+    curr_field = fields[variable_index];
 
     init_mpi();
     PIDX_access pidx_access;
@@ -306,7 +311,6 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_current_variable");
 
     unsigned char* data = NULL;
-
     uint64_t particle_count = 0; 
 
     // Read the data into a local buffer (data) in row major order

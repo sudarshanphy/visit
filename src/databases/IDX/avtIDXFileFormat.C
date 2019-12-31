@@ -524,6 +524,8 @@ void avtIDXFileFormat::createTimeIndex()
     debug4 << "loaded " << timeIndex.size() << " timesteps"<< std::endl;
     debug4 << reader->getNTimesteps() << " in the timesteps range of the IDX file" << std::endl;
 
+
+
     //if(timeIndex.size() != reader->getNTimesteps())
     //  std::cout << "ERROR: the timesteps in the IDX file and in the index.xml are not consistent!\n You will not be able to use the physical time"<< std::endl;
 
@@ -1161,8 +1163,7 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
     }
 
     // TODO find out which variable is the position (now use the first field as position)
-
-    unsigned char* data = reader->getParticleData(my_box, logTimeIndex[0], reader->getFields()[0].name.c_str()); 
+    unsigned char* data = reader->getParticleData(my_box, logTimeIndex[timestate], reader->getFields()[reader->getParticlePositionIndex()].name.c_str()); 
 
     uint64_t num = reader->getParticleCount();
       // Create the vtkPoints object and copy points into it.

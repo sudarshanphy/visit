@@ -80,6 +80,10 @@ public:
   inline bool isCompressed() const{
     return compressed_dataset;
   }
+
+  inline uint64_t getParticlePositionIndex(){
+    return position_index;
+  }
   
   virtual ~IDX_IO(){};
     
@@ -96,6 +100,7 @@ protected:
   bool compressed_dataset;
   bool particle_dataset;
   uint64_t particle_count;
+  uint32_t position_index;
 };
 
 
