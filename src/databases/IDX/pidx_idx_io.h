@@ -40,6 +40,10 @@ public:
     
     std::vector<int> getGlobalSize();
 
+    PIDX_variable *checkpoint_vars = NULL;
+    uint64_t *checkpoint_particle_counts = NULL;
+    void **checkpoint_data = NULL;
+
     virtual ~PIDXIO();
 
 };

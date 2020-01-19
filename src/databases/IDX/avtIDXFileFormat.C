@@ -1152,6 +1152,7 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
 {
     int glow[3], ghigh[3];
 
+    // get bounds as a CC_Mesh
     level_info.getBounds(glow,ghigh,"CC_Mesh",use_extracells);
 
     //TODO use patches or global size info to make box
@@ -1165,32 +1166,36 @@ avtIDXFileFormat::GetParticleMesh(int timestate, int domain, const char *meshnam
     // TODO find out which variable is the position (now use the first field as position)
     unsigned char* data = reader->getParticleData(my_box, logTimeIndex[timestate], reader->getFields()[reader->getParticlePositionIndex()].name.c_str()); 
 
+    printf("got the data\n");
+
     uint64_t num = reader->getParticleCount();
       // Create the vtkPoints object and copy points into it.
       vtkDoubleArray *doubleArray = vtkDoubleArray::New();
       doubleArray->SetNumberOfComponents(dim);
       doubleArray->SetArray((double*)data, num*dim, 0);
-      
       vtkPoints *points = vtkPoints::New();
       points->SetData(doubleArray);
       doubleArray->Delete();
-      
+    
       // Create a vtkUnstructuredGrid to contain the point cells. 
       vtkUnstructuredGrid *ugrid = vtkUnstructuredGrid::New(); 
       ugrid->SetPoints(points); 
       points->Delete(); 
       ugrid->Allocate(num); 
       vtkIdType onevertex; 
-
-      for(int i = 0; i < num; ++i)
+      
+      for(uint64_t i = 0; i < num; ++i)
       {
         onevertex = i; 
         //double* p = (double*)data;
         
         double* tp = points->GetPoint(i); //&p[i*3];
         //printf("p %f %f %f\n", tp[0],tp[1],tp[2]);
+        
         ugrid->InsertNextCell(VTK_VERTEX, 1, &onevertex); 
       } 
+
+      printf("made the grid\n");
 #if 0 
       // Try to retrieve existing cache ref
       void_ref_ptr vrTmp =

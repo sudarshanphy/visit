@@ -128,13 +128,6 @@ bool PIDXIO::openDataset(const String filename)
     PIDX_get_io_mode(pidx_file, &io_type);
     particle_dataset = io_type > PIDX_RAW_IO; // is dataset particle or grid
 
-    if(particle_dataset){
-        ret = PIDX_get_particle_number(pidx_file, &particle_count);
-        if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_particle_number");
-
-        printf("FOUND %lld PARTICLES\n", particle_count);
-    }
-
     (global_size[2] > 1) ? dims = 3 : dims = 2;
 
     for(int i=0; i < dims; i++)
@@ -147,6 +140,13 @@ bool PIDXIO::openDataset(const String filename)
 
     ret = PIDX_get_variable_count(pidx_file, &variable_count);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_set_variable_count");
+
+    if(particle_dataset){
+        ret = PIDX_get_particle_number(pidx_file, &particle_count);
+        if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_particle_number");
+
+        printf("FOUND %lld PARTICLES\n", particle_count);
+   }
 
     int first_tstep = 0, last_tstep = 0;
     ret = PIDX_get_first_time_step(pidx_file, &first_tstep);
@@ -302,6 +302,41 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
         return NULL;
     }
 
+#if 1
+
+    checkpoint_vars = (PIDX_variable *)calloc(variable_count, sizeof(PIDX_variable));
+    checkpoint_particle_counts = (uint64_t *)calloc(variable_count, sizeof(uint64_t));
+    checkpoint_data = (void **)calloc(variable_count, sizeof(void*));
+
+    ret = PIDX_set_current_variable_index(pidx_file, 0);
+    if (ret != PIDX_success) terminate_with_error_msg("PIDX_set_current_variable_index");
+
+    for (int i = 0; i < variable_count; ++i)
+    {
+      ret = PIDX_get_next_variable(pidx_file, &checkpoint_vars[i]);
+      if (ret != PIDX_success) terminate_with_error_msg("PIDX_get_next_variable");
+
+      ret = PIDX_variable_read_particle_data_layout(checkpoint_vars[i], physical_local_offset, physical_local_size,
+          &checkpoint_data[i], &checkpoint_particle_counts[i], PIDX_row_major);
+      if (ret != PIDX_success) terminate_with_error_msg("PIDX_variable_read_particle_data_layout");
+
+      if (i + 1 < variable_count)
+      {
+        ret = PIDX_read_next_variable(pidx_file, checkpoint_vars[i]);
+        if (ret != PIDX_success) terminate_with_error_msg("PIDX_read_next_variable");
+      }
+    }
+
+    // TODO: delete stuff
+    // for (int i = 0; i <= variable_index && i != variable_index; ++i)
+    // {
+    //   free(checkpoint_data[i]);
+    // }
+    // //free(checkpoint_data);
+    // free(checkpoint_vars);
+    // free(checkpoint_particle_counts);
+
+#else // this is how it should be one day
     PIDX_variable variable;
 
     ret = PIDX_set_current_variable_index(pidx_file, variable_index);
@@ -310,13 +345,14 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
     ret = PIDX_get_current_variable(pidx_file, &variable);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_get_current_variable");
 
-    unsigned char* data = NULL;
+    
     uint64_t particle_count = 0; 
 
     // Read the data into a local buffer (data) in row major order
     ret = PIDX_variable_read_particle_data_layout(variable, physical_local_offset, physical_local_size,
         (void**)&data, &particle_count, PIDX_row_major);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_variable_read_particle_data_layout");
+#endif
 
     ret = PIDX_close(pidx_file);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_close");
@@ -324,8 +360,11 @@ unsigned char* PIDXIO::getParticleData(const VisitIDXIO::Box box, const int time
     ret = PIDX_close_access(pidx_access);
     if (ret != PIDX_success)  terminate_with_error_msg("PIDX_close_access");
 
-    printf("PARTICLE COUNT %lld\n", particle_count);
-    return (unsigned char*)data;
+    ret = PIDX_reset_variable_counter(pidx_file);
+    if (ret != PIDX_success)  terminate_with_error_msg("PIDX_reset_variable_counter");
+
+    //return (unsigned char*)data;
+    return (unsigned char *)checkpoint_data[variable_index];
 
 }
 
