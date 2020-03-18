@@ -76,15 +76,15 @@ function bv_vtk_force
 
 function bv_vtk_info
 {
-    export VTK_FILE=${VTK_FILE:-"VTK-8.1.0.tar.gz"}
-    export VTK_VERSION=${VTK_VERSION:-"8.1.0"}
-    export VTK_SHORT_VERSION=${VTK_SHORT_VERSION:-"8.1"}
+    export VTK_FILE=${VTK_FILE:-"VTK-9.0.0.rc1.tar.gz"}
+    export VTK_VERSION=${VTK_VERSION:-"9.0.0.rc1"}
+    export VTK_SHORT_VERSION=${VTK_SHORT_VERSION:-"9.0"}
     export VTK_COMPATIBILITY_VERSION=${VTK_SHORT_VERSION}
-    export VTK_URL=${VTK_URL:-"http://www.vtk.org/files/release/${VTK_SHORT_VERSION}"}
-    export VTK_BUILD_DIR=${VTK_BUILD_DIR:-"VTK-8.1.0"}
+    export VTK_URL=${VTK_URL:-"https://www.vtk.org/files/release/${VTK_SHORT_VERSION}"}
+    export VTK_BUILD_DIR=${VTK_BUILD_DIR:-"VTK-9.0.0.rc1"}
     export VTK_INSTALL_DIR=${VTK_INSTALL_DIR:-"vtk"}
-    export VTK_MD5_CHECKSUM="4fa5eadbc8723ba0b8d203f05376d932"
-    export VTK_SHA256_CHECKSUM="6e269f07b64fb13774f5925161fb4e1f379f4e6a0131c8408c555f6b58ef3cb7"
+    export VTK_MD5_CHECKSUM="d41d8cd98f00b204e9800998ecf8427e"
+    #export VTK_SHA256_CHECKSUM="6e269f07b64fb13774f5925161fb4e1f379f4e6a0131c8408c555f6b58ef3cb7"
 }
 
 function bv_vtk_print
@@ -144,56 +144,10 @@ function bv_vtk_dry_run
 # *************************************************************************** #
 #                            Function 6, build_vtk                            #
 # *************************************************************************** #
-function apply_vtkxopenglrenderwindow_patch
-{
-  # patch vtk's vtkXOpenRenderWindow to fix segv when deleting windows in
-  # offscreen mode.
-
-   patch -p0 << \EOF
-*** Rendering/OpenGL2/vtkXOpenGLRenderWindow.cxx.orig 2018-03-30 14:38:07.000000000
---- Rendering/OpenGL2/vtkXOpenGLRenderWindow.cxx 2018-03-30 14:38:40.000000000
-***************
-*** 1148,1160 ****
-
-  void vtkXOpenGLRenderWindow::PopContext()
-  {
-    GLXContext current = glXGetCurrentContext();
-    GLXContext target = static_cast<GLXContext>(this->ContextStack.top());
-    this->ContextStack.pop();
-!   if (target != current)
-    {
-      glXMakeCurrent(this->DisplayStack.top(),
-        this->DrawableStack.top(),
-        target);
-    }
-    this->DisplayStack.pop();
---- 1148,1160 ----
-
-  void vtkXOpenGLRenderWindow::PopContext()
-  {
-    GLXContext current = glXGetCurrentContext();
-    GLXContext target = static_cast<GLXContext>(this->ContextStack.top());
-    this->ContextStack.pop();
-!   if (target && target != current)
-    {
-      glXMakeCurrent(this->DisplayStack.top(),
-        this->DrawableStack.top(),
-        target);
-    }
-    this->DisplayStack.pop();
-
-EOF
-
-    if [[ $? != 0 ]] ; then
-      warn "vtk patch for vtkXOpenGLRenderWindow failed."
-      return 1
-    fi
-    return 0;
-
-}
 
 function apply_vtkopenglspheremapper_h_patch
 {
+##NEED TO UPDATE THIS
   # patch vtk's vtkOpenGLSphereMapper.h to fix bug evidenced when
   # points are double precision
 
@@ -522,428 +476,6 @@ EOF
     return 0;
 }
 
-function apply_vtkdatawriter_patch
-{
-  # patch vtk's vtkDataWriter to fix bug when writing binary vtkBitArray,
-  # and non-AOS data arrays (as used with LibSim).
-
-   patch -p0 << \EOF
-*** IO/Legacy/vtkDataWriter.cxx.original 2018-01-19 13:52:19.000000000
---- IO/Legacy/vtkDataWriter.cxx 2018-01-19 13:52:49.000000000
-***************
-*** 1015,1034 ****
-    *fp << "\n";
-  }
-  
-  // Returns a pointer to the data ordered in original VTK style ordering
-  // of the data. If this is an SOA array it has to allocate the memory
-  // for that in which case the calling function must delete it.
-! template <class T>
-! T* GetArrayRawPointer(vtkAbstractArray* array, T* ptr, int isAOSArray)
-  {
-    if (isAOSArray)
-    {
-!     return ptr;
-!   }
-!   T* data = new T[array->GetNumberOfComponents()*array->GetNumberOfTuples()];
-!   vtkSOADataArrayTemplate<T>* typedArray =
-!     vtkSOADataArrayTemplate<T>::SafeDownCast(array);
-!   typedArray->ExportToVoidPointer(data);
-    return data;
-  }
-  
---- 1015,1043 ----
-    *fp << "\n";
-  }
-  
-+ //------------------------------------------------------------------------------
-+ template <class Value, class Array>
-+ Value* GetPointer(vtkAbstractArray* array)
-+ {
-+   return static_cast<Array*>(array)->GetPointer(0);
-+ }
-+ //------------------------------------------------------------------------------
-  // Returns a pointer to the data ordered in original VTK style ordering
-  // of the data. If this is an SOA array it has to allocate the memory
-  // for that in which case the calling function must delete it.
-! template <class T, class Array>
-! T* GetArrayRawPointer(vtkAbstractArray* array, int isAOSArray)
-  {
-    if (isAOSArray)
-    {
-!     return GetPointer<T, Array>(array);
-! }
-! 
-!   auto nc = array->GetNumberOfComponents();
-!   auto nt = array->GetNumberOfTuples();
-! 
-!   T* data = new T[nc * nt];
-!   array->ExportToVoidPointer(data);
-    return data;
-  }
-  
-***************
-*** 1072,1082 ****
-        }
-        else
-        {
-!         unsigned char *cptr=
-!           static_cast<vtkUnsignedCharArray *>(data)->GetPointer(0);
-!         fp->write(reinterpret_cast<char *>(cptr),
-!                   (sizeof(unsigned char))*((num-1)/8+1));
-! 
-        }
-        *fp << "\n";
-      }
---- 1081,1088 ----
-        }
-        else
-        {
-!         unsigned char* cptr = static_cast<vtkBitArray*>(data)->GetPointer(0);
-!         fp->write(reinterpret_cast<char*>(cptr), (sizeof(unsigned char)) * ((num - 1) / 8 + 1));
-        }
-        *fp << "\n";
-      }
-***************
-*** 1084,1092 ****
-  
-      case VTK_CHAR:
-      {
-!       snprintf (str, sizeof(str), format, "char"); *fp << str;
-!       char *s=GetArrayRawPointer(
-!         data, static_cast<vtkCharArray *>(data)->GetPointer(0), isAOSArray);
-  #if VTK_TYPE_CHAR_IS_SIGNED
-        vtkWriteDataArray(fp, s, this->FileType, "%hhd ", num, numComp);
-  #else
---- 1090,1098 ----
-  
-      case VTK_CHAR:
-      {
-!       snprintf(str, sizeof(str), format, "char");
-!       *fp << str;
-!       char* s = GetArrayRawPointer<char, vtkCharArray>(data, isAOSArray);
-  #if VTK_TYPE_CHAR_IS_SIGNED
-        vtkWriteDataArray(fp, s, this->FileType, "%hhd ", num, numComp);
-  #else
-***************
-*** 1101,1109 ****
-  
-      case VTK_SIGNED_CHAR:
-      {
-!       snprintf (str, sizeof(str), format, "signed_char"); *fp << str;
-!       signed char *s=GetArrayRawPointer(
-!         data, static_cast<vtkSignedCharArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hhd ", num, numComp);
-        if (!isAOSArray)
-        {
---- 1107,1115 ----
-  
-      case VTK_SIGNED_CHAR:
-      {
-!       snprintf(str, sizeof(str), format, "signed_char");
-!       *fp << str;
-!       signed char* s = GetArrayRawPointer<signed char, vtkSignedCharArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hhd ", num, numComp);
-        if (!isAOSArray)
-        {
-***************
-*** 1114,1122 ****
-  
-      case VTK_UNSIGNED_CHAR:
-      {
-!       snprintf (str, sizeof(str), format, "unsigned_char"); *fp << str;
-!       unsigned char *s=GetArrayRawPointer(
-!         data, static_cast<vtkUnsignedCharArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hhu ", num, numComp);
-        if (!isAOSArray)
-        {
---- 1120,1128 ----
-  
-      case VTK_UNSIGNED_CHAR:
-      {
-!       snprintf(str, sizeof(str), format, "unsigned_char");
-!       *fp << str;
-!       unsigned char* s = GetArrayRawPointer<unsigned char, vtkUnsignedCharArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hhu ", num, numComp);
-        if (!isAOSArray)
-        {
-***************
-*** 1127,1135 ****
-  
-      case VTK_SHORT:
-      {
-!       snprintf (str, sizeof(str), format, "short"); *fp << str;
-!       short *s=GetArrayRawPointer(
-!         data, static_cast<vtkShortArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hd ", num, numComp);
-        if (!isAOSArray)
-        {
---- 1133,1141 ----
-  
-      case VTK_SHORT:
-      {
-!       snprintf(str, sizeof(str), format, "short");
-!       *fp << str;
-!       short* s = GetArrayRawPointer<short, vtkShortArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hd ", num, numComp);
-        if (!isAOSArray)
-        {
-***************
-*** 1140,1260 ****
-  
-      case VTK_UNSIGNED_SHORT:
-      {
-!       snprintf (str, sizeof(str), format, "unsigned_short"); *fp << str;
-!       unsigned short *s=GetArrayRawPointer(
-!         data, static_cast<vtkUnsignedShortArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hu ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_INT:
-      {
-!       snprintf (str, sizeof(str), format, "int"); *fp << str;
-!       int *s=GetArrayRawPointer(
-!         data, static_cast<vtkIntArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%d ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_INT:
-      {
-!       snprintf (str, sizeof(str), format, "unsigned_int"); *fp << str;
-!       unsigned int *s=GetArrayRawPointer(
-!         data, static_cast<vtkUnsignedIntArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%u ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_LONG:
-      {
-!       snprintf (str, sizeof(str), format, "long"); *fp << str;
-!       long *s=GetArrayRawPointer(
-!         data, static_cast<vtkLongArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%ld ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_LONG:
-      {
-!       snprintf (str, sizeof(str), format, "unsigned_long"); *fp << str;
-!       unsigned long *s=GetArrayRawPointer(
-!         data, static_cast<vtkUnsignedLongArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%lu ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_LONG_LONG:
-      {
-!       snprintf (str, sizeof(str), format, "vtktypeint64"); *fp << str;
-!       long long *s=GetArrayRawPointer(
-!         data, static_cast<vtkTypeInt64Array *>(data)->GetPointer(0), isAOSArray);
-        strcpy(outputFormat, vtkTypeTraits<long long>::ParseFormat());
-        strcat(outputFormat, " ");
-        vtkWriteDataArray(fp, s, this->FileType, outputFormat, num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_LONG_LONG:
-      {
-!       snprintf (str, sizeof(str), format, "vtktypeuint64"); *fp << str;
-!       unsigned long long *s=GetArrayRawPointer(
-!         data, static_cast<vtkTypeUInt64Array *>(data)->GetPointer(0), isAOSArray);
-        strcpy(outputFormat, vtkTypeTraits<unsigned long long>::ParseFormat());
-        strcat(outputFormat, " ");
-        vtkWriteDataArray(fp, s, this->FileType, outputFormat, num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_FLOAT:
-      {
-!       snprintf (str, sizeof(str), format, "float"); *fp << str;
-!       float *s=GetArrayRawPointer(
-!         data, static_cast<vtkFloatArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%g ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
-  
-      case VTK_DOUBLE:
-      {
-!       snprintf (str, sizeof(str), format, "double"); *fp << str;
-!       double *s=GetArrayRawPointer(
-!         data, static_cast<vtkDoubleArray *>(data)->GetPointer(0), isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%.11lg ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete [] s;
-        }
-      }
-      break;
---- 1146,1268 ----
-  
-      case VTK_UNSIGNED_SHORT:
-      {
-!       snprintf(str, sizeof(str), format, "unsigned_short");
-!       *fp << str;
-!       unsigned short* s =
-!         GetArrayRawPointer<unsigned short, vtkUnsignedShortArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%hu ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_INT:
-      {
-!       snprintf(str, sizeof(str), format, "int");
-!       *fp << str;
-!       int* s = GetArrayRawPointer<int, vtkIntArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%d ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_INT:
-      {
-!       snprintf(str, sizeof(str), format, "unsigned_int");
-!       *fp << str;
-!       unsigned int* s = GetArrayRawPointer<unsigned int, vtkUnsignedIntArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%u ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_LONG:
-      {
-!       snprintf(str, sizeof(str), format, "long");
-!       *fp << str;
-!       long* s = GetArrayRawPointer<long, vtkLongArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%ld ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_LONG:
-      {
-!       snprintf(str, sizeof(str), format, "unsigned_long");
-!       *fp << str;
-!       unsigned long* s = GetArrayRawPointer<unsigned long, vtkUnsignedLongArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%lu ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_LONG_LONG:
-      {
-!       snprintf(str, sizeof(str), format, "vtktypeint64");
-!       *fp << str;
-!       long long* s = GetArrayRawPointer<long long, vtkTypeInt64Array>(data, isAOSArray);
-        strcpy(outputFormat, vtkTypeTraits<long long>::ParseFormat());
-        strcat(outputFormat, " ");
-        vtkWriteDataArray(fp, s, this->FileType, outputFormat, num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_UNSIGNED_LONG_LONG:
-      {
-!       snprintf(str, sizeof(str), format, "vtktypeuint64");
-!       *fp << str;
-!       unsigned long long* s =
-!         GetArrayRawPointer<unsigned long long, vtkTypeUInt64Array>(data, isAOSArray);
-        strcpy(outputFormat, vtkTypeTraits<unsigned long long>::ParseFormat());
-        strcat(outputFormat, " ");
-        vtkWriteDataArray(fp, s, this->FileType, outputFormat, num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_FLOAT:
-      {
-!       snprintf(str, sizeof(str), format, "float");
-!       *fp << str;
-!       float* s = GetArrayRawPointer<float, vtkFloatArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%g ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-  
-      case VTK_DOUBLE:
-      {
-!       snprintf(str, sizeof(str), format, "double");
-!       *fp << str;
-!       double* s = GetArrayRawPointer<double, vtkDoubleArray>(data, isAOSArray);
-        vtkWriteDataArray(fp, s, this->FileType, "%.11lg ", num, numComp);
-        if (!isAOSArray)
-        {
-!         delete[] s;
-        }
-      }
-      break;
-
-EOF
-
-    if [[ $? != 0 ]] ; then
-      warn "vtk patch for vtkDataWriter failed."
-      return 1
-    fi
-    return 0;
-}
 
 function apply_vtkospray_patches
 {
@@ -1439,43 +971,34 @@ EOF
 
 function apply_vtk_patch
 {
-    apply_vtkdatawriter_patch
-    if [[ $? != 0 ]] ; then
-       return 1
-    fi
+    # will have to test if these or versions thereof are still required
+    #apply_vtkopenglspheremapper_h_patch
+    #if [[ $? != 0 ]] ; then
+    #    return 1
+    #fi
 
-    apply_vtkopenglspheremapper_h_patch
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
-
-    apply_vtkopenglspheremapper_patch
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
-
-    apply_vtkxopenglrenderwindow_patch
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
+    #apply_vtkopenglspheremapper_patch
+    #if [[ $? != 0 ]] ; then
+    #    return 1
+    #fi
 
     # Note: don't guard ospray patches by if ospray is selected 
     # b/c subsequent calls to build_visit won't get a chance to patch
     # given the if test logic used above
-    apply_vtkospraypolydatamappernode_patch
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
+    #apply_vtkospraypolydatamappernode_patch
+    #if [[ $? != 0 ]] ; then
+    #    return 1
+    #fi
 
-    apply_vtkospray_patches
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
+    #apply_vtkospray_patches
+    #if [[ $? != 0 ]] ; then
+    #    return 1
+    #fi
 
-    apply_vtkospray_linking_patch
-    if [[ $? != 0 ]] ; then
-        return 1
-    fi
+    #apply_vtkospray_linking_patch
+    #if [[ $? != 0 ]] ; then
+    #    return 1
+    #fi
 
     apply_vtk_python3_python_args_patch
     if [[ $? != 0 ]] ; then
@@ -1516,20 +1039,20 @@ function build_vtk
     #
     # Apply patches
     #
-    info "Patching VTK . . ."
-    cd $VTK_BUILD_DIR || error "Can't cd to VTK build dir."
-    apply_vtk_patch
-    if [[ $? != 0 ]] ; then
-        if [[ $untarred_vtk == 1 ]] ; then
-            warn "Giving up on VTK build because the patch failed."
-            return 1
-        else
-            warn "Patch failed, but continuing.  I believe that this script\n" \
-                 "tried to apply a patch to an existing directory that had\n" \
-                 "already been patched ... that is, the patch is\n" \
-                 "failing harmlessly on a second application."
-        fi
-    fi
+    #info "Patching VTK . . ."
+    #cd $VTK_BUILD_DIR || error "Can't cd to VTK build dir."
+    #apply_vtk_patch
+    #if [[ $? != 0 ]] ; then
+    #    if [[ $untarred_vtk == 1 ]] ; then
+    #        warn "Giving up on VTK build because the patch failed."
+    #        return 1
+    #    else
+    #        warn "Patch failed, but continuing.  I believe that this script\n" \
+    #             "tried to apply a patch to an existing directory that had\n" \
+    #             "already been patched ... that is, the patch is\n" \
+    #             "failing harmlessly on a second application."
+    #    fi
+    #fi
 
     # move back up to the start dir
     cd "$START_DIR"
@@ -1599,8 +1122,8 @@ function build_vtk
     fi
     vopts="${vopts} -DVTK_DEBUG_LEAKS:BOOL=${vtk_debug_leaks}"
     vopts="${vopts} -DVTK_LEGACY_REMOVE:BOOL=true"
-    vopts="${vopts} -DBUILD_TESTING:BOOL=false"
-    vopts="${vopts} -DBUILD_DOCUMENTATION:BOOL=false"
+    vopts="${vopts} -DVTK_BUILD_TESTING:BOOL=false"
+    vopts="${vopts} -DVTK_BUILD_DOCUMENTATION:BOOL=false"
     vopts="${vopts} -DCMAKE_C_COMPILER:STRING=${C_COMPILER}"
     vopts="${vopts} -DCMAKE_CXX_COMPILER:STRING=${CXX_COMPILER}"
     vopts="${vopts} -DCMAKE_C_FLAGS:STRING=\"${C_OPT_FLAGS}\""
@@ -1637,40 +1160,39 @@ function build_vtk
     vopts="${vopts} -DVTK_ALL_NEW_OBJECT_FACTORY:BOOL=true"
 
     # Turn off module groups
-    vopts="${vopts} -DVTK_Group_Imaging:BOOL=false"
-    vopts="${vopts} -DVTK_Group_MPI:BOOL=false"
-    vopts="${vopts} -DVTK_Group_Qt:BOOL=false"
-    vopts="${vopts} -DVTK_Group_Rendering:BOOL=false"
-    vopts="${vopts} -DVTK_Group_StandAlone:BOOL=false"
-    vopts="${vopts} -DVTK_Group_Tk:BOOL=false"
-    vopts="${vopts} -DVTK_Group_Views:BOOL=false"
-    vopts="${vopts} -DVTK_Group_Web:BOOL=false"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Imaging:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_MPI:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Qt:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Rendering:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_StandAlone:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Tk:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Views:STRING=DONT_WANT"
+    vopts="${vopts} -DVTK_GROUP_ENABLE_Web:STRING=DONT_WANT"
 
     # Turn on individual modules. dependent modules are turned on automatically
-    vopts="${vopts} -DModule_vtkCommonCore:BOOL=true"
-    vopts="${vopts} -DModule_vtkFiltersFlowPaths:BOOL=true"
-    vopts="${vopts} -DModule_vtkFiltersHybrid:BOOL=true"
-    vopts="${vopts} -DModule_vtkFiltersModeling:BOOL=true"
-    vopts="${vopts} -DModule_vtkGeovisCore:BOOL=true"
-    vopts="${vopts} -DModule_vtkIOEnSight:BOOL=true"
-    vopts="${vopts} -DModule_vtkIOGeometry:BOOL=true"
-    vopts="${vopts} -DModule_vtkIOLegacy:BOOL=true"
-    vopts="${vopts} -DModule_vtkIOPLY:BOOL=true"
-    vopts="${vopts} -DModule_vtkIOXML:BOOL=true"
-    vopts="${vopts} -DModule_vtkInteractionStyle:BOOL=true"
-    vopts="${vopts} -DModule_vtkRenderingAnnotation:BOOL=true"
-    vopts="${vopts} -DModule_vtkRenderingFreeType:BOOL=true"
-    vopts="${vopts} -DModule_vtkRenderingOpenGL2:BOOL=true"
-    vopts="${vopts} -DModule_vtklibxml2:BOOL=true"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_CommonCore:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_FiltersFlowPaths:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_FiltersHybrid:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_FiltersModeling:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_GeovisCore:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_IOEnSight:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_IOGeometry:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_IOLegacy:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_IOPLY:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_IOXML:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_InteractionStyle:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_RenderingAnnotation:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_RenderingFreeType:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_RenderingOpenGL2:STRING=YES"
+    vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_libxml2:STRING=YES"
 
     # Tell VTK where to locate qmake if we're building graphical support. We
     # do not add graphical support for server-only builds.
     if [[ "$DO_DBIO_ONLY" != "yes" ]]; then
         if [[ "$DO_ENGINE_ONLY" != "yes" ]]; then
             if [[ "$DO_SERVER_COMPONENTS_ONLY" != "yes" ]]; then
-                vopts="${vopts} -DModule_vtkGUISupportQtOpenGL:BOOL=true"
+                vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_GUISupportQtOpenGL:BOOL:STRING=YES"
                 vopts="${vopts} -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_BIN_DIR}/qmake"
-                vopts="${vopts} -DVTK_QT_VERSION=5"
                 vopts="${vopts} -DCMAKE_PREFIX_PATH=${QT_INSTALL_DIR}/lib/cmake"
             fi
         fi
@@ -1685,6 +1207,7 @@ function build_vtk
             pylib="${PYTHON_LIBRARY}"
 
             vopts="${vopts} -DVTK_WRAP_PYTHON:BOOL=true"
+            vopts="${vopts} -DVTK_PYTHON_VERSION:STRING=2"
             vopts="${vopts} -DPYTHON_EXECUTABLE:FILEPATH=${py}"
             vopts="${vopts} -DPYTHON_EXTRA_LIBS:STRING=${VTK_PY_LIBS}"
             vopts="${vopts} -DPYTHON_INCLUDE_DIR:PATH=${pyinc}"
@@ -1716,7 +1239,7 @@ function build_vtk
 
     # Use OSPRay?
     if [[ "$DO_OSPRAY" == "yes" ]] ; then
-        vopts="${vopts} -DModule_vtkRenderingOSPRay:BOOL=ON"
+        vopts="${vopts} -DVTK_MODULE_ENABLE_VTK_RenderingOSPRay:BOOL=ON"
         vopts="${vopts} -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}"
         vopts="${vopts} -Dembree_DIR=${EMBREE_INSTALL_DIR}"
     fi
