@@ -474,7 +474,7 @@ CConvertUnstructuredGridToPolyData(avtDataRepresentation &data, void *dataAndKey
         geoFilter->Update();
         vtkPolyData *out_pd = geoFilter->GetOutput();
         out_pd->Register(NULL);
-        
+
         avtDataRepresentation new_data(out_pd, data.GetDomain(), data.GetLabel());
         data = new_data;
     }

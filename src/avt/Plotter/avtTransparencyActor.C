@@ -35,6 +35,7 @@
 #include <vtkParallelImageSpaceRedistributor.h>
 #include <vtkTransform.h>
 #include <vtkTransformFilter.h>
+#include <vtkUnsignedCharArray.h>
 #include <vtkVisItPolyDataNormals.h>
 
 #include <ColorAttribute.h>
@@ -1996,7 +1997,7 @@ avtTransparencyActor::PrepareDataset(size_t input, size_t subinput)
             //
             prepDS->Allocate(pd);
             vtkIdType ncells = pd->GetNumberOfCells();
-            vtkIdType  *cellPts = NULL;
+            const vtkIdType  *cellPts = NULL;
             vtkIdType   myCellPts[100];
             vtkIdType   npts = 0;
             vector<vtkIdType> ptIds;
