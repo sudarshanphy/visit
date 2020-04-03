@@ -226,7 +226,7 @@ avtqtviswindow
 winutil
 ${VIEWER_QT_LIBS}
 ${CMAKE_THREAD_LIBS}
-vtkGUISupportQt
+VTK::GUISupportQt
 )
 
 if(HAVE_OSMESA OR HAVE_EGL)
@@ -266,9 +266,8 @@ TARGET_LINK_LIBRARIES(viewer_exe
     ${viewer_exe_IPlot}
     ${viewer_exe_VPlot}
     viewer
-    vtkpng
-    vtkjpeg
-    ${VTK_FREETYPE_LIBRARIES}
+    VTK::png
+    VTK::jpeg
 )
 
 # If we're building statically then the viewer can't be linked until the plugin

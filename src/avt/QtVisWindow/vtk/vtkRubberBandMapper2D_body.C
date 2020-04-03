@@ -1,9 +1,7 @@
     int numPts;
     vtkPolyData *input= vtkPolyData::SafeDownCast(this->GetInput());
-    vtkIdType npts, *pts;
     int j;
     vtkPoints *p, *displayPts;
-    vtkCellArray *aPrim;
     vtkUnsignedCharArray *c=NULL;
     unsigned char *rgba;
     double *ftmp;
@@ -82,10 +80,13 @@
     }
 
     // Draw the polygons.
-    aPrim = input->GetPolys();
-    for (aPrim->InitTraversal(); aPrim->GetNextCell(npts,pts); cellNum++)
-    {
-        if (c)
+    auto aPrim = vtk::TakeSmartPointer(input->GetPolys()->NewIterator());
+    vtkIdType npts;
+    const vtkIdType *pts;
+    for (aPrim->GoToFirstCell(); !aPrim->IsDoneWithTraversal(); aPrim->GoToNextCell(), cellNum++)
+    { 
+        aPrim->GetCurrentCell(npts,pts);
+        if (c) 
         {
             if (cellScalars)
                 rgba = c->GetPointer(4*cellNum);
@@ -117,10 +118,11 @@
     //     'retina' displays."
     //
     int devicePixelRatio = privateInstance->widget->devicePixelRatio();
-    aPrim = input->GetLines();
-    for (aPrim->InitTraversal(); aPrim->GetNextCell(npts,pts); cellNum++)
-    {
-        if (c && cellScalars)
+    aPrim = vtk::TakeSmartPointer(input->GetLines()->NewIterator());
+    for (aPrim->GoToFirstCell(); !aPrim->IsDoneWithTraversal(); aPrim->GoToNextCell(), cellNum++)
+    { 
+        aPrim->GetCurrentCell(npts,pts);
+        if (c && cellScalars) 
         {
             rgba = c->GetPointer(4*cellNum);
             SET_FOREGROUND(rgba);
