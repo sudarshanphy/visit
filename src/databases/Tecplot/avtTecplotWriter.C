@@ -19,6 +19,7 @@
 
 #include <vtkCell.h>
 #include <vtkCellArray.h>
+#include <vtkCellArrayIterator.h>
 #include <vtkCellData.h>
 #include <vtkCellType.h>
 #include <vtkDataSetWriter.h>
@@ -834,10 +835,12 @@ avtTecplotWriter::WritePolyData(vtkPolyData *pd, int chunk)
 
     // Search through the poly cells and see what we have.
     int ntri = 0, nquad = 0;
-    pd->GetPolys()->InitTraversal();
-    vtkIdType npts, *pts = 0;
-    while(pd->GetPolys()->GetNextCell(npts, pts))
+    vtkIdType npts;
+    const vtkIdType *pts = nullptr;
+    auto iter = vtk::TakeSmartPointer(pd->GetPolys()->NewIterator());
+    for(iter->GoToFirstCell(); !iter->IsDoneWithTraversal(); iter->GoToNextCell())
     {
+        iter->GetCurrentCell(npts, pts);
         if(npts == 3)
             ntri++;
         else if(npts == 4)
@@ -881,9 +884,9 @@ avtTecplotWriter::WritePolyData(vtkPolyData *pd, int chunk)
     WriteDataArrays(pd);
 
     // Save the polygons.
-    pd->GetPolys()->InitTraversal();
-    while(pd->GetPolys()->GetNextCell(npts, pts))
+    for(iter->GoToFirstCell(); !iter->IsDoneWithTraversal(); iter->GoToNextCell())
     {
+        iter->GetCurrentCell(npts, pts);
         if(npts == 3 || npts == 4)
         {
             if(subdivide && npts == 4)
