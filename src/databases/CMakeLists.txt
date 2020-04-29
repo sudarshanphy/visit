@@ -431,7 +431,7 @@ Miranda
 NASTRAN
 Nek5000
 OVERFLOW
-#OpenFOAM  the underlying vtk reader needs work to update with VTK 9 version
+OpenFOAM
 PATRAN
 PuReMD
 PLOT3D
