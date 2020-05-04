@@ -5,11 +5,9 @@
 #include "vtkVisItPolyDataNormals.h"
 
 #include <vtkCellArray.h>
-#include <vtkCellArrayIterator.h>
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
-#include <vtkIdTypeArray.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkMath.h>
@@ -260,6 +258,8 @@ vtkVisItPolyDataNormals::ExecutePointWithoutSplitting(
             dnormals[p*3+1] += normal[1];
             dnormals[p*3+2] += normal[2];
         }
+        // Increment our connectivity pointer
+        outPolyPtr += nPts;
     }
 
     // Renormalize the normals; they've only been accumulated so far,
@@ -664,8 +664,6 @@ vtkVisItPolyDataNormals::ExecutePointWithSplitting(vtkPolyData *input,
                 newPointIndex++;
             }
         }
-        if (replaceCell)
-            connPtr->ReplaceCurrentCell(ptIds);
     }
 
     output->SetPolys(outPolys);
