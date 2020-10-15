@@ -53,7 +53,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
-        subsetNames = new Vector();
+        subsetNames = new Vector<String>();
         subsetType = SUBSET_TYPE_UNKNOWN;
         opacity = 1;
         wireframe = false;
@@ -77,7 +77,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
-        subsetNames = new Vector();
+        subsetNames = new Vector<String>();
         subsetType = SUBSET_TYPE_UNKNOWN;
         opacity = 1;
         wireframe = false;
@@ -103,7 +103,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         lineWidth = obj.lineWidth;
         singleColor = new ColorAttribute(obj.singleColor);
         multiColor = new ColorAttributeList(obj.multiColor);
-        subsetNames = new Vector(obj.subsetNames.size());
+        subsetNames = new Vector<String>(obj.subsetNames.size());
         for(i = 0; i < obj.subsetNames.size(); ++i)
             subsetNames.addElement(new String((String)obj.subsetNames.elementAt(i)));
 
@@ -211,7 +211,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         Select(6);
     }
 
-    public void SetSubsetNames(Vector subsetNames_)
+    public void SetSubsetNames(Vector<String> subsetNames_)
     {
         subsetNames = subsetNames_;
         Select(7);
@@ -285,7 +285,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
     public int                GetLineWidth() { return lineWidth; }
     public ColorAttribute     GetSingleColor() { return singleColor; }
     public ColorAttributeList GetMultiColor() { return multiColor; }
-    public Vector             GetSubsetNames() { return subsetNames; }
+    public Vector<String>     GetSubsetNames() { return subsetNames; }
     public int                GetSubsetType() { return subsetType; }
     public double             GetOpacity() { return opacity; }
     public boolean            GetWireframe() { return wireframe; }
@@ -452,7 +452,7 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
     private int                lineWidth;
     private ColorAttribute     singleColor;
     private ColorAttributeList multiColor;
-    private Vector             subsetNames; // vector of String objects
+    private Vector<String>     subsetNames; // vector of String objects
     private int                subsetType;
     private double             opacity;
     private boolean            wireframe;

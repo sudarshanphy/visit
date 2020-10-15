@@ -55,8 +55,8 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
         currentPickType = 0;
         currentPickValid = false;
         currentPickLetter = new String("");
-        pastPicks = new Vector();
-        pastPickLetters = new Vector();
+        pastPicks = new Vector<Double>();
+        pastPickLetters = new Vector<String>();
     }
 
     public SpreadsheetAttributes(int nMoreFields)
@@ -78,8 +78,8 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
         currentPickType = 0;
         currentPickValid = false;
         currentPickLetter = new String("");
-        pastPicks = new Vector();
-        pastPickLetters = new Vector();
+        pastPicks = new Vector<Double>();
+        pastPickLetters = new Vector<String>();
     }
 
     public SpreadsheetAttributes(SpreadsheetAttributes obj)
@@ -103,14 +103,14 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
         currentPickType = obj.currentPickType;
         currentPickValid = obj.currentPickValid;
         currentPickLetter = new String(obj.currentPickLetter);
-        pastPicks = new Vector(obj.pastPicks.size());
+        pastPicks = new Vector<Double>(obj.pastPicks.size());
         for(i = 0; i < obj.pastPicks.size(); ++i)
         {
             Double dv = (Double)obj.pastPicks.elementAt(i);
             pastPicks.addElement(new Double(dv.doubleValue()));
         }
 
-        pastPickLetters = new Vector(obj.pastPickLetters.size());
+        pastPickLetters = new Vector<String>(obj.pastPickLetters.size());
         for(i = 0; i < obj.pastPickLetters.size(); ++i)
             pastPickLetters.addElement(new String((String)obj.pastPickLetters.elementAt(i)));
 
@@ -264,13 +264,13 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
         Select(14);
     }
 
-    public void SetPastPicks(Vector pastPicks_)
+    public void SetPastPicks(Vector<Double> pastPicks_)
     {
         pastPicks = pastPicks_;
         Select(15);
     }
 
-    public void SetPastPickLetters(Vector pastPickLetters_)
+    public void SetPastPickLetters(Vector<String> pastPickLetters_)
     {
         pastPickLetters = pastPickLetters_;
         Select(16);
@@ -292,8 +292,8 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
     public int            GetCurrentPickType() { return currentPickType; }
     public boolean        GetCurrentPickValid() { return currentPickValid; }
     public String         GetCurrentPickLetter() { return currentPickLetter; }
-    public Vector         GetPastPicks() { return pastPicks; }
-    public Vector         GetPastPickLetters() { return pastPickLetters; }
+    public Vector<Double> GetPastPicks() { return pastPicks; }
+    public Vector<String> GetPastPickLetters() { return pastPickLetters; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -440,7 +440,7 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
     private int            currentPickType;
     private boolean        currentPickValid;
     private String         currentPickLetter;
-    private Vector         pastPicks; // vector of Double objects
-    private Vector         pastPickLetters; // vector of String objects
+    private Vector<Double> pastPicks; // vector of Double objects
+    private Vector<String> pastPickLetters; // vector of String objects
 }
 

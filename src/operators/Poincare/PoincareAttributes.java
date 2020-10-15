@@ -131,7 +131,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
         pointSource[0] = 0;
         pointSource[1] = 0;
         pointSource[2] = 0;
-        pointList = new Vector();
+        pointList = new Vector<Double>();
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
@@ -235,7 +235,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
         pointSource[0] = 0;
         pointSource[1] = 0;
         pointSource[2] = 0;
-        pointList = new Vector();
+        pointList = new Vector<Double>();
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
@@ -342,7 +342,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
         pointSource[1] = obj.pointSource[1];
         pointSource[2] = obj.pointSource[2];
 
-        pointList = new Vector(obj.pointList.size());
+        pointList = new Vector<Double>(obj.pointList.size());
         for(i = 0; i < obj.pointList.size(); ++i)
         {
             Double dv = (Double)obj.pointList.elementAt(i);
@@ -638,7 +638,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
         Select(11);
     }
 
-    public void SetPointList(Vector pointList_)
+    public void SetPointList(Vector<Double> pointList_)
     {
         pointList = pointList_;
         Select(12);
@@ -1071,7 +1071,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
     public int            GetPuncturePlane() { return puncturePlane; }
     public int            GetSourceType() { return sourceType; }
     public double[]       GetPointSource() { return pointSource; }
-    public Vector         GetPointList() { return pointList; }
+    public Vector<Double> GetPointList() { return pointList; }
     public double[]       GetLineStart() { return lineStart; }
     public double[]       GetLineEnd() { return lineEnd; }
     public int            GetPointDensity() { return pointDensity; }
@@ -1759,7 +1759,7 @@ public class PoincareAttributes extends AttributeSubject implements Plugin
     private int            puncturePlane;
     private int            sourceType;
     private double[]       pointSource;
-    private Vector         pointList; // vector of Double objects
+    private Vector<Double> pointList; // vector of Double objects
     private double[]       lineStart;
     private double[]       lineEnd;
     private int            pointDensity;

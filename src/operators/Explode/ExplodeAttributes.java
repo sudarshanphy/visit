@@ -75,8 +75,8 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
         cellExplosionFactor = 1;
         explosionPattern = EXPLOSIONPATTERN_IMPACT;
         explodeAllCells = false;
-        boundaryNames = new Vector();
-        explosions = new Vector();
+        boundaryNames = new Vector<String>();
+        explosions = new Vector<ExplodeAttributes>();
         subsetType = SUBSETTYPE_UNKNOWN;
     }
 
@@ -112,8 +112,8 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
         cellExplosionFactor = 1;
         explosionPattern = EXPLOSIONPATTERN_IMPACT;
         explodeAllCells = false;
-        boundaryNames = new Vector();
-        explosions = new Vector();
+        boundaryNames = new Vector<String>();
+        explosions = new Vector<ExplodeAttributes>();
         subsetType = SUBSETTYPE_UNKNOWN;
     }
 
@@ -156,12 +156,12 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
         cellExplosionFactor = obj.cellExplosionFactor;
         explosionPattern = obj.explosionPattern;
         explodeAllCells = obj.explodeAllCells;
-        boundaryNames = new Vector(obj.boundaryNames.size());
+        boundaryNames = new Vector<String>(obj.boundaryNames.size());
         for(i = 0; i < obj.boundaryNames.size(); ++i)
             boundaryNames.addElement(new String((String)obj.boundaryNames.elementAt(i)));
 
         // *** Copy the explosions field ***
-        explosions = new Vector(obj.explosions.size());
+        explosions = new Vector<ExplodeAttributes>(obj.explosions.size());
         for(i = 0; i < obj.explosions.size(); ++i)
         {
             ExplodeAttributes oldObj = (ExplodeAttributes)obj.explosions.elementAt(i);
@@ -381,7 +381,7 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
         Select(12);
     }
 
-    public void SetBoundaryNames(Vector boundaryNames_)
+    public void SetBoundaryNames(Vector<String> boundaryNames_)
     {
         boundaryNames = boundaryNames_;
         Select(13);
@@ -394,22 +394,22 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
     }
 
     // Property getting methods
-    public int      GetExplosionType() { return explosionType; }
-    public double[] GetExplosionPoint() { return explosionPoint; }
-    public double[] GetPlanePoint() { return planePoint; }
-    public double[] GetPlaneNorm() { return planeNorm; }
-    public double[] GetCylinderPoint1() { return cylinderPoint1; }
-    public double[] GetCylinderPoint2() { return cylinderPoint2; }
-    public double   GetMaterialExplosionFactor() { return materialExplosionFactor; }
-    public String   GetMaterial() { return material; }
-    public double   GetCylinderRadius() { return cylinderRadius; }
-    public boolean  GetExplodeMaterialCells() { return explodeMaterialCells; }
-    public double   GetCellExplosionFactor() { return cellExplosionFactor; }
-    public int      GetExplosionPattern() { return explosionPattern; }
-    public boolean  GetExplodeAllCells() { return explodeAllCells; }
-    public Vector   GetBoundaryNames() { return boundaryNames; }
-    public Vector   GetExplosions() { return explosions; }
-    public int      GetSubsetType() { return subsetType; }
+    public int                          GetExplosionType() { return explosionType; }
+    public double[]                     GetExplosionPoint() { return explosionPoint; }
+    public double[]                     GetPlanePoint() { return planePoint; }
+    public double[]                     GetPlaneNorm() { return planeNorm; }
+    public double[]                     GetCylinderPoint1() { return cylinderPoint1; }
+    public double[]                     GetCylinderPoint2() { return cylinderPoint2; }
+    public double                       GetMaterialExplosionFactor() { return materialExplosionFactor; }
+    public String                       GetMaterial() { return material; }
+    public double                       GetCylinderRadius() { return cylinderRadius; }
+    public boolean                      GetExplodeMaterialCells() { return explodeMaterialCells; }
+    public double                       GetCellExplosionFactor() { return cellExplosionFactor; }
+    public int                          GetExplosionPattern() { return explosionPattern; }
+    public boolean                      GetExplodeAllCells() { return explodeAllCells; }
+    public Vector<String>               GetBoundaryNames() { return boundaryNames; }
+    public Vector<ExplodeAttributes>    GetExplosions() { return explosions; }
+    public int                          GetSubsetType() { return subsetType; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -609,21 +609,21 @@ public class ExplodeAttributes extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private int      explosionType;
-    private double[] explosionPoint;
-    private double[] planePoint;
-    private double[] planeNorm;
-    private double[] cylinderPoint1;
-    private double[] cylinderPoint2;
-    private double   materialExplosionFactor;
-    private String   material;
-    private double   cylinderRadius;
-    private boolean  explodeMaterialCells;
-    private double   cellExplosionFactor;
-    private int      explosionPattern;
-    private boolean  explodeAllCells;
-    private Vector   boundaryNames; // vector of String objects
-    private Vector   explosions; // vector of ExplodeAttributes objects
-    private int      subsetType;
+    private int                         explosionType;
+    private double[]                    explosionPoint;
+    private double[]                    planePoint;
+    private double[]                    planeNorm;
+    private double[]                    cylinderPoint1;
+    private double[]                    cylinderPoint2;
+    private double                      materialExplosionFactor;
+    private String                      material;
+    private double                      cylinderRadius;
+    private boolean                     explodeMaterialCells;
+    private double                      cellExplosionFactor;
+    private int                         explosionPattern;
+    private boolean                     explodeAllCells;
+    private Vector<String>              boundaryNames; // vector of String objects
+    private Vector<ExplodeAttributes>   explosions; // vector of ExplodeAttributes objects
+    private int                         subsetType;
 }
 

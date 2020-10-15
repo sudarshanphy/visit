@@ -42,7 +42,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
         super(MultiCurveAttributes_numAdditionalAtts);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         singleColor = new ColorAttribute(255, 0, 0);
         multiColor = new ColorAttributeList();
@@ -64,7 +64,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
         super(MultiCurveAttributes_numAdditionalAtts + nMoreFields);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         singleColor = new ColorAttribute(255, 0, 0);
         multiColor = new ColorAttributeList();
@@ -88,7 +88,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
         int i;
 
         defaultPalette = new ColorControlPointList(obj.defaultPalette);
-        changedColors = new Vector(obj.changedColors.size());
+        changedColors = new Vector<Byte>(obj.changedColors.size());
         for(i = 0; i < obj.changedColors.size(); ++i)
         {
             Byte bv = (Byte)obj.changedColors.elementAt(i);
@@ -156,7 +156,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
         Select(0);
     }
 
-    public void SetChangedColors(Vector changedColors_)
+    public void SetChangedColors(Vector<Byte> changedColors_)
     {
         changedColors = changedColors_;
         Select(1);
@@ -248,7 +248,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
 
     // Property getting methods
     public ColorControlPointList GetDefaultPalette() { return defaultPalette; }
-    public Vector                GetChangedColors() { return changedColors; }
+    public Vector<Byte>                GetChangedColors() { return changedColors; }
     public int                   GetColorType() { return colorType; }
     public ColorAttribute        GetSingleColor() { return singleColor; }
     public ColorAttributeList    GetMultiColor() { return multiColor; }
@@ -389,7 +389,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
 
     // Attributes
     private ColorControlPointList defaultPalette;
-    private Vector                changedColors; // vector of Byte objects
+    private Vector<Byte>                changedColors; // vector of Byte objects
     private int                   colorType;
     private ColorAttribute        singleColor;
     private ColorAttributeList    multiColor;

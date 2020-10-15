@@ -33,16 +33,16 @@ public class ExtractPointFunction2DAttributes extends AttributeSubject implement
     {
         super(ExtractPointFunction2DAttributes_numAdditionalAtts);
 
-        I = new Vector();
-        J = new Vector();
+        I = new Vector<Integer>();
+        J = new Vector<Integer>();
     }
 
     public ExtractPointFunction2DAttributes(int nMoreFields)
     {
         super(ExtractPointFunction2DAttributes_numAdditionalAtts + nMoreFields);
 
-        I = new Vector();
-        J = new Vector();
+        I = new Vector<Integer>();
+        J = new Vector<Integer>();
     }
 
     public ExtractPointFunction2DAttributes(ExtractPointFunction2DAttributes obj)
@@ -51,13 +51,13 @@ public class ExtractPointFunction2DAttributes extends AttributeSubject implement
 
         int i;
 
-        I = new Vector();
+        I = new Vector<Integer>();
         for(i = 0; i < obj.I.size(); ++i)
         {
             Integer iv = (Integer)obj.I.elementAt(i);
             I.addElement(new Integer(iv.intValue()));
         }
-        J = new Vector();
+        J = new Vector<Integer>();
         for(i = 0; i < obj.J.size(); ++i)
         {
             Integer iv = (Integer)obj.J.elementAt(i);
@@ -108,21 +108,21 @@ public class ExtractPointFunction2DAttributes extends AttributeSubject implement
     public String GetVersion() { return "1.0"; }
 
     // Property setting methods
-    public void SetI(Vector I_)
+    public void SetI(Vector<Integer> I_)
     {
         I = I_;
         Select(0);
     }
 
-    public void SetJ(Vector J_)
+    public void SetJ(Vector<Integer> J_)
     {
         J = J_;
         Select(1);
     }
 
     // Property getting methods
-    public Vector GetI() { return I; }
-    public Vector GetJ() { return J; }
+    public Vector<Integer> GetI() { return I; }
+    public Vector<Integer> GetJ() { return J; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -156,7 +156,7 @@ public class ExtractPointFunction2DAttributes extends AttributeSubject implement
 
 
     // Attributes
-    private Vector I; // vector of Integer objects
-    private Vector J; // vector of Integer objects
+    private Vector<Integer> I; // vector of Integer objects
+    private Vector<Integer> J; // vector of Integer objects
 }
 

@@ -45,7 +45,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         useGlobalId = false;
         categoryName = new String("Whole");
         subsetName = new String("Whole");
-        index = new Vector();
+        index = new Vector<Integer>();
         index.addElement(new Integer(0));
         logical = false;
         requestedLayer = 0;
@@ -61,7 +61,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         useGlobalId = false;
         categoryName = new String("Whole");
         subsetName = new String("Whole");
-        index = new Vector();
+        index = new Vector<Integer>();
         index.addElement(new Integer(0));
         logical = false;
         requestedLayer = 0;
@@ -79,7 +79,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         useGlobalId = obj.useGlobalId;
         categoryName = new String(obj.categoryName);
         subsetName = new String(obj.subsetName);
-        index = new Vector();
+        index = new Vector<Integer>();
         for(i = 0; i < obj.index.size(); ++i)
         {
             Integer iv = (Integer)obj.index.elementAt(i);
@@ -156,7 +156,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         Select(3);
     }
 
-    public void SetIndex(Vector index_)
+    public void SetIndex(Vector<Integer> index_)
     {
         index = index_;
         Select(4);
@@ -187,15 +187,15 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
     }
 
     // Property getting methods
-    public int     GetAdjacencyType() { return adjacencyType; }
-    public boolean GetUseGlobalId() { return useGlobalId; }
-    public String  GetCategoryName() { return categoryName; }
-    public String  GetSubsetName() { return subsetName; }
-    public Vector  GetIndex() { return index; }
-    public boolean GetLogical() { return logical; }
-    public int     GetRequestedLayer() { return requestedLayer; }
-    public int     GetSeedType() { return seedType; }
-    public boolean GetHonorOriginalMesh() { return honorOriginalMesh; }
+    public int              GetAdjacencyType() { return adjacencyType; }
+    public boolean          GetUseGlobalId() { return useGlobalId; }
+    public String           GetCategoryName() { return categoryName; }
+    public String           GetSubsetName() { return subsetName; }
+    public Vector<Integer>  GetIndex() { return index; }
+    public boolean          GetLogical() { return logical; }
+    public int              GetRequestedLayer() { return requestedLayer; }
+    public int              GetSeedType() { return seedType; }
+    public boolean          GetHonorOriginalMesh() { return honorOriginalMesh; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -281,14 +281,14 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private int     adjacencyType;
-    private boolean useGlobalId;
-    private String  categoryName;
-    private String  subsetName;
-    private Vector  index; // vector of Integer objects
-    private boolean logical;
-    private int     requestedLayer;
-    private int     seedType;
-    private boolean honorOriginalMesh;
+    private int             adjacencyType;
+    private boolean         useGlobalId;
+    private String          categoryName;
+    private String          subsetName;
+    private Vector<Integer> index; // vector of Integer objects
+    private boolean         logical;
+    private int             requestedLayer;
+    private int             seedType;
+    private boolean         honorOriginalMesh;
 }
 

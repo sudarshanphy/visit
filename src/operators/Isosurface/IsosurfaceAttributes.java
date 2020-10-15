@@ -43,8 +43,8 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
         super(IsosurfaceAttributes_numAdditionalAtts);
 
         contourNLevels = 10;
-        contourValue = new Vector();
-        contourPercent = new Vector();
+        contourValue = new Vector<Double>();
+        contourPercent = new Vector<Double>();
         contourMethod = SELECT_BY_LEVEL;
         minFlag = false;
         min = 0;
@@ -59,8 +59,8 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
         super(IsosurfaceAttributes_numAdditionalAtts + nMoreFields);
 
         contourNLevels = 10;
-        contourValue = new Vector();
-        contourPercent = new Vector();
+        contourValue = new Vector<Double>();
+        contourPercent = new Vector<Double>();
         contourMethod = SELECT_BY_LEVEL;
         minFlag = false;
         min = 0;
@@ -77,14 +77,14 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
         int i;
 
         contourNLevels = obj.contourNLevels;
-        contourValue = new Vector(obj.contourValue.size());
+        contourValue = new Vector<Double>(obj.contourValue.size());
         for(i = 0; i < obj.contourValue.size(); ++i)
         {
             Double dv = (Double)obj.contourValue.elementAt(i);
             contourValue.addElement(new Double(dv.doubleValue()));
         }
 
-        contourPercent = new Vector(obj.contourPercent.size());
+        contourPercent = new Vector<Double>(obj.contourPercent.size());
         for(i = 0; i < obj.contourPercent.size(); ++i)
         {
             Double dv = (Double)obj.contourPercent.elementAt(i);
@@ -157,13 +157,13 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
         Select(0);
     }
 
-    public void SetContourValue(Vector contourValue_)
+    public void SetContourValue(Vector<Double> contourValue_)
     {
         contourValue = contourValue_;
         Select(1);
     }
 
-    public void SetContourPercent(Vector contourPercent_)
+    public void SetContourPercent(Vector<Double> contourPercent_)
     {
         contourPercent = contourPercent_;
         Select(2);
@@ -212,16 +212,16 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
     }
 
     // Property getting methods
-    public int     GetContourNLevels() { return contourNLevels; }
-    public Vector  GetContourValue() { return contourValue; }
-    public Vector  GetContourPercent() { return contourPercent; }
-    public int     GetContourMethod() { return contourMethod; }
-    public boolean GetMinFlag() { return minFlag; }
-    public double  GetMin() { return min; }
-    public boolean GetMaxFlag() { return maxFlag; }
-    public double  GetMax() { return max; }
-    public int     GetScaling() { return scaling; }
-    public String  GetVariable() { return variable; }
+    public int              GetContourNLevels() { return contourNLevels; }
+    public Vector<Double>   GetContourValue() { return contourValue; }
+    public Vector<Double>   GetContourPercent() { return contourPercent; }
+    public int              GetContourMethod() { return contourMethod; }
+    public boolean          GetMinFlag() { return minFlag; }
+    public double           GetMin() { return min; }
+    public boolean          GetMaxFlag() { return maxFlag; }
+    public double           GetMax() { return max; }
+    public int              GetScaling() { return scaling; }
+    public String           GetVariable() { return variable; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -315,15 +315,15 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private int     contourNLevels;
-    private Vector  contourValue; // vector of Double objects
-    private Vector  contourPercent; // vector of Double objects
-    private int     contourMethod;
-    private boolean minFlag;
-    private double  min;
-    private boolean maxFlag;
-    private double  max;
-    private int     scaling;
-    private String  variable;
+    private int             contourNLevels;
+    private Vector<Double>  contourValue; // vector of Double objects
+    private Vector<Double>  contourPercent; // vector of Double objects
+    private int             contourMethod;
+    private boolean         minFlag;
+    private double          min;
+    private boolean         maxFlag;
+    private double          max;
+    private int             scaling;
+    private String          variable;
 }
 

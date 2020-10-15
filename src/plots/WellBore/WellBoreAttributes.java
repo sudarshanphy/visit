@@ -57,7 +57,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         super(WellBoreAttributes_numAdditionalAtts);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         colorTableName = new String("Default");
         invertColorTable = false;
@@ -72,8 +72,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellNameScale = 0.2f;
         legendFlag = true;
         nWellBores = 0;
-        wellBores = new Vector();
-        wellNames = new Vector();
+        wellBores = new Vector<Integer>();
+        wellNames = new Vector<String>();
     }
 
     public WellBoreAttributes(int nMoreFields)
@@ -81,7 +81,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         super(WellBoreAttributes_numAdditionalAtts + nMoreFields);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         colorTableName = new String("Default");
         invertColorTable = false;
@@ -96,8 +96,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellNameScale = 0.2f;
         legendFlag = true;
         nWellBores = 0;
-        wellBores = new Vector();
-        wellNames = new Vector();
+        wellBores = new Vector<Integer>();
+        wellNames = new Vector<String>();
     }
 
     public WellBoreAttributes(WellBoreAttributes obj)
@@ -107,7 +107,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         int i;
 
         defaultPalette = new ColorControlPointList(obj.defaultPalette);
-        changedColors = new Vector(obj.changedColors.size());
+        changedColors = new Vector<Byte>(obj.changedColors.size());
         for(i = 0; i < obj.changedColors.size(); ++i)
         {
             Byte bv = (Byte)obj.changedColors.elementAt(i);
@@ -128,13 +128,13 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellNameScale = obj.wellNameScale;
         legendFlag = obj.legendFlag;
         nWellBores = obj.nWellBores;
-        wellBores = new Vector();
+        wellBores = new Vector<Integer>();
         for(i = 0; i < obj.wellBores.size(); ++i)
         {
             Integer iv = (Integer)obj.wellBores.elementAt(i);
             wellBores.addElement(new Integer(iv.intValue()));
         }
-        wellNames = new Vector(obj.wellNames.size());
+        wellNames = new Vector<String>(obj.wellNames.size());
         for(i = 0; i < obj.wellNames.size(); ++i)
             wellNames.addElement(new String((String)obj.wellNames.elementAt(i)));
 
@@ -205,7 +205,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         Select(0);
     }
 
-    public void SetChangedColors(Vector changedColors_)
+    public void SetChangedColors(Vector<Byte> changedColors_)
     {
         changedColors = changedColors_;
         Select(1);
@@ -295,13 +295,13 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         Select(15);
     }
 
-    public void SetWellBores(Vector wellBores_)
+    public void SetWellBores(Vector<Integer> wellBores_)
     {
         wellBores = wellBores_;
         Select(16);
     }
 
-    public void SetWellNames(Vector wellNames_)
+    public void SetWellNames(Vector<String> wellNames_)
     {
         wellNames = wellNames_;
         Select(17);
@@ -309,7 +309,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
 
     // Property getting methods
     public ColorControlPointList GetDefaultPalette() { return defaultPalette; }
-    public Vector                GetChangedColors() { return changedColors; }
+    public Vector<Byte>          GetChangedColors() { return changedColors; }
     public int                   GetColorType() { return colorType; }
     public String                GetColorTableName() { return colorTableName; }
     public boolean               GetInvertColorTable() { return invertColorTable; }
@@ -324,8 +324,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
     public float                 GetWellNameScale() { return wellNameScale; }
     public boolean               GetLegendFlag() { return legendFlag; }
     public int                   GetNWellBores() { return nWellBores; }
-    public Vector                GetWellBores() { return wellBores; }
-    public Vector                GetWellNames() { return wellNames; }
+    public Vector<Integer>       GetWellBores() { return wellBores; }
+    public Vector<String>        GetWellNames() { return wellNames; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -489,7 +489,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
 
     // Attributes
     private ColorControlPointList defaultPalette;
-    private Vector                changedColors; // vector of Byte objects
+    private Vector<Byte>          changedColors; // vector of Byte objects
     private int                   colorType;
     private String                colorTableName;
     private boolean               invertColorTable;
@@ -504,7 +504,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
     private float                 wellNameScale;
     private boolean               legendFlag;
     private int                   nWellBores;
-    private Vector                wellBores; // vector of Integer objects
-    private Vector                wellNames; // vector of String objects
+    private Vector<Integer>       wellBores; // vector of Integer objects
+    private Vector<String>        wellNames; // vector of String objects
 }
 

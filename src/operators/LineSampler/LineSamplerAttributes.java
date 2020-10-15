@@ -138,12 +138,12 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
         timeStepStart = 0;
         timeStepStop = 0;
         timeStepStride = 1;
-        channelList = new Vector();
+        channelList = new Vector<Double>();
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(90));
-        wallList = new Vector();
+        wallList = new Vector<Double>();
         wallList.addElement(new Double(0));
         wallList.addElement(new Double(0));
         nChannelListArrays = 1;
@@ -205,12 +205,12 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
         timeStepStart = 0;
         timeStepStop = 0;
         timeStepStride = 1;
-        channelList = new Vector();
+        channelList = new Vector<Double>();
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(0));
         channelList.addElement(new Double(90));
-        wallList = new Vector();
+        wallList = new Vector<Double>();
         wallList.addElement(new Double(0));
         wallList.addElement(new Double(0));
         nChannelListArrays = 1;
@@ -275,14 +275,14 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
         timeStepStart = obj.timeStepStart;
         timeStepStop = obj.timeStepStop;
         timeStepStride = obj.timeStepStride;
-        channelList = new Vector(obj.channelList.size());
+        channelList = new Vector<Double>(obj.channelList.size());
         for(i = 0; i < obj.channelList.size(); ++i)
         {
             Double dv = (Double)obj.channelList.elementAt(i);
             channelList.addElement(new Double(dv.doubleValue()));
         }
 
-        wallList = new Vector(obj.wallList.size());
+        wallList = new Vector<Double>(obj.wallList.size());
         for(i = 0; i < obj.wallList.size(); ++i)
         {
             Double dv = (Double)obj.wallList.elementAt(i);
@@ -684,13 +684,13 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
         Select(46);
     }
 
-    public void SetChannelList(Vector channelList_)
+    public void SetChannelList(Vector<Double> channelList_)
     {
         channelList = channelList_;
         Select(47);
     }
 
-    public void SetWallList(Vector wallList_)
+    public void SetWallList(Vector<Double> wallList_)
     {
         wallList = wallList_;
         Select(48);
@@ -715,58 +715,58 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
     }
 
     // Property getting methods
-    public int      GetMeshGeometry() { return meshGeometry; }
-    public int      GetArrayConfiguration() { return arrayConfiguration; }
-    public int      GetBoundary() { return boundary; }
-    public int      GetInstanceId() { return instanceId; }
-    public int      GetNArrays() { return nArrays; }
-    public double   GetToroidalArrayAngle() { return toroidalArrayAngle; }
-    public int      GetNChannels() { return nChannels; }
-    public int      GetChannelProjection() { return channelProjection; }
-    public int      GetChannelLayoutType() { return channelLayoutType; }
-    public double   GetChannelOffset() { return channelOffset; }
-    public double   GetChannelAngle() { return channelAngle; }
-    public int      GetNRows() { return nRows; }
-    public double   GetRowOffset() { return rowOffset; }
-    public double[] GetArrayOrigin() { return arrayOrigin; }
-    public int      GetArrayAxis() { return arrayAxis; }
-    public double   GetPoloidalAngleStart() { return poloidalAngleStart; }
-    public double   GetPoloidalAngleStop() { return poloidalAngleStop; }
-    public double   GetPoloialAngle() { return poloialAngle; }
-    public double   GetPoloialRTilt() { return poloialRTilt; }
-    public double   GetPoloialZTilt() { return poloialZTilt; }
-    public double   GetToroidalAngle() { return toroidalAngle; }
-    public boolean  GetFlipToroidalAngle() { return flipToroidalAngle; }
-    public int      GetViewGeometry() { return viewGeometry; }
-    public int      GetViewDimension() { return viewDimension; }
-    public boolean  GetDonotApplyToAll() { return donotApplyToAll; }
-    public double   GetHeightPlotScale() { return heightPlotScale; }
-    public double   GetChannelPlotOffset() { return channelPlotOffset; }
-    public double   GetArrayPlotOffset() { return arrayPlotOffset; }
-    public int      GetDisplayTime() { return displayTime; }
-    public int      GetChannelGeometry() { return channelGeometry; }
-    public double   GetRadius() { return radius; }
-    public double   GetDivergence() { return divergence; }
-    public int      GetChannelProfile() { return channelProfile; }
-    public double   GetStandardDeviation() { return standardDeviation; }
-    public double   GetSampleDistance() { return sampleDistance; }
-    public double   GetSampleVolume() { return sampleVolume; }
-    public double   GetSampleArc() { return sampleArc; }
-    public int      GetChannelIntegration() { return channelIntegration; }
-    public int      GetToroidalIntegration() { return toroidalIntegration; }
-    public int      GetToroidalAngleSampling() { return toroidalAngleSampling; }
-    public double   GetToroidalAngleStart() { return toroidalAngleStart; }
-    public double   GetToroidalAngleStop() { return toroidalAngleStop; }
-    public double   GetToroidalAngleStride() { return toroidalAngleStride; }
-    public int      GetTimeSampling() { return timeSampling; }
-    public int      GetTimeStepStart() { return timeStepStart; }
-    public int      GetTimeStepStop() { return timeStepStop; }
-    public int      GetTimeStepStride() { return timeStepStride; }
-    public Vector   GetChannelList() { return channelList; }
-    public Vector   GetWallList() { return wallList; }
-    public int      GetNChannelListArrays() { return nChannelListArrays; }
-    public double   GetChannelListToroidalArrayAngle() { return channelListToroidalArrayAngle; }
-    public double   GetChannelListToroidalAngle() { return channelListToroidalAngle; }
+    public int              GetMeshGeometry() { return meshGeometry; }
+    public int              GetArrayConfiguration() { return arrayConfiguration; }
+    public int              GetBoundary() { return boundary; }
+    public int              GetInstanceId() { return instanceId; }
+    public int              GetNArrays() { return nArrays; }
+    public double           GetToroidalArrayAngle() { return toroidalArrayAngle; }
+    public int              GetNChannels() { return nChannels; }
+    public int              GetChannelProjection() { return channelProjection; }
+    public int              GetChannelLayoutType() { return channelLayoutType; }
+    public double           GetChannelOffset() { return channelOffset; }
+    public double           GetChannelAngle() { return channelAngle; }
+    public int              GetNRows() { return nRows; }
+    public double           GetRowOffset() { return rowOffset; }
+    public double[]         GetArrayOrigin() { return arrayOrigin; }
+    public int              GetArrayAxis() { return arrayAxis; }
+    public double           GetPoloidalAngleStart() { return poloidalAngleStart; }
+    public double           GetPoloidalAngleStop() { return poloidalAngleStop; }
+    public double           GetPoloialAngle() { return poloialAngle; }
+    public double           GetPoloialRTilt() { return poloialRTilt; }
+    public double           GetPoloialZTilt() { return poloialZTilt; }
+    public double           GetToroidalAngle() { return toroidalAngle; }
+    public boolean          GetFlipToroidalAngle() { return flipToroidalAngle; }
+    public int              GetViewGeometry() { return viewGeometry; }
+    public int              GetViewDimension() { return viewDimension; }
+    public boolean          GetDonotApplyToAll() { return donotApplyToAll; }
+    public double           GetHeightPlotScale() { return heightPlotScale; }
+    public double           GetChannelPlotOffset() { return channelPlotOffset; }
+    public double           GetArrayPlotOffset() { return arrayPlotOffset; }
+    public int              GetDisplayTime() { return displayTime; }
+    public int              GetChannelGeometry() { return channelGeometry; }
+    public double           GetRadius() { return radius; }
+    public double           GetDivergence() { return divergence; }
+    public int              GetChannelProfile() { return channelProfile; }
+    public double           GetStandardDeviation() { return standardDeviation; }
+    public double           GetSampleDistance() { return sampleDistance; }
+    public double           GetSampleVolume() { return sampleVolume; }
+    public double           GetSampleArc() { return sampleArc; }
+    public int              GetChannelIntegration() { return channelIntegration; }
+    public int              GetToroidalIntegration() { return toroidalIntegration; }
+    public int              GetToroidalAngleSampling() { return toroidalAngleSampling; }
+    public double           GetToroidalAngleStart() { return toroidalAngleStart; }
+    public double           GetToroidalAngleStop() { return toroidalAngleStop; }
+    public double           GetToroidalAngleStride() { return toroidalAngleStride; }
+    public int              GetTimeSampling() { return timeSampling; }
+    public int              GetTimeStepStart() { return timeStepStart; }
+    public int              GetTimeStepStop() { return timeStepStop; }
+    public int              GetTimeStepStride() { return timeStepStride; }
+    public Vector<Double>   GetChannelList() { return channelList; }
+    public Vector<Double>   GetWallList() { return wallList; }
+    public int              GetNChannelListArrays() { return nChannelListArrays; }
+    public double           GetChannelListToroidalArrayAngle() { return channelListToroidalArrayAngle; }
+    public double           GetChannelListToroidalAngle() { return channelListToroidalAngle; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -1191,57 +1191,57 @@ public class LineSamplerAttributes extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private int      meshGeometry;
-    private int      arrayConfiguration;
-    private int      boundary;
-    private int      instanceId;
-    private int      nArrays;
-    private double   toroidalArrayAngle;
-    private int      nChannels;
-    private int      channelProjection;
-    private int      channelLayoutType;
-    private double   channelOffset;
-    private double   channelAngle;
-    private int      nRows;
-    private double   rowOffset;
-    private double[] arrayOrigin;
-    private int      arrayAxis;
-    private double   poloidalAngleStart;
-    private double   poloidalAngleStop;
-    private double   poloialAngle;
-    private double   poloialRTilt;
-    private double   poloialZTilt;
-    private double   toroidalAngle;
-    private boolean  flipToroidalAngle;
-    private int      viewGeometry;
-    private int      viewDimension;
-    private boolean  donotApplyToAll;
-    private double   heightPlotScale;
-    private double   channelPlotOffset;
-    private double   arrayPlotOffset;
-    private int      displayTime;
-    private int      channelGeometry;
-    private double   radius;
-    private double   divergence;
-    private int      channelProfile;
-    private double   standardDeviation;
-    private double   sampleDistance;
-    private double   sampleVolume;
-    private double   sampleArc;
-    private int      channelIntegration;
-    private int      toroidalIntegration;
-    private int      toroidalAngleSampling;
-    private double   toroidalAngleStart;
-    private double   toroidalAngleStop;
-    private double   toroidalAngleStride;
-    private int      timeSampling;
-    private int      timeStepStart;
-    private int      timeStepStop;
-    private int      timeStepStride;
-    private Vector   channelList; // vector of Double objects
-    private Vector   wallList; // vector of Double objects
-    private int      nChannelListArrays;
-    private double   channelListToroidalArrayAngle;
-    private double   channelListToroidalAngle;
+    private int             meshGeometry;
+    private int             arrayConfiguration;
+    private int             boundary;
+    private int             instanceId;
+    private int             nArrays;
+    private double          toroidalArrayAngle;
+    private int             nChannels;
+    private int             channelProjection;
+    private int             channelLayoutType;
+    private double          channelOffset;
+    private double          channelAngle;
+    private int             nRows;
+    private double          rowOffset;
+    private double[]        arrayOrigin;
+    private int             arrayAxis;
+    private double          poloidalAngleStart;
+    private double          poloidalAngleStop;
+    private double          poloialAngle;
+    private double          poloialRTilt;
+    private double          poloialZTilt;
+    private double          toroidalAngle;
+    private boolean         flipToroidalAngle;
+    private int             viewGeometry;
+    private int             viewDimension;
+    private boolean         donotApplyToAll;
+    private double          heightPlotScale;
+    private double          channelPlotOffset;
+    private double          arrayPlotOffset;
+    private int             displayTime;
+    private int             channelGeometry;
+    private double          radius;
+    private double          divergence;
+    private int             channelProfile;
+    private double          standardDeviation;
+    private double          sampleDistance;
+    private double          sampleVolume;
+    private double          sampleArc;
+    private int             channelIntegration;
+    private int             toroidalIntegration;
+    private int             toroidalAngleSampling;
+    private double          toroidalAngleStart;
+    private double          toroidalAngleStop;
+    private double          toroidalAngleStride;
+    private int             timeSampling;
+    private int             timeStepStart;
+    private int             timeStepStop;
+    private int             timeStepStride;
+    private Vector<Double>  channelList; // vector of Double objects
+    private Vector<Double>  wallList; // vector of Double objects
+    private int             nChannelListArrays;
+    private double          channelListToroidalArrayAngle;
+    private double          channelListToroidalAngle;
 }
 

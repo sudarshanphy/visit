@@ -33,20 +33,20 @@ public class AxisAlignedSlice4DAttributes extends AttributeSubject implements Pl
     {
         super(AxisAlignedSlice4DAttributes_numAdditionalAtts);
 
-        I = new Vector();
-        J = new Vector();
-        K = new Vector();
-        L = new Vector();
+        I = new Vector<Integer>();
+        J = new Vector<Integer>();
+        K = new Vector<Integer>();
+        L = new Vector<Integer>();
     }
 
     public AxisAlignedSlice4DAttributes(int nMoreFields)
     {
         super(AxisAlignedSlice4DAttributes_numAdditionalAtts + nMoreFields);
 
-        I = new Vector();
-        J = new Vector();
-        K = new Vector();
-        L = new Vector();
+        I = new Vector<Integer>();
+        J = new Vector<Integer>();
+        K = new Vector<Integer>();
+        L = new Vector<Integer>();
     }
 
     public AxisAlignedSlice4DAttributes(AxisAlignedSlice4DAttributes obj)
@@ -55,25 +55,25 @@ public class AxisAlignedSlice4DAttributes extends AttributeSubject implements Pl
 
         int i;
 
-        I = new Vector();
+        I = new Vector<Integer>();
         for(i = 0; i < obj.I.size(); ++i)
         {
             Integer iv = (Integer)obj.I.elementAt(i);
             I.addElement(new Integer(iv.intValue()));
         }
-        J = new Vector();
+        J = new Vector<Integer>();
         for(i = 0; i < obj.J.size(); ++i)
         {
             Integer iv = (Integer)obj.J.elementAt(i);
             J.addElement(new Integer(iv.intValue()));
         }
-        K = new Vector();
+        K = new Vector<Integer>();
         for(i = 0; i < obj.K.size(); ++i)
         {
             Integer iv = (Integer)obj.K.elementAt(i);
             K.addElement(new Integer(iv.intValue()));
         }
-        L = new Vector();
+        L = new Vector<Integer>();
         for(i = 0; i < obj.L.size(); ++i)
         {
             Integer iv = (Integer)obj.L.elementAt(i);
@@ -144,35 +144,35 @@ public class AxisAlignedSlice4DAttributes extends AttributeSubject implements Pl
     public String GetVersion() { return "1.0"; }
 
     // Property setting methods
-    public void SetI(Vector I_)
+    public void SetI(Vector<Integer> I_)
     {
         I = I_;
         Select(0);
     }
 
-    public void SetJ(Vector J_)
+    public void SetJ(Vector<Integer> J_)
     {
         J = J_;
         Select(1);
     }
 
-    public void SetK(Vector K_)
+    public void SetK(Vector<Integer> K_)
     {
         K = K_;
         Select(2);
     }
 
-    public void SetL(Vector L_)
+    public void SetL(Vector<Integer> L_)
     {
         L = L_;
         Select(3);
     }
 
     // Property getting methods
-    public Vector GetI() { return I; }
-    public Vector GetJ() { return J; }
-    public Vector GetK() { return K; }
-    public Vector GetL() { return L; }
+    public Vector<Integer> GetI() { return I; }
+    public Vector<Integer> GetJ() { return J; }
+    public Vector<Integer> GetK() { return K; }
+    public Vector<Integer> GetL() { return L; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -218,9 +218,9 @@ public class AxisAlignedSlice4DAttributes extends AttributeSubject implements Pl
 
 
     // Attributes
-    private Vector I; // vector of Integer objects
-    private Vector J; // vector of Integer objects
-    private Vector K; // vector of Integer objects
-    private Vector L; // vector of Integer objects
+    private Vector<Integer> I; // vector of Integer objects
+    private Vector<Integer> J; // vector of Integer objects
+    private Vector<Integer> K; // vector of Integer objects
+    private Vector<Integer> L; // vector of Integer objects
 }
 

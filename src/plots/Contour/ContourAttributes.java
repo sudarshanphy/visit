@@ -51,7 +51,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         super(ContourAttributes_numAdditionalAtts);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         colorTableName = new String("Default");
         invertColorTable = false;
@@ -60,8 +60,8 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         singleColor = new ColorAttribute(255, 0, 0);
         multiColor = new ColorAttributeList();
         contourNLevels = 10;
-        contourValue = new Vector();
-        contourPercent = new Vector();
+        contourValue = new Vector<Double>();
+        contourPercent = new Vector<Double>();
         contourMethod = SELECT_BY_LEVEL;
         minFlag = false;
         maxFlag = false;
@@ -76,7 +76,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         super(ContourAttributes_numAdditionalAtts + nMoreFields);
 
         defaultPalette = new ColorControlPointList();
-        changedColors = new Vector();
+        changedColors = new Vector<Byte>();
         colorType = COLORINGMETHOD_COLORBYMULTIPLECOLORS;
         colorTableName = new String("Default");
         invertColorTable = false;
@@ -85,8 +85,8 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         singleColor = new ColorAttribute(255, 0, 0);
         multiColor = new ColorAttributeList();
         contourNLevels = 10;
-        contourValue = new Vector();
-        contourPercent = new Vector();
+        contourValue = new Vector<Double>();
+        contourPercent = new Vector<Double>();
         contourMethod = SELECT_BY_LEVEL;
         minFlag = false;
         maxFlag = false;
@@ -103,7 +103,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         int i;
 
         defaultPalette = new ColorControlPointList(obj.defaultPalette);
-        changedColors = new Vector(obj.changedColors.size());
+        changedColors = new Vector<Byte>(obj.changedColors.size());
         for(i = 0; i < obj.changedColors.size(); ++i)
         {
             Byte bv = (Byte)obj.changedColors.elementAt(i);
@@ -118,14 +118,14 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         singleColor = new ColorAttribute(obj.singleColor);
         multiColor = new ColorAttributeList(obj.multiColor);
         contourNLevels = obj.contourNLevels;
-        contourValue = new Vector(obj.contourValue.size());
+        contourValue = new Vector<Double>(obj.contourValue.size());
         for(i = 0; i < obj.contourValue.size(); ++i)
         {
             Double dv = (Double)obj.contourValue.elementAt(i);
             contourValue.addElement(new Double(dv.doubleValue()));
         }
 
-        contourPercent = new Vector(obj.contourPercent.size());
+        contourPercent = new Vector<Double>(obj.contourPercent.size());
         for(i = 0; i < obj.contourPercent.size(); ++i)
         {
             Double dv = (Double)obj.contourPercent.elementAt(i);
@@ -207,7 +207,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         Select(0);
     }
 
-    public void SetChangedColors(Vector changedColors_)
+    public void SetChangedColors(Vector<Byte> changedColors_)
     {
         changedColors = changedColors_;
         Select(1);
@@ -261,13 +261,13 @@ public class ContourAttributes extends AttributeSubject implements Plugin
         Select(9);
     }
 
-    public void SetContourValue(Vector contourValue_)
+    public void SetContourValue(Vector<Double> contourValue_)
     {
         contourValue = contourValue_;
         Select(10);
     }
 
-    public void SetContourPercent(Vector contourPercent_)
+    public void SetContourPercent(Vector<Double> contourPercent_)
     {
         contourPercent = contourPercent_;
         Select(11);
@@ -317,7 +317,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
 
     // Property getting methods
     public ColorControlPointList GetDefaultPalette() { return defaultPalette; }
-    public Vector                GetChangedColors() { return changedColors; }
+    public Vector<Byte>          GetChangedColors() { return changedColors; }
     public int                   GetColorType() { return colorType; }
     public String                GetColorTableName() { return colorTableName; }
     public boolean               GetInvertColorTable() { return invertColorTable; }
@@ -326,8 +326,8 @@ public class ContourAttributes extends AttributeSubject implements Plugin
     public ColorAttribute        GetSingleColor() { return singleColor; }
     public ColorAttributeList    GetMultiColor() { return multiColor; }
     public int                   GetContourNLevels() { return contourNLevels; }
-    public Vector                GetContourValue() { return contourValue; }
-    public Vector                GetContourPercent() { return contourPercent; }
+    public Vector<Double>        GetContourValue() { return contourValue; }
+    public Vector<Double>        GetContourPercent() { return contourPercent; }
     public int                   GetContourMethod() { return contourMethod; }
     public boolean               GetMinFlag() { return minFlag; }
     public boolean               GetMaxFlag() { return maxFlag; }
@@ -493,7 +493,7 @@ public class ContourAttributes extends AttributeSubject implements Plugin
 
     // Attributes
     private ColorControlPointList defaultPalette;
-    private Vector                changedColors; // vector of Byte objects
+    private Vector<Byte>          changedColors; // vector of Byte objects
     private int                   colorType;
     private String                colorTableName;
     private boolean               invertColorTable;
@@ -502,8 +502,8 @@ public class ContourAttributes extends AttributeSubject implements Plugin
     private ColorAttribute        singleColor;
     private ColorAttributeList    multiColor;
     private int                   contourNLevels;
-    private Vector                contourValue; // vector of Double objects
-    private Vector                contourPercent; // vector of Double objects
+    private Vector<Double>        contourValue; // vector of Double objects
+    private Vector<Double>        contourPercent; // vector of Double objects
     private int                   contourMethod;
     private boolean               minFlag;
     private boolean               maxFlag;

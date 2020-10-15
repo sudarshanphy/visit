@@ -47,7 +47,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
-        boundaryNames = new Vector();
+        boundaryNames = new Vector<String>();
         opacity = 1;
         wireframe = false;
         drawInternal = false;
@@ -72,7 +72,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
-        boundaryNames = new Vector();
+        boundaryNames = new Vector<String>();
         opacity = 1;
         wireframe = false;
         drawInternal = false;
@@ -99,7 +99,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
         lineWidth = obj.lineWidth;
         singleColor = new ColorAttribute(obj.singleColor);
         multiColor = new ColorAttributeList(obj.multiColor);
-        boundaryNames = new Vector(obj.boundaryNames.size());
+        boundaryNames = new Vector<String>(obj.boundaryNames.size());
         for(i = 0; i < obj.boundaryNames.size(); ++i)
             boundaryNames.addElement(new String((String)obj.boundaryNames.elementAt(i)));
 
@@ -209,7 +209,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
         Select(6);
     }
 
-    public void SetBoundaryNames(Vector boundaryNames_)
+    public void SetBoundaryNames(Vector<String> boundaryNames_)
     {
         boundaryNames = boundaryNames_;
         Select(7);
@@ -289,7 +289,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
     public int                GetLineWidth() { return lineWidth; }
     public ColorAttribute     GetSingleColor() { return singleColor; }
     public ColorAttributeList GetMultiColor() { return multiColor; }
-    public Vector             GetBoundaryNames() { return boundaryNames; }
+    public Vector<String>     GetBoundaryNames() { return boundaryNames; }
     public double             GetOpacity() { return opacity; }
     public boolean            GetWireframe() { return wireframe; }
     public boolean            GetDrawInternal() { return drawInternal; }
@@ -453,7 +453,7 @@ public class FilledBoundaryAttributes extends AttributeSubject implements Plugin
     private int                lineWidth;
     private ColorAttribute     singleColor;
     private ColorAttributeList multiColor;
-    private Vector             boundaryNames; // vector of String objects
+    private Vector<String>     boundaryNames; // vector of String objects
     private double             opacity;
     private boolean            wireframe;
     private boolean            drawInternal;

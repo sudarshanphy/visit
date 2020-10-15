@@ -140,7 +140,7 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
         boxExtents[4] = 0;
         boxExtents[5] = 1;
         useWholeBox = true;
-        pointList = new Vector();
+        pointList = new Vector<Double>();
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
@@ -150,7 +150,7 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(1));
         pointList.addElement(new Double(0));
-        fieldData = new Vector();
+        fieldData = new Vector<Double>();
         sampleDensity0 = 2;
         sampleDensity1 = 2;
         sampleDensity2 = 2;
@@ -256,7 +256,7 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
         boxExtents[4] = 0;
         boxExtents[5] = 1;
         useWholeBox = true;
-        pointList = new Vector();
+        pointList = new Vector<Double>();
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(0));
@@ -266,7 +266,7 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
         pointList.addElement(new Double(0));
         pointList.addElement(new Double(1));
         pointList.addElement(new Double(0));
-        fieldData = new Vector();
+        fieldData = new Vector<Double>();
         sampleDensity0 = 2;
         sampleDensity1 = 2;
         sampleDensity2 = 2;
@@ -378,14 +378,14 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
             boxExtents[i] = obj.boxExtents[i];
 
         useWholeBox = obj.useWholeBox;
-        pointList = new Vector(obj.pointList.size());
+        pointList = new Vector<Double>(obj.pointList.size());
         for(i = 0; i < obj.pointList.size(); ++i)
         {
             Double dv = (Double)obj.pointList.elementAt(i);
             pointList.addElement(new Double(dv.doubleValue()));
         }
 
-        fieldData = new Vector(obj.fieldData.size());
+        fieldData = new Vector<Double>(obj.fieldData.size());
         for(i = 0; i < obj.fieldData.size(); ++i)
         {
             Double dv = (Double)obj.fieldData.elementAt(i);
@@ -750,13 +750,13 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
         Select(10);
     }
 
-    public void SetPointList(Vector pointList_)
+    public void SetPointList(Vector<Double> pointList_)
     {
         pointList = pointList_;
         Select(11);
     }
 
-    public void SetFieldData(Vector fieldData_)
+    public void SetFieldData(Vector<Double> fieldData_)
     {
         fieldData = fieldData_;
         Select(12);
@@ -1121,77 +1121,77 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
     }
 
     // Property getting methods
-    public int      GetSourceType() { return sourceType; }
-    public double[] GetPointSource() { return pointSource; }
-    public double[] GetLineStart() { return lineStart; }
-    public double[] GetLineEnd() { return lineEnd; }
-    public double[] GetPlaneOrigin() { return planeOrigin; }
-    public double[] GetPlaneNormal() { return planeNormal; }
-    public double[] GetPlaneUpAxis() { return planeUpAxis; }
-    public double   GetRadius() { return radius; }
-    public double[] GetSphereOrigin() { return sphereOrigin; }
-    public double[] GetBoxExtents() { return boxExtents; }
-    public boolean  GetUseWholeBox() { return useWholeBox; }
-    public Vector   GetPointList() { return pointList; }
-    public Vector   GetFieldData() { return fieldData; }
-    public int      GetSampleDensity0() { return sampleDensity0; }
-    public int      GetSampleDensity1() { return sampleDensity1; }
-    public int      GetSampleDensity2() { return sampleDensity2; }
-    public int      GetDataValue() { return dataValue; }
-    public String   GetDataVariable() { return dataVariable; }
-    public int      GetIntegrationDirection() { return integrationDirection; }
-    public int      GetMaxSteps() { return maxSteps; }
-    public boolean  GetTerminateByDistance() { return terminateByDistance; }
-    public double   GetTermDistance() { return termDistance; }
-    public boolean  GetTerminateByTime() { return terminateByTime; }
-    public double   GetTermTime() { return termTime; }
-    public double   GetMaxStepLength() { return maxStepLength; }
-    public boolean  GetLimitMaximumTimestep() { return limitMaximumTimestep; }
-    public double   GetMaxTimeStep() { return maxTimeStep; }
-    public double   GetRelTol() { return relTol; }
-    public int      GetAbsTolSizeType() { return absTolSizeType; }
-    public double   GetAbsTolAbsolute() { return absTolAbsolute; }
-    public double   GetAbsTolBBox() { return absTolBBox; }
-    public int      GetFieldType() { return fieldType; }
-    public double   GetFieldConstant() { return fieldConstant; }
-    public double[] GetVelocitySource() { return velocitySource; }
-    public int      GetIntegrationType() { return integrationType; }
-    public int      GetParallelizationAlgorithmType() { return parallelizationAlgorithmType; }
-    public int      GetMaxProcessCount() { return maxProcessCount; }
-    public int      GetMaxDomainCacheSize() { return maxDomainCacheSize; }
-    public int      GetWorkGroupSize() { return workGroupSize; }
-    public boolean  GetPathlines() { return pathlines; }
-    public boolean  GetPathlinesOverrideStartingTimeFlag() { return pathlinesOverrideStartingTimeFlag; }
-    public double   GetPathlinesOverrideStartingTime() { return pathlinesOverrideStartingTime; }
-    public double   GetPathlinesPeriod() { return pathlinesPeriod; }
-    public int      GetPathlinesCMFE() { return pathlinesCMFE; }
-    public int      GetDisplayGeometry() { return displayGeometry; }
-    public int      GetCleanupMethod() { return cleanupMethod; }
-    public double   GetCleanupThreshold() { return cleanupThreshold; }
-    public boolean  GetCropBeginFlag() { return cropBeginFlag; }
-    public double   GetCropBegin() { return cropBegin; }
-    public boolean  GetCropEndFlag() { return cropEndFlag; }
-    public double   GetCropEnd() { return cropEnd; }
-    public int      GetCropValue() { return cropValue; }
-    public double   GetSampleDistance0() { return sampleDistance0; }
-    public double   GetSampleDistance1() { return sampleDistance1; }
-    public double   GetSampleDistance2() { return sampleDistance2; }
-    public boolean  GetFillInterior() { return fillInterior; }
-    public boolean  GetRandomSamples() { return randomSamples; }
-    public int      GetRandomSeed() { return randomSeed; }
-    public int      GetNumberOfRandomSamples() { return numberOfRandomSamples; }
-    public boolean  GetIssueAdvectionWarnings() { return issueAdvectionWarnings; }
-    public boolean  GetIssueBoundaryWarnings() { return issueBoundaryWarnings; }
-    public boolean  GetIssueTerminationWarnings() { return issueTerminationWarnings; }
-    public boolean  GetIssueStepsizeWarnings() { return issueStepsizeWarnings; }
-    public boolean  GetIssueStiffnessWarnings() { return issueStiffnessWarnings; }
-    public boolean  GetIssueCriticalPointsWarnings() { return issueCriticalPointsWarnings; }
-    public double   GetCriticalPointThreshold() { return criticalPointThreshold; }
-    public double   GetCorrelationDistanceAngTol() { return correlationDistanceAngTol; }
-    public double   GetCorrelationDistanceMinDistAbsolute() { return correlationDistanceMinDistAbsolute; }
-    public double   GetCorrelationDistanceMinDistBBox() { return correlationDistanceMinDistBBox; }
-    public int      GetCorrelationDistanceMinDistType() { return correlationDistanceMinDistType; }
-    public String   GetSelection() { return selection; }
+    public int              GetSourceType() { return sourceType; }
+    public double[]         GetPointSource() { return pointSource; }
+    public double[]         GetLineStart() { return lineStart; }
+    public double[]         GetLineEnd() { return lineEnd; }
+    public double[]         GetPlaneOrigin() { return planeOrigin; }
+    public double[]         GetPlaneNormal() { return planeNormal; }
+    public double[]         GetPlaneUpAxis() { return planeUpAxis; }
+    public double           GetRadius() { return radius; }
+    public double[]         GetSphereOrigin() { return sphereOrigin; }
+    public double[]         GetBoxExtents() { return boxExtents; }
+    public boolean          GetUseWholeBox() { return useWholeBox; }
+    public Vector<Double>   GetPointList() { return pointList; }
+    public Vector<Double>   GetFieldData() { return fieldData; }
+    public int              GetSampleDensity0() { return sampleDensity0; }
+    public int              GetSampleDensity1() { return sampleDensity1; }
+    public int              GetSampleDensity2() { return sampleDensity2; }
+    public int              GetDataValue() { return dataValue; }
+    public String           GetDataVariable() { return dataVariable; }
+    public int              GetIntegrationDirection() { return integrationDirection; }
+    public int              GetMaxSteps() { return maxSteps; }
+    public boolean          GetTerminateByDistance() { return terminateByDistance; }
+    public double           GetTermDistance() { return termDistance; }
+    public boolean          GetTerminateByTime() { return terminateByTime; }
+    public double           GetTermTime() { return termTime; }
+    public double           GetMaxStepLength() { return maxStepLength; }
+    public boolean          GetLimitMaximumTimestep() { return limitMaximumTimestep; }
+    public double           GetMaxTimeStep() { return maxTimeStep; }
+    public double           GetRelTol() { return relTol; }
+    public int              GetAbsTolSizeType() { return absTolSizeType; }
+    public double           GetAbsTolAbsolute() { return absTolAbsolute; }
+    public double           GetAbsTolBBox() { return absTolBBox; }
+    public int              GetFieldType() { return fieldType; }
+    public double           GetFieldConstant() { return fieldConstant; }
+    public double[]         GetVelocitySource() { return velocitySource; }
+    public int              GetIntegrationType() { return integrationType; }
+    public int              GetParallelizationAlgorithmType() { return parallelizationAlgorithmType; }
+    public int              GetMaxProcessCount() { return maxProcessCount; }
+    public int              GetMaxDomainCacheSize() { return maxDomainCacheSize; }
+    public int              GetWorkGroupSize() { return workGroupSize; }
+    public boolean          GetPathlines() { return pathlines; }
+    public boolean          GetPathlinesOverrideStartingTimeFlag() { return pathlinesOverrideStartingTimeFlag; }
+    public double           GetPathlinesOverrideStartingTime() { return pathlinesOverrideStartingTime; }
+    public double           GetPathlinesPeriod() { return pathlinesPeriod; }
+    public int              GetPathlinesCMFE() { return pathlinesCMFE; }
+    public int              GetDisplayGeometry() { return displayGeometry; }
+    public int              GetCleanupMethod() { return cleanupMethod; }
+    public double           GetCleanupThreshold() { return cleanupThreshold; }
+    public boolean          GetCropBeginFlag() { return cropBeginFlag; }
+    public double           GetCropBegin() { return cropBegin; }
+    public boolean          GetCropEndFlag() { return cropEndFlag; }
+    public double           GetCropEnd() { return cropEnd; }
+    public int              GetCropValue() { return cropValue; }
+    public double           GetSampleDistance0() { return sampleDistance0; }
+    public double           GetSampleDistance1() { return sampleDistance1; }
+    public double           GetSampleDistance2() { return sampleDistance2; }
+    public boolean          GetFillInterior() { return fillInterior; }
+    public boolean          GetRandomSamples() { return randomSamples; }
+    public int              GetRandomSeed() { return randomSeed; }
+    public int              GetNumberOfRandomSamples() { return numberOfRandomSamples; }
+    public boolean          GetIssueAdvectionWarnings() { return issueAdvectionWarnings; }
+    public boolean          GetIssueBoundaryWarnings() { return issueBoundaryWarnings; }
+    public boolean          GetIssueTerminationWarnings() { return issueTerminationWarnings; }
+    public boolean          GetIssueStepsizeWarnings() { return issueStepsizeWarnings; }
+    public boolean          GetIssueStiffnessWarnings() { return issueStiffnessWarnings; }
+    public boolean          GetIssueCriticalPointsWarnings() { return issueCriticalPointsWarnings; }
+    public double           GetCriticalPointThreshold() { return criticalPointThreshold; }
+    public double           GetCorrelationDistanceAngTol() { return correlationDistanceAngTol; }
+    public double           GetCorrelationDistanceMinDistAbsolute() { return correlationDistanceMinDistAbsolute; }
+    public double           GetCorrelationDistanceMinDistBBox() { return correlationDistanceMinDistBBox; }
+    public int              GetCorrelationDistanceMinDistType() { return correlationDistanceMinDistType; }
+    public String           GetSelection() { return selection; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -1767,76 +1767,76 @@ public class IntegralCurveAttributes extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private int      sourceType;
-    private double[] pointSource;
-    private double[] lineStart;
-    private double[] lineEnd;
-    private double[] planeOrigin;
-    private double[] planeNormal;
-    private double[] planeUpAxis;
-    private double   radius;
-    private double[] sphereOrigin;
-    private double[] boxExtents;
-    private boolean  useWholeBox;
-    private Vector   pointList; // vector of Double objects
-    private Vector   fieldData; // vector of Double objects
-    private int      sampleDensity0;
-    private int      sampleDensity1;
-    private int      sampleDensity2;
-    private int      dataValue;
-    private String   dataVariable;
-    private int      integrationDirection;
-    private int      maxSteps;
-    private boolean  terminateByDistance;
-    private double   termDistance;
-    private boolean  terminateByTime;
-    private double   termTime;
-    private double   maxStepLength;
-    private boolean  limitMaximumTimestep;
-    private double   maxTimeStep;
-    private double   relTol;
-    private int      absTolSizeType;
-    private double   absTolAbsolute;
-    private double   absTolBBox;
-    private int      fieldType;
-    private double   fieldConstant;
-    private double[] velocitySource;
-    private int      integrationType;
-    private int      parallelizationAlgorithmType;
-    private int      maxProcessCount;
-    private int      maxDomainCacheSize;
-    private int      workGroupSize;
-    private boolean  pathlines;
-    private boolean  pathlinesOverrideStartingTimeFlag;
-    private double   pathlinesOverrideStartingTime;
-    private double   pathlinesPeriod;
-    private int      pathlinesCMFE;
-    private int      displayGeometry;
-    private int      cleanupMethod;
-    private double   cleanupThreshold;
-    private boolean  cropBeginFlag;
-    private double   cropBegin;
-    private boolean  cropEndFlag;
-    private double   cropEnd;
-    private int      cropValue;
-    private double   sampleDistance0;
-    private double   sampleDistance1;
-    private double   sampleDistance2;
-    private boolean  fillInterior;
-    private boolean  randomSamples;
-    private int      randomSeed;
-    private int      numberOfRandomSamples;
-    private boolean  issueAdvectionWarnings;
-    private boolean  issueBoundaryWarnings;
-    private boolean  issueTerminationWarnings;
-    private boolean  issueStepsizeWarnings;
-    private boolean  issueStiffnessWarnings;
-    private boolean  issueCriticalPointsWarnings;
-    private double   criticalPointThreshold;
-    private double   correlationDistanceAngTol;
-    private double   correlationDistanceMinDistAbsolute;
-    private double   correlationDistanceMinDistBBox;
-    private int      correlationDistanceMinDistType;
-    private String   selection;
+    private int             sourceType;
+    private double[]        pointSource;
+    private double[]        lineStart;
+    private double[]        lineEnd;
+    private double[]        planeOrigin;
+    private double[]        planeNormal;
+    private double[]        planeUpAxis;
+    private double          radius;
+    private double[]        sphereOrigin;
+    private double[]        boxExtents;
+    private boolean         useWholeBox;
+    private Vector<Double>  pointList; // vector of Double objects
+    private Vector<Double>  fieldData; // vector of Double objects
+    private int             sampleDensity0;
+    private int             sampleDensity1;
+    private int             sampleDensity2;
+    private int             dataValue;
+    private String          dataVariable;
+    private int             integrationDirection;
+    private int             maxSteps;
+    private boolean         terminateByDistance;
+    private double          termDistance;
+    private boolean         terminateByTime;
+    private double          termTime;
+    private double          maxStepLength;
+    private boolean         limitMaximumTimestep;
+    private double          maxTimeStep;
+    private double          relTol;
+    private int             absTolSizeType;
+    private double          absTolAbsolute;
+    private double          absTolBBox;
+    private int             fieldType;
+    private double          fieldConstant;
+    private double[]        velocitySource;
+    private int             integrationType;
+    private int             parallelizationAlgorithmType;
+    private int             maxProcessCount;
+    private int             maxDomainCacheSize;
+    private int             workGroupSize;
+    private boolean         pathlines;
+    private boolean         pathlinesOverrideStartingTimeFlag;
+    private double          pathlinesOverrideStartingTime;
+    private double          pathlinesPeriod;
+    private int             pathlinesCMFE;
+    private int             displayGeometry;
+    private int             cleanupMethod;
+    private double          cleanupThreshold;
+    private boolean         cropBeginFlag;
+    private double          cropBegin;
+    private boolean         cropEndFlag;
+    private double          cropEnd;
+    private int             cropValue;
+    private double          sampleDistance0;
+    private double          sampleDistance1;
+    private double          sampleDistance2;
+    private boolean         fillInterior;
+    private boolean         randomSamples;
+    private int             randomSeed;
+    private int             numberOfRandomSamples;
+    private boolean         issueAdvectionWarnings;
+    private boolean         issueBoundaryWarnings;
+    private boolean         issueTerminationWarnings;
+    private boolean         issueStepsizeWarnings;
+    private boolean         issueStiffnessWarnings;
+    private boolean         issueCriticalPointsWarnings;
+    private double          criticalPointThreshold;
+    private double          correlationDistanceAngTol;
+    private double          correlationDistanceMinDistAbsolute;
+    private double          correlationDistanceMinDistBBox;
+    private int             correlationDistanceMinDistType;
+    private String          selection;
 }
 

@@ -40,10 +40,10 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
     {
         super(ParallelCoordinatesAttributes_numAdditionalAtts);
 
-        scalarAxisNames = new Vector();
-        visualAxisNames = new Vector();
-        extentMinima = new Vector();
-        extentMaxima = new Vector();
+        scalarAxisNames = new Vector<String>();
+        visualAxisNames = new Vector<String>();
+        extentMinima = new Vector<Double>();
+        extentMaxima = new Vector<Double>();
         drawLines = true;
         linesColor = new ColorAttribute(128, 0, 0);
         drawContext = true;
@@ -61,10 +61,10 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
     {
         super(ParallelCoordinatesAttributes_numAdditionalAtts + nMoreFields);
 
-        scalarAxisNames = new Vector();
-        visualAxisNames = new Vector();
-        extentMinima = new Vector();
-        extentMaxima = new Vector();
+        scalarAxisNames = new Vector<String>();
+        visualAxisNames = new Vector<String>();
+        extentMinima = new Vector<Double>();
+        extentMaxima = new Vector<Double>();
         drawLines = true;
         linesColor = new ColorAttribute(128, 0, 0);
         drawContext = true;
@@ -84,22 +84,22 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
 
         int i;
 
-        scalarAxisNames = new Vector(obj.scalarAxisNames.size());
+        scalarAxisNames = new Vector<String>(obj.scalarAxisNames.size());
         for(i = 0; i < obj.scalarAxisNames.size(); ++i)
             scalarAxisNames.addElement(new String((String)obj.scalarAxisNames.elementAt(i)));
 
-        visualAxisNames = new Vector(obj.visualAxisNames.size());
+        visualAxisNames = new Vector<String>(obj.visualAxisNames.size());
         for(i = 0; i < obj.visualAxisNames.size(); ++i)
             visualAxisNames.addElement(new String((String)obj.visualAxisNames.elementAt(i)));
 
-        extentMinima = new Vector(obj.extentMinima.size());
+        extentMinima = new Vector<Double>(obj.extentMinima.size());
         for(i = 0; i < obj.extentMinima.size(); ++i)
         {
             Double dv = (Double)obj.extentMinima.elementAt(i);
             extentMinima.addElement(new Double(dv.doubleValue()));
         }
 
-        extentMaxima = new Vector(obj.extentMaxima.size());
+        extentMaxima = new Vector<Double>(obj.extentMaxima.size());
         for(i = 0; i < obj.extentMaxima.size(); ++i)
         {
             Double dv = (Double)obj.extentMaxima.elementAt(i);
@@ -193,25 +193,25 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
     public String GetVersion() { return "1.0"; }
 
     // Property setting methods
-    public void SetScalarAxisNames(Vector scalarAxisNames_)
+    public void SetScalarAxisNames(Vector<String> scalarAxisNames_)
     {
         scalarAxisNames = scalarAxisNames_;
         Select(0);
     }
 
-    public void SetVisualAxisNames(Vector visualAxisNames_)
+    public void SetVisualAxisNames(Vector<String> visualAxisNames_)
     {
         visualAxisNames = visualAxisNames_;
         Select(1);
     }
 
-    public void SetExtentMinima(Vector extentMinima_)
+    public void SetExtentMinima(Vector<Double> extentMinima_)
     {
         extentMinima = extentMinima_;
         Select(2);
     }
 
-    public void SetExtentMaxima(Vector extentMaxima_)
+    public void SetExtentMaxima(Vector<Double> extentMaxima_)
     {
         extentMaxima = extentMaxima_;
         Select(3);
@@ -284,10 +284,10 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
     }
 
     // Property getting methods
-    public Vector         GetScalarAxisNames() { return scalarAxisNames; }
-    public Vector         GetVisualAxisNames() { return visualAxisNames; }
-    public Vector         GetExtentMinima() { return extentMinima; }
-    public Vector         GetExtentMaxima() { return extentMaxima; }
+    public Vector<String> GetScalarAxisNames() { return scalarAxisNames; }
+    public Vector<String> GetVisualAxisNames() { return visualAxisNames; }
+    public Vector<Double> GetExtentMinima() { return extentMinima; }
+    public Vector<Double> GetExtentMaxima() { return extentMaxima; }
     public boolean        GetDrawLines() { return drawLines; }
     public ColorAttribute GetLinesColor() { return linesColor; }
     public boolean        GetDrawContext() { return drawContext; }
@@ -419,10 +419,10 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
 
 
     // Attributes
-    private Vector         scalarAxisNames; // vector of String objects
-    private Vector         visualAxisNames; // vector of String objects
-    private Vector         extentMinima; // vector of Double objects
-    private Vector         extentMaxima; // vector of Double objects
+    private Vector<String> scalarAxisNames; // vector of String objects
+    private Vector<String> visualAxisNames; // vector of String objects
+    private Vector<Double> extentMinima; // vector of Double objects
+    private Vector<Double> extentMaxima; // vector of Double objects
     private boolean        drawLines;
     private ColorAttribute linesColor;
     private boolean        drawContext;

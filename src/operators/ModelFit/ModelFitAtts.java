@@ -51,34 +51,34 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
     {
         super(ModelFitAtts_numAdditionalAtts);
 
-        Vars = new Vector();
-        numVars = new Vector();
-        Tuples = new Vector();
-        StatTuples = new Vector();
-        numTups = new Vector();
-        thold = new Vector();
-        selectionType = new Vector();
-        distanceType = new Vector();
-        inputSpace = new Vector();
-        modelNames = new Vector();
-        modelNums = new Vector();
+        Vars = new Vector<String>();
+        numVars = new Vector<Integer>();
+        Tuples = new Vector<Double>();
+        StatTuples = new Vector<Byte>();
+        numTups = new Vector<Integer>();
+        thold = new Vector<Double>();
+        selectionType = new Vector<Integer>();
+        distanceType = new Vector<Integer>();
+        inputSpace = new Vector<Integer>();
+        modelNames = new Vector<String>();
+        modelNums = new Vector<Integer>();
     }
 
     public ModelFitAtts(int nMoreFields)
     {
         super(ModelFitAtts_numAdditionalAtts + nMoreFields);
 
-        Vars = new Vector();
-        numVars = new Vector();
-        Tuples = new Vector();
-        StatTuples = new Vector();
-        numTups = new Vector();
-        thold = new Vector();
-        selectionType = new Vector();
-        distanceType = new Vector();
-        inputSpace = new Vector();
-        modelNames = new Vector();
-        modelNums = new Vector();
+        Vars = new Vector<String>();
+        numVars = new Vector<Integer>();
+        Tuples = new Vector<Double>();
+        StatTuples = new Vector<Byte>();
+        numTups = new Vector<Integer>();
+        thold = new Vector<Double>();
+        selectionType = new Vector<Integer>();
+        distanceType = new Vector<Integer>();
+        inputSpace = new Vector<Integer>();
+        modelNames = new Vector<String>();
+        modelNums = new Vector<Integer>();
     }
 
     public ModelFitAtts(ModelFitAtts obj)
@@ -87,66 +87,66 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
 
         int i;
 
-        Vars = new Vector(obj.Vars.size());
+        Vars = new Vector<String>(obj.Vars.size());
         for(i = 0; i < obj.Vars.size(); ++i)
             Vars.addElement(new String((String)obj.Vars.elementAt(i)));
 
-        numVars = new Vector();
+        numVars = new Vector<Integer>();
         for(i = 0; i < obj.numVars.size(); ++i)
         {
             Integer iv = (Integer)obj.numVars.elementAt(i);
             numVars.addElement(new Integer(iv.intValue()));
         }
-        Tuples = new Vector(obj.Tuples.size());
+        Tuples = new Vector<Double>(obj.Tuples.size());
         for(i = 0; i < obj.Tuples.size(); ++i)
         {
             Double dv = (Double)obj.Tuples.elementAt(i);
             Tuples.addElement(new Double(dv.doubleValue()));
         }
 
-        StatTuples = new Vector(obj.StatTuples.size());
+        StatTuples = new Vector<Byte>(obj.StatTuples.size());
         for(i = 0; i < obj.StatTuples.size(); ++i)
         {
             Byte bv = (Byte)obj.StatTuples.elementAt(i);
             StatTuples.addElement(new Byte(bv.byteValue()));
         }
 
-        numTups = new Vector();
+        numTups = new Vector<Integer>();
         for(i = 0; i < obj.numTups.size(); ++i)
         {
             Integer iv = (Integer)obj.numTups.elementAt(i);
             numTups.addElement(new Integer(iv.intValue()));
         }
-        thold = new Vector(obj.thold.size());
+        thold = new Vector<Double>(obj.thold.size());
         for(i = 0; i < obj.thold.size(); ++i)
         {
             Double dv = (Double)obj.thold.elementAt(i);
             thold.addElement(new Double(dv.doubleValue()));
         }
 
-        selectionType = new Vector();
+        selectionType = new Vector<Integer>();
         for(i = 0; i < obj.selectionType.size(); ++i)
         {
             Integer iv = (Integer)obj.selectionType.elementAt(i);
             selectionType.addElement(new Integer(iv.intValue()));
         }
-        distanceType = new Vector();
+        distanceType = new Vector<Integer>();
         for(i = 0; i < obj.distanceType.size(); ++i)
         {
             Integer iv = (Integer)obj.distanceType.elementAt(i);
             distanceType.addElement(new Integer(iv.intValue()));
         }
-        inputSpace = new Vector();
+        inputSpace = new Vector<Integer>();
         for(i = 0; i < obj.inputSpace.size(); ++i)
         {
             Integer iv = (Integer)obj.inputSpace.elementAt(i);
             inputSpace.addElement(new Integer(iv.intValue()));
         }
-        modelNames = new Vector(obj.modelNames.size());
+        modelNames = new Vector<String>(obj.modelNames.size());
         for(i = 0; i < obj.modelNames.size(); ++i)
             modelNames.addElement(new String((String)obj.modelNames.elementAt(i)));
 
-        modelNums = new Vector();
+        modelNums = new Vector<Integer>();
         for(i = 0; i < obj.modelNums.size(); ++i)
         {
             Integer iv = (Integer)obj.modelNums.elementAt(i);
@@ -287,84 +287,84 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
     public String GetVersion() { return "1.0"; }
 
     // Property setting methods
-    public void SetVars(Vector Vars_)
+    public void SetVars(Vector<String> Vars_)
     {
         Vars = Vars_;
         Select(0);
     }
 
-    public void SetNumVars(Vector numVars_)
+    public void SetNumVars(Vector<Integer> numVars_)
     {
         numVars = numVars_;
         Select(1);
     }
 
-    public void SetTuples(Vector Tuples_)
+    public void SetTuples(Vector<Double> Tuples_)
     {
         Tuples = Tuples_;
         Select(2);
     }
 
-    public void SetStatTuples(Vector StatTuples_)
+    public void SetStatTuples(Vector<Byte> StatTuples_)
     {
         StatTuples = StatTuples_;
         Select(3);
     }
 
-    public void SetNumTups(Vector numTups_)
+    public void SetNumTups(Vector<Integer> numTups_)
     {
         numTups = numTups_;
         Select(4);
     }
 
-    public void SetThold(Vector thold_)
+    public void SetThold(Vector<Double> thold_)
     {
         thold = thold_;
         Select(5);
     }
 
-    public void SetSelectionType(Vector selectionType_)
+    public void SetSelectionType(Vector<Integer> selectionType_)
     {
         selectionType = selectionType_;
         Select(6);
     }
 
-    public void SetDistanceType(Vector distanceType_)
+    public void SetDistanceType(Vector<Integer> distanceType_)
     {
         distanceType = distanceType_;
         Select(7);
     }
 
-    public void SetInputSpace(Vector inputSpace_)
+    public void SetInputSpace(Vector<Integer> inputSpace_)
     {
         inputSpace = inputSpace_;
         Select(8);
     }
 
-    public void SetModelNames(Vector modelNames_)
+    public void SetModelNames(Vector<String> modelNames_)
     {
         modelNames = modelNames_;
         Select(9);
     }
 
-    public void SetModelNums(Vector modelNums_)
+    public void SetModelNums(Vector<Integer> modelNums_)
     {
         modelNums = modelNums_;
         Select(10);
     }
 
     // Property getting methods
-    public Vector GetVars() { return Vars; }
-    public Vector GetNumVars() { return numVars; }
-    public Vector GetTuples() { return Tuples; }
-    public Vector GetStatTuples() { return StatTuples; }
-    public Vector GetNumTups() { return numTups; }
-    public Vector GetThold() { return thold; }
-    public Vector GetSelectionType() { return selectionType; }
-    public Vector GetDistanceType() { return distanceType; }
-    public Vector GetInputSpace() { return inputSpace; }
-    public Vector GetModelNames() { return modelNames; }
-    public Vector GetModelNums() { return modelNums; }
+    public Vector<String>  GetVars() { return Vars; }
+    public Vector<Integer> GetNumVars() { return numVars; }
+    public Vector<Double>  GetTuples() { return Tuples; }
+    public Vector<Byte>    GetStatTuples() { return StatTuples; }
+    public Vector<Integer> GetNumTups() { return numTups; }
+    public Vector<Double>  GetThold() { return thold; }
+    public Vector<Integer> GetSelectionType() { return selectionType; }
+    public Vector<Integer> GetDistanceType() { return distanceType; }
+    public Vector<Integer> GetInputSpace() { return inputSpace; }
+    public Vector<String>  GetModelNames() { return modelNames; }
+    public Vector<Integer> GetModelNums() { return modelNums; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -452,16 +452,16 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
 
 
     // Attributes
-    private Vector Vars; // vector of String objects
-    private Vector numVars; // vector of Integer objects
-    private Vector Tuples; // vector of Double objects
-    private Vector StatTuples; // vector of Byte objects
-    private Vector numTups; // vector of Integer objects
-    private Vector thold; // vector of Double objects
-    private Vector selectionType; // vector of Integer objects
-    private Vector distanceType; // vector of Integer objects
-    private Vector inputSpace; // vector of Integer objects
-    private Vector modelNames; // vector of String objects
-    private Vector modelNums; // vector of Integer objects
+    private Vector<String>  Vars; // vector of String objects
+    private Vector<Integer> numVars; // vector of Integer objects
+    private Vector<Double>  Tuples; // vector of Double objects
+    private Vector<Byte>    StatTuples; // vector of Byte objects
+    private Vector<Integer> numTups; // vector of Integer objects
+    private Vector<Double>  thold; // vector of Double objects
+    private Vector<Integer> selectionType; // vector of Integer objects
+    private Vector<Integer> distanceType; // vector of Integer objects
+    private Vector<Integer> inputSpace; // vector of Integer objects
+    private Vector<String>  modelNames; // vector of String objects
+    private Vector<Integer> modelNums; // vector of Integer objects
 }
 
