@@ -81,14 +81,14 @@ public class IsosurfaceAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.contourValue.size(); ++i)
         {
             Double dv = (Double)obj.contourValue.elementAt(i);
-            contourValue.addElement(new Double(dv.doubleValue()));
+            contourValue.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         contourPercent = new Vector<Double>(obj.contourPercent.size());
         for(i = 0; i < obj.contourPercent.size(); ++i)
         {
             Double dv = (Double)obj.contourPercent.elementAt(i);
-            contourPercent.addElement(new Double(dv.doubleValue()));
+            contourPercent.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         contourMethod = obj.contourMethod;

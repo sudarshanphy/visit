@@ -55,13 +55,13 @@ public class ExtractPointFunction2DAttributes extends AttributeSubject implement
         for(i = 0; i < obj.I.size(); ++i)
         {
             Integer iv = (Integer)obj.I.elementAt(i);
-            I.addElement(new Integer(iv.intValue()));
+            I.addElement(Integer.valueOf(iv.intValue()));
         }
         J = new Vector<Integer>();
         for(i = 0; i < obj.J.size(); ++i)
         {
             Integer iv = (Integer)obj.J.elementAt(i);
-            J.addElement(new Integer(iv.intValue()));
+            J.addElement(Integer.valueOf(iv.intValue()));
         }
 
         SelectAll();

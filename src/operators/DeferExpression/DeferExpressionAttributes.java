@@ -32,14 +32,14 @@ public class DeferExpressionAttributes extends AttributeSubject implements Plugi
     {
         super(DeferExpressionAttributes_numAdditionalAtts);
 
-        exprs = new Vector();
+        exprs = new Vector<String>();
     }
 
     public DeferExpressionAttributes(int nMoreFields)
     {
         super(DeferExpressionAttributes_numAdditionalAtts + nMoreFields);
 
-        exprs = new Vector();
+        exprs = new Vector<String>();
     }
 
     public DeferExpressionAttributes(DeferExpressionAttributes obj)
@@ -48,7 +48,7 @@ public class DeferExpressionAttributes extends AttributeSubject implements Plugi
 
         int i;
 
-        exprs = new Vector(obj.exprs.size());
+        exprs = new Vector<String>(obj.exprs.size());
         for(i = 0; i < obj.exprs.size(); ++i)
             exprs.addElement(new String((String)obj.exprs.elementAt(i)));
 
@@ -87,14 +87,14 @@ public class DeferExpressionAttributes extends AttributeSubject implements Plugi
     public String GetVersion() { return "1.0"; }
 
     // Property setting methods
-    public void SetExprs(Vector exprs_)
+    public void SetExprs(Vector<String> exprs_)
     {
         exprs = exprs_;
         Select(0);
     }
 
     // Property getting methods
-    public Vector GetExprs() { return exprs; }
+    public Vector<String> GetExprs() { return exprs; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -117,6 +117,6 @@ public class DeferExpressionAttributes extends AttributeSubject implements Plugi
 
 
     // Attributes
-    private Vector exprs; // vector of String objects
+    private Vector<String> exprs; // vector of String objects
 }
 

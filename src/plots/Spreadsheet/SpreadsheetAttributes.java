@@ -107,7 +107,7 @@ public class SpreadsheetAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.pastPicks.size(); ++i)
         {
             Double dv = (Double)obj.pastPicks.elementAt(i);
-            pastPicks.addElement(new Double(dv.doubleValue()));
+            pastPicks.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         pastPickLetters = new Vector<String>(obj.pastPickLetters.size());

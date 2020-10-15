@@ -96,14 +96,14 @@ public class ParallelCoordinatesAttributes extends AttributeSubject implements P
         for(i = 0; i < obj.extentMinima.size(); ++i)
         {
             Double dv = (Double)obj.extentMinima.elementAt(i);
-            extentMinima.addElement(new Double(dv.doubleValue()));
+            extentMinima.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         extentMaxima = new Vector<Double>(obj.extentMaxima.size());
         for(i = 0; i < obj.extentMaxima.size(); ++i)
         {
             Double dv = (Double)obj.extentMaxima.elementAt(i);
-            extentMaxima.addElement(new Double(dv.doubleValue()));
+            extentMaxima.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         drawLines = obj.drawLines;

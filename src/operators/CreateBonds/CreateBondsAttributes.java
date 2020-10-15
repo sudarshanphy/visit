@@ -36,17 +36,17 @@ public class CreateBondsAttributes extends AttributeSubject implements Plugin
 
         elementVariable = new String("element");
         atomicNumber1 = new Vector<Integer>();
-        atomicNumber1.addElement(new Integer(1));
-        atomicNumber1.addElement(new Integer(-1));
+        atomicNumber1.addElement(Integer.valueOf(1));
+        atomicNumber1.addElement(Integer.valueOf(1));
         atomicNumber2 = new Vector<Integer>();
-        atomicNumber2.addElement(new Integer(-1));
-        atomicNumber2.addElement(new Integer(-1));
+        atomicNumber2.addElement(Integer.valueOf(-1));
+        atomicNumber2.addElement(Integer.valueOf(-1));
         minDist = new Vector<Double>();
-        minDist.addElement(new Double(0.4));
-        minDist.addElement(new Double(0.4));
+        minDist.addElement(Double.valueOf(0.4));
+        minDist.addElement(Double.valueOf(0.4));
         maxDist = new Vector<Double>();
-        maxDist.addElement(new Double(1.2));
-        maxDist.addElement(new Double(1.9));
+        maxDist.addElement(Double.valueOf(1.2));
+        maxDist.addElement(Double.valueOf(1.9));
         maxBondsClamp = 10;
         addPeriodicBonds = false;
         useUnitCellVectors = true;
@@ -73,17 +73,17 @@ public class CreateBondsAttributes extends AttributeSubject implements Plugin
 
         elementVariable = new String("element");
         atomicNumber1 = new Vector<Integer>();
-        atomicNumber1.addElement(new Integer(1));
-        atomicNumber1.addElement(new Integer(-1));
+        atomicNumber1.addElement(Integer.valueOf(1));
+        atomicNumber1.addElement(Integer.valueOf(1));
         atomicNumber2 = new Vector<Integer>();
-        atomicNumber2.addElement(new Integer(-1));
-        atomicNumber2.addElement(new Integer(-1));
+        atomicNumber2.addElement(Integer.valueOf(-1));
+        atomicNumber2.addElement(Integer.valueOf(-1));
         minDist = new Vector<Double>();
-        minDist.addElement(new Double(0.4));
-        minDist.addElement(new Double(0.4));
+        minDist.addElement(Double.valueOf(0.4));
+        minDist.addElement(Double.valueOf(0.4));
         maxDist = new Vector<Double>();
-        maxDist.addElement(new Double(1.2));
-        maxDist.addElement(new Double(1.9));
+        maxDist.addElement(Double.valueOf(1.2));
+        maxDist.addElement(Double.valueOf(1.9));
         maxBondsClamp = 10;
         addPeriodicBonds = false;
         useUnitCellVectors = true;
@@ -115,26 +115,26 @@ public class CreateBondsAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.atomicNumber1.size(); ++i)
         {
             Integer iv = (Integer)obj.atomicNumber1.elementAt(i);
-            atomicNumber1.addElement(new Integer(iv.intValue()));
+            atomicNumber1.addElement(Integer.valueOf(iv.intValue()));
         }
         atomicNumber2 = new Vector<Integer>();
         for(i = 0; i < obj.atomicNumber2.size(); ++i)
         {
             Integer iv = (Integer)obj.atomicNumber2.elementAt(i);
-            atomicNumber2.addElement(new Integer(iv.intValue()));
+            atomicNumber2.addElement(Integer.valueOf(iv.intValue()));
         }
         minDist = new Vector<Double>(obj.minDist.size());
         for(i = 0; i < obj.minDist.size(); ++i)
         {
             Double dv = (Double)obj.minDist.elementAt(i);
-            minDist.addElement(new Double(dv.doubleValue()));
+            minDist.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         maxDist = new Vector<Double>(obj.maxDist.size());
         for(i = 0; i < obj.maxDist.size(); ++i)
         {
             Double dv = (Double)obj.maxDist.elementAt(i);
-            maxDist.addElement(new Double(dv.doubleValue()));
+            maxDist.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         maxBondsClamp = obj.maxBondsClamp;

@@ -111,7 +111,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.changedColors.size(); ++i)
         {
             Byte bv = (Byte)obj.changedColors.elementAt(i);
-            changedColors.addElement(new Byte(bv.byteValue()));
+            changedColors.addElement(Byte.valueOf(bv.byteValue()));
         }
 
         colorType = obj.colorType;
@@ -132,7 +132,7 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.wellBores.size(); ++i)
         {
             Integer iv = (Integer)obj.wellBores.elementAt(i);
-            wellBores.addElement(new Integer(iv.intValue()));
+            wellBores.addElement(Integer.valueOf(iv.intValue()));
         }
         wellNames = new Vector<String>(obj.wellNames.size());
         for(i = 0; i < obj.wellNames.size(); ++i)

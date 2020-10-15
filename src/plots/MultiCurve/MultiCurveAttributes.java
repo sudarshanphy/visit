@@ -92,7 +92,7 @@ public class MultiCurveAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.changedColors.size(); ++i)
         {
             Byte bv = (Byte)obj.changedColors.elementAt(i);
-            changedColors.addElement(new Byte(bv.byteValue()));
+            changedColors.addElement(Byte.valueOf(bv.byteValue()));
         }
 
         colorType = obj.colorType;

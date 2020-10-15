@@ -46,7 +46,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         categoryName = new String("Whole");
         subsetName = new String("Whole");
         index = new Vector<Integer>();
-        index.addElement(new Integer(0));
+        index.addElement(Integer.valueOf(0));
         logical = false;
         requestedLayer = 0;
         seedType = SEEDIDTYPE_SEEDCELL;
@@ -62,7 +62,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         categoryName = new String("Whole");
         subsetName = new String("Whole");
         index = new Vector<Integer>();
-        index.addElement(new Integer(0));
+        index.addElement(Integer.valueOf(0));
         logical = false;
         requestedLayer = 0;
         seedType = SEEDIDTYPE_SEEDCELL;
@@ -83,7 +83,7 @@ public class OnionPeelAttributes extends AttributeSubject implements Plugin
         for(i = 0; i < obj.index.size(); ++i)
         {
             Integer iv = (Integer)obj.index.elementAt(i);
-            index.addElement(new Integer(iv.intValue()));
+            index.addElement(Integer.valueOf(iv.intValue()));
         }
         logical = obj.logical;
         requestedLayer = obj.requestedLayer;

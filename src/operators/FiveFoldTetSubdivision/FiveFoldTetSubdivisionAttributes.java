@@ -73,13 +73,13 @@ public class FiveFoldTetSubdivisionAttributes extends AttributeSubject implement
         for(i = 0; i < obj.selectedIds.size(); ++i)
         {
             Integer iv = (Integer)obj.selectedIds.elementAt(i);
-            selectedIds.addElement(new Integer(iv.intValue()));
+            selectedIds.addElement(Integer.valueOf(iv.intValue()));
         }
         highlightedIds = new Vector();
         for(i = 0; i < obj.highlightedIds.size(); ++i)
         {
             Integer iv = (Integer)obj.highlightedIds.elementAt(i);
-            highlightedIds.addElement(new Integer(iv.intValue()));
+            highlightedIds.addElement(Integer.valueOf(iv.intValue()));
         }
 
         SelectAll();

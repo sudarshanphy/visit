@@ -95,52 +95,52 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
         for(i = 0; i < obj.numVars.size(); ++i)
         {
             Integer iv = (Integer)obj.numVars.elementAt(i);
-            numVars.addElement(new Integer(iv.intValue()));
+            numVars.addElement(Integer.valueOf(iv.intValue()));
         }
         Tuples = new Vector<Double>(obj.Tuples.size());
         for(i = 0; i < obj.Tuples.size(); ++i)
         {
             Double dv = (Double)obj.Tuples.elementAt(i);
-            Tuples.addElement(new Double(dv.doubleValue()));
+            Tuples.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         StatTuples = new Vector<Byte>(obj.StatTuples.size());
         for(i = 0; i < obj.StatTuples.size(); ++i)
         {
             Byte bv = (Byte)obj.StatTuples.elementAt(i);
-            StatTuples.addElement(new Byte(bv.byteValue()));
+            StatTuples.addElement(Byte.valueOf(bv.byteValue()));
         }
 
         numTups = new Vector<Integer>();
         for(i = 0; i < obj.numTups.size(); ++i)
         {
             Integer iv = (Integer)obj.numTups.elementAt(i);
-            numTups.addElement(new Integer(iv.intValue()));
+            numTups.addElement(Integer.valueOf(iv.intValue()));
         }
         thold = new Vector<Double>(obj.thold.size());
         for(i = 0; i < obj.thold.size(); ++i)
         {
             Double dv = (Double)obj.thold.elementAt(i);
-            thold.addElement(new Double(dv.doubleValue()));
+            thold.addElement(Double.valueOf(dv.doubleValue()));
         }
 
         selectionType = new Vector<Integer>();
         for(i = 0; i < obj.selectionType.size(); ++i)
         {
             Integer iv = (Integer)obj.selectionType.elementAt(i);
-            selectionType.addElement(new Integer(iv.intValue()));
+            selectionType.addElement(Integer.valueOf(iv.intValue()));
         }
         distanceType = new Vector<Integer>();
         for(i = 0; i < obj.distanceType.size(); ++i)
         {
             Integer iv = (Integer)obj.distanceType.elementAt(i);
-            distanceType.addElement(new Integer(iv.intValue()));
+            distanceType.addElement(Integer.valueOf(iv.intValue()));
         }
         inputSpace = new Vector<Integer>();
         for(i = 0; i < obj.inputSpace.size(); ++i)
         {
             Integer iv = (Integer)obj.inputSpace.elementAt(i);
-            inputSpace.addElement(new Integer(iv.intValue()));
+            inputSpace.addElement(Integer.valueOf(iv.intValue()));
         }
         modelNames = new Vector<String>(obj.modelNames.size());
         for(i = 0; i < obj.modelNames.size(); ++i)
@@ -150,7 +150,7 @@ public class ModelFitAtts extends AttributeSubject implements Plugin
         for(i = 0; i < obj.modelNums.size(); ++i)
         {
             Integer iv = (Integer)obj.modelNums.elementAt(i);
-            modelNums.addElement(new Integer(iv.intValue()));
+            modelNums.addElement(Integer.valueOf(iv.intValue()));
         }
 
         SelectAll();
