@@ -61,6 +61,9 @@ function check_minimum_compiler_version()
         fi
     elif [[ "$OPSYS" == "Darwin"  &&  "$CXX_COMPILER" == "clang++" ]] ; then 
         VERSION=$(clang++ -v 2>&1 | grep "clang version" | cut -d' ' -f3 )
+        if [[ "$VERSION" == "version" ]] ; then
+            VERSION=$(clang++ -v 2>&1 | grep "clang version" | cut -d' ' -f4 )
+        fi
         echo "apple clang version $VERSION"
         testvercomp $VERSION 5.0 '<'
         if [[ $? == 0 ]] ; then
