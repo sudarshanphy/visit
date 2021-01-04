@@ -2520,16 +2520,6 @@ namespace paraDIS {
       armLengthBins = (double*)calloc(mNumBins, sizeof(double)); 
       armBins = (long*)calloc(mNumBins, sizeof(long));  
     }
-    //NN types corresponding to burgers values of the NN arms:    
-    const char *armTypes[7] = {
-      "NN_200", 
-      "NN_020", 
-      "NN_002", 
-      "NN_+++",
-      "NN_++-",
-      "NN_+-+",
-      "NN_-++"
-    };
     
     double shortLengths[16] = {0}, longLengths[16]={0}; 
     uint32_t numShortArms[16]={0}, numLongArms[16]={0}; 
@@ -2616,21 +2606,49 @@ namespace paraDIS {
       ++n;
     }
 
-           
-    
     if (mThreshold >= 0.0) {
       fprintf(thefile, "\n\n----------------------\n"); 
       fprintf(thefile, "THRESHOLD data.  Threshold = %.2f\n", mThreshold); 
       int n = 0; 
-      for (n=0; n<16; n++) {       
+      for (n=0; n<16; n++) {
+
+        //
+        // NOTE: originally, this loop was utilizing an array that looked like
+        //
+        //  //NN types corresponding to burgers values of the NN arms:
+        //  const char *armTypes[7] = {
+        //    "NN_200",
+        //    "NN_020",
+        //    "NN_002",
+        //    "NN_+++",
+        //    "NN_++-",
+        //    "NN_+-+",
+        //    "NN_-++"
+        //  };
+        //
+        //  armTypes[n] was being used in place of bTypeName. But, since
+        //  armTypes is of length 7, this doesn't make sense here. I've
+        //  replaced armTypes[n] with the most sensible replacement I could
+        //  find, but it should be noted that I'm not at all familiar
+        //  with Paradis or the intention of the original author of this
+        //  code.
+        //
+        string bTypeName = BurgersTypeNames(n-1);
+
         fprintf(thefile, "----------------------\n"); 
-        fprintf(thefile, "Total number of %s arms: %d\n", armTypes[n], numShortArms[n] + numLongArms[n]); 
-        fprintf(thefile, "Total length of %s arms: %.2f\n", armTypes[n], shortLengths[n] + longLengths[n]); 
-        fprintf(thefile, "Number of %s arms SHORTER than threshold = %d\n", armTypes[n], numShortArms[n]); 
-        fprintf(thefile, "Total length of %s arms shorter than threshold = %.2f\n", armTypes[n], shortLengths[n]); 
-        fprintf(thefile, "Number of %s arms LONGER than threshold = %d\n", armTypes[n], numLongArms[n]); 
-        fprintf(thefile, "Total length of %s arms longer than threshold = %.2f\n", armTypes[n], longLengths[n]); 
-        fprintf(thefile, "\n"); 
+        fprintf(thefile, "Total number of Burger's type %s: %d\n",
+            bTypeName.c_str(), numShortArms[n] + numLongArms[n]);
+        fprintf(thefile, "Total length of Burger's type %s: %.2f\n",
+            bTypeName.c_str(), shortLengths[n] + longLengths[n]);
+        fprintf(thefile, "Number of Burger's type %s SHORTER than threshold = "
+            "%d\n", bTypeName.c_str(), numShortArms[n]);
+        fprintf(thefile, "Total length of Burger's type %s shorter than "
+            "threshold = %.2f\n", bTypeName.c_str(), shortLengths[n]);
+        fprintf(thefile, "Number of Burger's type %s LONGER than threshold "
+            "= %d\n", bTypeName.c_str(), numLongArms[n]);
+        fprintf(thefile, "Total length of Burger's type %s longer than "
+            "threshold = %.2f\n", bTypeName.c_str(), longLengths[n]);
+        fprintf(thefile, "\n");
       }
     }
     
