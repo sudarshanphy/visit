@@ -467,13 +467,42 @@ CConvertUnstructuredGridToPolyData(avtDataRepresentation &data, void *dataAndKey
     }
 
     vtkDataSet *ds = data.GetDataVTK();
+
     if (ds->GetDataObjectType() == VTK_UNSTRUCTURED_GRID)
     {
+        // KSB 2-3-2022 look for singleton PointData arrays (constant-expressions).
+        // With VTK-9.1, vtkGeometryFilter will convert these single-tuple PD arrays
+        // into nPoints-tuples PD arrays (via CopyAllocate and CopyData vs old
+        // behavior of PassData for PointData).
+        // Easiest fix at the moment seems to be to remove the singletons before using
+        // vtkGeometryFilter and replace them aftewards.
+
+        std::vector<vtkDataArray*> singletons;
+        vtkPointData *pd = ds->GetPointData();
+        vtkIdType nPts = ds->GetNumberOfPoints();
+        if (nPts > 1)
+        {
+            for (int i = 0; i < pd->GetNumberOfArrays(); ++i)
+            {
+                vtkDataArray *array = pd->GetArray(i);
+                if (array->GetNumberOfTuples() == 1)
+                {
+                    // ensure the array isn't deleted when removed from pd
+                    array->Register(NULL);
+                    singletons.push_back(array);
+                    pd->RemoveArray(i);
+                }
+            }
+        }
+   
         vtkNew<vtkGeometryFilter> geoFilter;
         geoFilter->SetInputData(ds);
         geoFilter->Update();
         vtkPolyData *out_pd = geoFilter->GetOutput();
         out_pd->Register(NULL);
+
+        for(size_t i = 0; i < singletons.size(); ++i)
+            out_pd->GetPointData()->AddArray(singletons[i]); 
         
         avtDataRepresentation new_data(out_pd, data.GetDomain(), data.GetLabel());
         data = new_data;
