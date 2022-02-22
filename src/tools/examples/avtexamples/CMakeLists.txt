@@ -256,6 +256,7 @@ ${QT_QTCORE_LIBRARY}
 VTK::CommonColor
 VTK::FiltersSources
 VTK::InteractionStyle
+VTK::RenderingVolumeOpenGL2
 ${OPENGL_LIBRARIES}
 ${ZLIB_LIBRARY}
 )

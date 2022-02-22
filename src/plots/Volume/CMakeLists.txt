@@ -28,12 +28,12 @@ SET(LIBV_SOURCES
 VolumeViewerEnginePluginInfo.C
 VolumeViewerPluginInfo.C
 avtVolumePlot.C
-VolumeFunctions.C
-VolumeRLEFunctions.C
 avtVolumeRenderer.C
 avtVolumeFilter.C
 avtLowerResolutionVolumeFilter.C
-avtDefaultRenderer.C
+avtVisItVTKRenderer.C
+avtVisItVTKRenderFilter.C
+avtICETCompositor.C
 ${COMMON_SOURCES}
 )
 
@@ -41,15 +41,32 @@ SET(LIBE_SOURCES
 VolumeViewerEnginePluginInfo.C
 VolumeEnginePluginInfo.C
 avtVolumePlot.C
-VolumeFunctions.C
-VolumeRLEFunctions.C
 avtVolumeRenderer.C
 avtVolumeFilter.C
 avtLowerResolutionVolumeFilter.C
-avtDefaultRenderer.C
+avtVisItVTKRenderer.C
+avtVisItVTKRenderFilter.C
+avtICETCompositor.C
 ${COMMON_SOURCES}
 )
 
+
+IF(ICET_FOUND)
+    # If we have Ice-T then add -DHAVE_ICET to the compilation flags.
+    # We need to link with OpenGL on Mac when we have IceT.
+    IF(APPLE)
+        SET(ICET_OPENGL ${OPENGL_gl_LIBRARY})
+    ENDIF(APPLE)
+    # Link icet libraries using absolute pathes
+    SET(ICET_FULLPATH_LIB ${ICET_OPENGL})
+    FOREACH(X ${ICET_LIB})
+        LIST(APPEND ICET_FULLPATH_LIB "${ICET_LIBRARY_DIR}/${X}")
+    ENDFOREACH()
+    # Other setups
+    INCLUDE_DIRECTORIES(${ICET_INCLUDE_DIR})
+    LINK_DIRECTORIES(${ICET_LIBRARY_DIR})
+    ADD_DEFINITIONS(-DHAVE_ICET)
+ENDIF()
 
 IF(VISIT_PYTHON_SCRIPTING)
     SET(PYINCLUDES ${PYTHON_INCLUDE_PATH} ${VISIT_INCLUDE_DIR}/visitpy/common ${VISIT_INCLUDE_DIR}/visitpy/visitpy)
@@ -92,10 +109,6 @@ ${VISIT_INCLUDE_DIR}/avt/Expressions/Abstract
 ${VISIT_INCLUDE_DIR}/avt/Expressions/General
 )
 
-if(VISIT_OSPRAY)
-    include_directories(${OSPRAY_INCLUDE_DIR})
-endif()
-
 if(VISIT_SLIVR)
     add_definitions(-DVISIT_SLIVR)
 endif()
@@ -106,19 +119,22 @@ ADD_LIBRARY(IVolumePlot ${LIBI_SOURCES})
 TARGET_LINK_LIBRARIES(IVolumePlot visitcommon)
 SET(INSTALLTARGETS IVolumePlot)
 
+set(vol_autoinits VTK::RenderingVolumeOpenGL2)
+if(TARGET VTK::RenderingRayTracing)
+    list(APPEND vol_autoinits VTK::RenderingRayTracing)
+endif()
+
 IF(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
     QT_WRAP_CPP(GVolumePlot LIBG_SOURCES ${LIBG_MOC_SOURCES})
     ADD_LIBRARY(GVolumePlot ${LIBG_SOURCES})
     TARGET_LINK_LIBRARIES(GVolumePlot visitcommon gui )
 
     ADD_LIBRARY(VVolumePlot ${LIBV_SOURCES})
-    TARGET_LINK_LIBRARIES(VVolumePlot visitcommon viewer VTK::RenderingVolumeOpenGL2 )
-    vtk_module_autoinit(TARGETS VVolumePlot MODULES VTK::RenderingVolumeOpenGL2 )
-
-    if(VISIT_OSPRAY)
-        target_link_libraries(VVolumePlot ${OSPRAY_LIBRARIES})
+    TARGET_LINK_LIBRARIES(VVolumePlot visitcommon viewer VTK::RenderingVolumeOpenGL2)
+    if(TARGET  VTK::RenderingRayTracing )
+        target_link_libraries(VVolumePlot VTK::RenderingRayTracing)
     endif()
-
+    vtk_module_autoinit(TARGETS VVolumePlot MODULES ${vol_autoinits})
 
     SET(INSTALLTARGETS ${INSTALLTARGETS} GVolumePlot VVolumePlot)
 
@@ -146,28 +162,34 @@ IF(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO
 ENDIF(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
 
 ADD_LIBRARY(EVolumePlot_ser ${LIBE_SOURCES})
-TARGET_LINK_LIBRARIES(EVolumePlot_ser visitcommon avtplotter_ser avtpipeline_ser avtexpressions_ser VTK::RenderingVolumeOpenGL2 )
-vtk_module_autoinit(TARGETS EVolumePlot_ser  MODULES VTK::RenderingVolumeOpenGL2 )
-if(VISIT_OSPRAY)
-    target_link_libraries(EVolumePlot_ser ${OSPRAY_LIBRARIES})
+TARGET_LINK_LIBRARIES(EVolumePlot_ser visitcommon avtplotter_ser avtpipeline_ser avtexpressions_ser VTK::RenderingVolumeOpenGL2)
+if(TARGET  VTK::RenderingRayTracing)
+    target_link_libraries(EVolumePlot_ser VTK::RenderingRayTracing)
 endif()
+IF(ICET_FOUND)
+    TARGET_LINK_LIBRARIES(EVolumePlot_ser ${ICET_FULLPATH_LIB})
+ENDIF()
+vtk_module_autoinit(TARGETS EVolumePlot_ser MODULES ${vol_autoinits})
 
 SET(INSTALLTARGETS ${INSTALLTARGETS} EVolumePlot_ser)
 ADD_TARGET_DEFINITIONS(EVolumePlot_ser ENGINE)
-
 IF(VISIT_PARALLEL)
     ADD_PARALLEL_LIBRARY(EVolumePlot_par ${LIBE_SOURCES})
-    TARGET_LINK_LIBRARIES(EVolumePlot_par visitcommon avtplotter_par avtpipeline_par avtexpressions_par VTK::RenderingVolumeOpenGL2 )
-    vtk_module_autoinit(TARGETS EVolumePlot_par  MODULES VTK::RenderingVolumeOpenGL2 )
-    if(VISIT_OSPRAY)
-        target_link_libraries(EVolumePlot_par ${OSPRAY_LIBRARIES})
+    TARGET_LINK_LIBRARIES(EVolumePlot_par visitcommon avtplotter_par avtpipeline_par avtexpressions_par VTK::RenderingVolumeOpenGL2)
+    if(TARGET  VTK::RenderingRayTracing)
+        target_link_libraries(EVolumePlot_par VTK::RenderingRayTracing)
     endif()
+    IF(ICET_FOUND)
+	TARGET_LINK_LIBRARIES(EVolumePlot_par ${ICET_FULLPATH_LIB})
+    ENDIF()
+    vtk_module_autoinit(TARGETS EVolumePlot_par MODULES ${vol_autoinits})
 
     SET(INSTALLTARGETS ${INSTALLTARGETS} EVolumePlot_par)
     ADD_TARGET_DEFINITIONS(EVolumePlot_par ENGINE)
 ENDIF(VISIT_PARALLEL)
 
+unset(vol_autoinits)
+
 VISIT_INSTALL_PLOT_PLUGINS(${INSTALLTARGETS})
 VISIT_PLUGIN_TARGET_RTOD(plots ${INSTALLTARGETS})
 VISIT_PLUGIN_TARGET_FOLDER(plots Volume ${INSTALLTARGETS})
-

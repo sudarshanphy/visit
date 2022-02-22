@@ -9,7 +9,6 @@
 #include <AttributeSubject.h>
 
 #include <ColorAttribute.h>
-#include <float.h>
 
 // ****************************************************************************
 // Class: RenderingAttributes

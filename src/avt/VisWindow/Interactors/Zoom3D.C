@@ -32,7 +32,7 @@ Zoom3D::Zoom3D(VisWindowInteractorProxy &v) : ZoomInteractor(v)
 {
     altPressed   = false;
     shiftPressed = false;
-    shouldSpin = false;
+    shouldSpin   = false;
 }
 
 
@@ -58,6 +58,11 @@ Zoom3D::Zoom3D(VisWindowInteractorProxy &v) : ZoomInteractor(v)
 //    Kathleen Bonnell, Wed Jun  8 10:01:52 PDT 2011
 //    Use current EventPostion instead of last.
 //
+//    Kathleen Biagas, Tue Feb 22, 2022
+//    Test useOSPRay to determine if PanCamera or PanImage should be used.
+//    It will be true only if HAVE_OSPRAY is true and ospray rendering is
+//    currently being used.
+//
 // ****************************************************************************
 
 void
@@ -80,8 +85,17 @@ Zoom3D::OnTimer(void)
           break;
 
         case VTKIS_PAN:
-          PanImage3D(Pos[0], Pos[1]);
-
+          // Currently the SetWindowCenter called from avtViewInfo.C
+          // does not get used in the vtkOSPRayCamerNode so instead
+          // pan the camera rather than the image.
+          if (useOSPRay)
+          {
+              PanCamera3D(Pos[0], Pos[1]);
+          }
+          else
+          {
+              PanImage3D(Pos[0], Pos[1]);
+          }
           rwi->CreateTimer(VTKI_TIMER_UPDATE);
           break;
 

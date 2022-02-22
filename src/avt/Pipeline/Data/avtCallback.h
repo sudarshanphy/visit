@@ -8,26 +8,24 @@
 
 #ifndef AVT_CALLBACK_H
 #define AVT_CALLBACK_H
+
 #include <pipeline_exports.h>
-
-
-#include <string>
 
 #include <avtDataObject.h>
 #include <avtDatabase.h>
+
 #include <GlobalAttributes.h>
+#include <WindowAttributes.h>
+#include <LightList.h>
+
+#include <string>
 
 class    AttributeSubject;
-
 
 typedef   void  (*WarningCallback)(void *, const char *);
 typedef   ref_ptr<avtDatabase> (*GetDatabaseCallback)(void *,
                                        const std::string &, int, const char *);
 typedef   void  (*ResetTimeoutCallback)(void *, int);
-
-
-#include <WindowAttributes.h>
-#include <LightList.h>
 
 
 // ****************************************************************************
@@ -108,10 +106,10 @@ class PIPELINE_API avtCallback
                                      { swRendering = b; };
     static bool                  GetSoftwareRendering(void)
                                      { return swRendering; };
-#ifdef VISIT_OSPRAY
-    static void                  SetOSPRayMode(bool b)
+#ifdef HAVE_OSPRAY
+    static void                  SetUseOSPRay(bool b)
                                      { useOSPRay = b; }
-    static bool                  UseOSPRay(void)
+    static bool                  GetUseOSPRay(void)
                                      { return useOSPRay; }
 #endif
     static void                  RegisterGetDatabaseCallback(
@@ -154,7 +152,7 @@ class PIPELINE_API avtCallback
     static bool                  nowinMode;
     static bool                  nowinInteractionMode;
     static bool                  swRendering;
-#ifdef VISIT_OSPRAY
+#ifdef HAVE_OSPRAY
     static bool                  useOSPRay;
 #endif
     static bool                  safeMode;

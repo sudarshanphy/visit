@@ -143,7 +143,4 @@
     <Include file="source" quoted="false">
       climits
     </Include>
-    <Include file="header" quoted="false">
-      float.h
-    </Include>
   </Attribute>

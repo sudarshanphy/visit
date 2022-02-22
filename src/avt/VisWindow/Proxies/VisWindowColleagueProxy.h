@@ -8,8 +8,8 @@
 
 #ifndef VIS_WINDOW_COLLEAGUE_PROXY_H
 #define VIS_WINDOW_COLLEAGUE_PROXY_H
-#include <viswindow_exports.h>
 
+#include <viswindow_exports.h>
 
 #include <VisWindowProtectionProxy.h>
 
@@ -245,9 +245,15 @@ class VISWINDOW_API VisWindowColleagueProxy : public VisWindowProtectionProxy
                              { return ProxiedGetAverageExternalRenderingTime(); };
     void                DoNextExternalRenderAsVisualQueue(int w, int h, const double *c)
                              { ProxiedDoNextExternalRenderAsVisualQueue(w,h,c); };
-#ifdef VISIT_OSPRAY
+#ifdef HAVE_OSPRAY
     bool                GetOsprayRendering()
                              { return ProxiedGetOsprayRendering(); };
+    int                 GetOspraySPP()
+                             { return ProxiedGetOspraySPP(); };
+    int                 GetOsprayAO()
+                             { return ProxiedGetOsprayAO(); };
+    bool                GetOsprayShadows()
+                             { return ProxiedGetOsprayShadows(); };
 #endif
 };
 

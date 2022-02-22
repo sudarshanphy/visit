@@ -24,10 +24,6 @@
 #   Kathleen Biagas, Wed Jan  8 14:19:28 PST 2014
 #   Add vtkAxesActor2D.
 #
-#   Kathleen Biagas, Tue Mar 15 08:26:33 MST 2016
-#   OSPRay is only required if requested (VISIT_OSPRAY is set to true/on).
-#   Change OSPRay messages type to STATUS.
-#
 #   Kathleen Biagas, Mon Jul 18 10:04:22 PDT 2016
 #   Remove SurfaceAndWireframeMapper, and specialized mappers for
 #   Structured/Rectilinear grids.
@@ -45,12 +41,6 @@
 #   Kathleen Biagas, Fri Jun  8 12:17:45 PDT 2018
 #   Remove vtkRenderingVolumeOpenGL2 from link line. Moved module init back
 #   into volume plot.
-#
-#   Qi WU, Sat Jun 10 22:21:27 MST 2018
-#   Remove the old VISIT_OSPRAY configurations because they are too old. 
-#   Additional Note: The FindOSPRay.cmake file is broken for a recent version
-#                    of OSPRay. We should use the built-inosprayConfig.cmake
-#                    file to find OSPRay instead.
 #
 #   Kathleen Biagas, Thu Sep 27 11:34:32 PDT 2018
 #   Install InitVTKRenderingConfig.h when VISIT_INSTALL_THIRD_PARTY true.
@@ -98,8 +88,9 @@ vtk/vtkVisItTextActor.C
 vtk/vtkVisItFullFrameMapper2D.C
 )
 
-if(VISIT_OSPRAY)
+if(OSPRAY_FOUND)
     list(APPEND AVTPLOTTER_VTK_SOURCES
+         vtk/vtkOSPRayVisItDataSetMapperNode.C
          vtk/vtkOSPRayVisItCubeAxesActorNode.C
          vtk/vtkOSPRayVisItAxisActorNode.C
          vtk/vtkVisItViewNodeFactory.C
@@ -172,16 +163,15 @@ ${PROJECT_BINARY_DIR}/avt/Plotter/vtk/
 # Add link directories
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_DIRECTORY})
 
-
 #********************************* SERIAL ************************************
 ADD_LIBRARY(avtplotter_ser ${AVTPLOTTER_SOURCES})
 TARGET_LINK_LIBRARIES(avtplotter_ser 
     visitcommon avtmath avtview avtfilters_ser avtpipeline_ser visit_vtk 
     lightweight_visit_vtk VTK::CommonExecutionModel VTK::FiltersHybrid
-    VTK::RenderingCore VTK::RenderingFreeType VTK::RenderingOpenGL2
+    VTK::RenderingCore VTK::RenderingFreeType VTK::RenderingOpenGL2 
     ${OPENGL_LIBRARIES})
-if(VISIT_OSPRAY)
-    target_link_libraries(avtplotter_ser VTK::RenderingOSPRay)
+if(TARGET VTK::RenderingRayTracing)
+    target_link_libraries(avtplotter_ser VTK::RenderingRayTracing)
 endif()
 VISIT_INSTALL_TARGETS(avtplotter_ser)
 
@@ -193,8 +183,8 @@ IF(VISIT_PARALLEL)
         lightweight_visit_vtk VTK::CommonExecutionModel VTK::FiltersHybrid
         VTK::RenderingCore VTK::RenderingFreeType VTK::RenderingOpenGL2
         ${OPENGL_LIBRARIES})
-    if(VISIT_OSPRAY)
-        target_link_libraries(avtplotter_par VTK::RenderingOSPRay)
+    if(TARGET VTK::RenderingRayTracing)
+        target_link_libraries(avtplotter_par VTK::RenderingRayTracing)
     endif()
     VISIT_INSTALL_TARGETS(avtplotter_par)
 ENDIF(VISIT_PARALLEL)

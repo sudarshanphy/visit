@@ -8,13 +8,16 @@
 
 #ifndef VIS_WINDOW_PROTECTION_PROXY_H
 #define VIS_WINDOW_PROTECTION_PROXY_H
+
+#include <visit-config.h>
+
 #include <viswindow_exports.h>
-#include <vector>
 
 #include <VisWindowTypes.h>
 
 #include <avtActor.h>
 
+#include <vector>
 
 class     vtkRenderer;
 class     vtkPolyDataMapper2D;
@@ -224,7 +227,7 @@ class VISWINDOW_API VisWindowProtectionProxy
                             int w, int h, const double *c);
 
     void                ProxiedGetExtents(double ext[2]); // TODO: remove with VTK8.
-#ifdef VISIT_OSPRAY
+#ifdef HAVE_OSPRAY
     bool                ProxiedGetOsprayRendering();
     int                 ProxiedGetOspraySPP();
     int                 ProxiedGetOsprayAO();

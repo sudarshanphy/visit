@@ -14,9 +14,6 @@
 #include <DebugStream.h>
 
 
-using std::string;
-
-
 WarningCallback               avtCallback::warningCallback = NULL;
 void                         *avtCallback::warningCallbackArgs = NULL;
 
@@ -30,7 +27,7 @@ bool                          avtCallback::nowinMode = false;
 bool                          avtCallback::nowinInteractionMode = false;
 bool                          avtCallback::swRendering = false;
 bool                          avtCallback::safeMode = false;
-#ifdef VISIT_OSPRAY
+#ifdef HAVE_OSPRAY
 bool                          avtCallback::useOSPRay = false;
 #endif
 
@@ -293,7 +290,7 @@ avtCallback::RegisterGetDatabaseCallback(GetDatabaseCallback gdc,
 // ****************************************************************************
 
 ref_ptr<avtDatabase>
-avtCallback::GetDatabase(const string &filename, int time, const char *format)
+avtCallback::GetDatabase(const std::string &filename, int time, const char *format)
 {
     if (getDatabaseCallback == NULL)
     {

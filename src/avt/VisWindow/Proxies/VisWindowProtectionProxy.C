@@ -6,12 +6,9 @@
 //                        VisWindowProtectionProxy.C                         //
 // ************************************************************************* //
 
-#include <VisWindow.h>
 #include <VisWindowProtectionProxy.h>
 
-
-using  std::vector;
-
+#include <VisWindow.h>
 
 // ****************************************************************************
 //  Method: VisWindowProtectionProxy::ProxiedGetMode
@@ -535,7 +532,7 @@ VisWindowProtectionProxy::ProxiedPick(int x, int y)
 // ****************************************************************************
 
 void
-VisWindowProtectionProxy::ProxiedUpdatePlotList(vector<avtActor_p> &lst)
+VisWindowProtectionProxy::ProxiedUpdatePlotList(std::vector<avtActor_p> &lst)
 {
     viswin->UpdatePlotList(lst);
 }
@@ -1163,7 +1160,7 @@ VisWindowProtectionProxy::ProxiedGetExtents(double ext[2])
      return viswin->GetExtents(ext);
 }
 
-#ifdef VISIT_OSPRAY
+#ifdef HAVE_OSPRAY
 // ****************************************************************************
 // Method: VisWindowProtectionProxy::ProxiedGetOsprayRendering
 //

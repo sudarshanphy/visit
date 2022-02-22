@@ -762,7 +762,6 @@ SET(CXX_TEST_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 #-----------------------------------------------------------------------------
 OPTION(VISIT_PARALLEL "Build VisIt's parallel compute engine." OFF)
 OPTION(VISIT_SLIVR    "Build VisIt with support for the SLIVR volume rendering library." ON)
-OPTION(VISIT_OSPRAY   "Build VisIt with support for the OSPRay volume rendering library." OFF)
 OPTION(VISIT_STATIC   "Build VisIt statically." OFF)
 IF(VISIT_STATIC)
     ADD_DEFINITIONS(-DVISIT_STATIC)
@@ -940,11 +939,6 @@ VISIT_3RDPARTY_VAR(MOAB_DIR      "Path containing the MOAB library's include and
 VISIT_3RDPARTY_VAR(MOAB_MPI_DIR  "Path containing the parallel MOAB library's include and lib")
 
 VISIT_3RDPARTY_VAR(OSPRAY_DIR    "Path containing the OSPRay library's include and lib")
-VISIT_3RDPARTY_VAR(EMBREE_DIR    "Path containing the embree library's include and lib")
-VISIT_3RDPARTY_VAR(ISPC_DIR      "Path containing the ISPC library's include and lib")
-# Note by Qi
-# should we change TBB_ROOT to TBB_DIR ?
-VISIT_3RDPARTY_VAR(TBB_ROOT      "Path containing the TBB library's include and lib")
 
 #-----------------------------------------------------------------------------
 # Read the version
@@ -1236,6 +1230,11 @@ CHECK_INCLUDE_FILES (stdbool.h   HAVE_STDBOOL_H)
 # zlib
 INCLUDE(${VISIT_SOURCE_DIR}/CMake/FindZlib.cmake)
 
+#ospray
+IF(EXISTS ${VISIT_OSPRAY_DIR})
+    include(${VISIT_SOURCE_DIR}/CMake/FindOSPRay.cmake)
+endif()
+
 # szip and jpeg
 IF(WIN32)
     INCLUDE(${VISIT_SOURCE_DIR}/CMake/FindJPEG.cmake)
@@ -1266,7 +1265,6 @@ ELSE(VISIT_THREAD)
 ENDIF(VISIT_THREAD)
 
 
-include(${VISIT_SOURCE_DIR}/CMake/FindOSPRay.cmake)
 
 
 #-----------------------------------------------------------------------------

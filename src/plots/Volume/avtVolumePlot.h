@@ -43,8 +43,8 @@ class avtResampleFilter;
 //    Brad Whitlock, Thu Apr 19 15:07:38 PST 2001
 //    I added a legend to the plot.
 //
-//    Kathleen Bonnell, Fri Aug 31 08:50:30 PDT 2001 
-//    Added avtLookupTable. 
+//    Kathleen Bonnell, Fri Aug 31 08:50:30 PDT 2001
+//    Added avtLookupTable.
 //
 //    Hank Childs, Tue Nov 20 12:09:13 PST 2001
 //    Added support for software volume rendering as well.
@@ -53,8 +53,8 @@ class avtResampleFilter;
 //    Allow for data to be smoothed with a shift centering filter.
 //
 //    Kathleen Bonnell, Tue Oct 22 08:33:26 PDT 2002
-//    Added ApplyRenderingTransformation. 
-//    
+//    Added ApplyRenderingTransformation.
+//
 //    Hank Childs, Wed Nov 24 16:44:44 PST 2004
 //    Integrated this plot with SR mode, meaning that a lot of infrastructure
 //    for delivering images could be removed.
@@ -73,7 +73,7 @@ class avtResampleFilter;
 //    unnecessary pipeline re-executions.
 //
 //    Brad Whitlock, Mon Dec 15 15:58:08 PST 2008
-//    I added a new avtLowerResolutionVolumeFilter that works on the 
+//    I added a new avtLowerResolutionVolumeFilter that works on the
 //    resampled data.
 //
 //    Kathleen Bonnell, Tue Mar  3 13:37:13 PST 2009
@@ -112,19 +112,28 @@ avtVolumePlot : public avtVolumeDataPlot
     virtual bool        ManagesOwnTransparency(void);
 
   protected:
-    VolumeAttributes                atts;
-    avtLowerResolutionVolumeFilter *volumeFilter;
-    avtVolumeFilter                *volumeImageFilter;
-    avtGradientExpression          *gradientFilter;
-    avtResampleFilter              *resampleFilter;
-    avtShiftCenteringFilter        *shiftCentering;
-    avtCompactTreeFilter           *compactTree;
-    avtVolumeRenderer_p             renderer;
-    avtUserDefinedMapper           *mapper;
-    avtLookupTable                 *avtLUT;
+    enum ResampleReason // Must match avtVolumePLot.h
+    {
+        NoResampling       = 0x0,
+        MutlipleDatasets   = 0x1,
+        NonRectilinearGrid = 0x2,
+        DifferentCentering = 0x4
+    };
 
-    avtVolumeVariableLegend        *varLegend;
-    avtLegend_p                     varLegendRefPtr;
+    VolumeAttributes                atts;
+
+    avtLowerResolutionVolumeFilter *lowResVolumeFilter {nullptr};
+    avtVolumeFilter                *volumeFilter {nullptr};
+    avtGradientExpression          *gradientFilter {nullptr};
+    avtResampleFilter              *resampleFilter {nullptr};
+    avtShiftCenteringFilter        *shiftCentering {nullptr};
+    avtCompactTreeFilter           *compactTree {nullptr};
+    avtVolumeRenderer_p             renderer {nullptr};
+    avtUserDefinedMapper           *mapper {nullptr};
+    avtLookupTable                 *avtLUT {nullptr};
+
+    avtVolumeVariableLegend        *varLegend {nullptr};
+    avtLegend_p                     varLegendRefPtr {nullptr};
 
     virtual avtMapperBase   *GetMapper(void);
     virtual avtDataObject_p  ApplyOperators(avtDataObject_p);
@@ -133,9 +142,8 @@ avtVolumePlot : public avtVolumeDataPlot
     virtual avtLegend_p      GetLegend(void) { return varLegendRefPtr; };
     void                     SetLegendOpacities();
     virtual avtContract_p    EnhanceSpecification(avtContract_p);
+
+    int                      DataMustBeResampled(avtDataObject_p);
 };
 
-
 #endif
-
-

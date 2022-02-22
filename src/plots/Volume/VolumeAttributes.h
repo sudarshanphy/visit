@@ -30,11 +30,25 @@ class VolumeAttributes : public AttributeSubject
 public:
     enum Renderer
     {
-        Default,
-        RayCasting,
-        RayCastingIntegration,
-        RayCastingSLIVR,
-        RayCastingOSPRay
+        Serial,
+        Parallel,
+        Composite,
+        Integration,
+        SLIVR
+    };
+    enum ResampleType
+    {
+        OnlyIfRequired,
+        SingleDomain,
+        ParallelRedistribute,
+        ParallelPerRank,
+        NoResampling
+    };
+    enum ResampleCentering
+    {
+        NativeCentering,
+        NodalCentering,
+        ZonalCentering
     };
     enum GradientType
     {
@@ -75,6 +89,11 @@ public:
         Higher,
         Highest
     };
+    enum OSPRayRenderTypes
+    {
+        SciVis,
+        PathTracer
+    };
 
     // These constructors are for objects of this class
     VolumeAttributes();
@@ -104,31 +123,33 @@ public:
     void SelectColorControlPoints();
     void SelectOpacityControlPoints();
     void SelectOpacityVariable();
-    void SelectCompactVariable();
     void SelectFreeformOpacity();
     void SelectMaterialProperties();
 
     // Property setting methods
-    void SetOsprayShadowsEnabledFlag(bool osprayShadowsEnabledFlag_);
-    void SetOsprayUseGridAcceleratorFlag(bool osprayUseGridAcceleratorFlag_);
-    void SetOsprayPreIntegrationFlag(bool osprayPreIntegrationFlag_);
-    void SetOspraySingleShadeFlag(bool ospraySingleShadeFlag_);
-    void SetOsprayOneSidedLightingFlag(bool osprayOneSidedLightingFlag_);
-    void SetOsprayAoTransparencyEnabledFlag(bool osprayAoTransparencyEnabledFlag_);
-    void SetOspraySpp(int ospraySpp_);
-    void SetOsprayAoSamples(int osprayAoSamples_);
-    void SetOsprayAoDistance(double osprayAoDistance_);
-    void SetOsprayMinContribution(double osprayMinContribution_);
+    void SetOSPRayEnabledFlag(bool OSPRayEnabledFlag_);
+    void SetOSPRayRenderType(OSPRayRenderTypes OSPRayRenderType_);
+    void SetOSPRayShadowsEnabledFlag(bool OSPRayShadowsEnabledFlag_);
+    void SetOSPRayUseGridAcceleratorFlag(bool OSPRayUseGridAcceleratorFlag_);
+    void SetOSPRayPreIntegrationFlag(bool OSPRayPreIntegrationFlag_);
+    void SetOSPRaySingleShadeFlag(bool OSPRaySingleShadeFlag_);
+    void SetOSPRayOneSidedLightingFlag(bool OSPRayOneSidedLightingFlag_);
+    void SetOSPRayAOTransparencyEnabledFlag(bool OSPRayAOTransparencyEnabledFlag_);
+    void SetOSPRaySPP(int OSPRaySPP_);
+    void SetOSPRayAOSamples(int OSPRayAOSamples_);
+    void SetOSPRayAODistance(double OSPRayAODistance_);
+    void SetOSPRayMinContribution(double OSPRayMinContribution_);
+    void SetOSPRayMaxContribution(double OSPRayMaxContribution_);
     void SetLegendFlag(bool legendFlag_);
     void SetLightingFlag(bool lightingFlag_);
     void SetColorControlPoints(const ColorControlPointList &colorControlPoints_);
     void SetOpacityAttenuation(float opacityAttenuation_);
     void SetOpacityMode(OpacityModes opacityMode_);
     void SetOpacityControlPoints(const GaussianControlPointList &opacityControlPoints_);
-    void SetResampleFlag(bool resampleFlag_);
+    void SetResampleType(ResampleType resampleType_);
     void SetResampleTarget(int resampleTarget_);
+    void SetResampleCentering(ResampleCentering resampleCentering_);
     void SetOpacityVariable(const std::string &opacityVariable_);
-    void SetCompactVariable(const std::string &compactVariable_);
     void SetFreeformOpacity(const unsigned char *freeformOpacity_);
     void SetUseColorVarMin(bool useColorVarMin_);
     void SetColorVarMin(float colorVarMin_);
@@ -153,16 +174,19 @@ public:
     void SetMaterialProperties(const double *materialProperties_);
 
     // Property getting methods
-    bool                           GetOsprayShadowsEnabledFlag() const;
-    bool                           GetOsprayUseGridAcceleratorFlag() const;
-    bool                           GetOsprayPreIntegrationFlag() const;
-    bool                           GetOspraySingleShadeFlag() const;
-    bool                           GetOsprayOneSidedLightingFlag() const;
-    bool                           GetOsprayAoTransparencyEnabledFlag() const;
-    int                            GetOspraySpp() const;
-    int                            GetOsprayAoSamples() const;
-    double                         GetOsprayAoDistance() const;
-    double                         GetOsprayMinContribution() const;
+    bool                           GetOSPRayEnabledFlag() const;
+    OSPRayRenderTypes              GetOSPRayRenderType() const;
+    bool                           GetOSPRayShadowsEnabledFlag() const;
+    bool                           GetOSPRayUseGridAcceleratorFlag() const;
+    bool                           GetOSPRayPreIntegrationFlag() const;
+    bool                           GetOSPRaySingleShadeFlag() const;
+    bool                           GetOSPRayOneSidedLightingFlag() const;
+    bool                           GetOSPRayAOTransparencyEnabledFlag() const;
+    int                            GetOSPRaySPP() const;
+    int                            GetOSPRayAOSamples() const;
+    double                         GetOSPRayAODistance() const;
+    double                         GetOSPRayMinContribution() const;
+    double                         GetOSPRayMaxContribution() const;
     bool                           GetLegendFlag() const;
     bool                           GetLightingFlag() const;
     const ColorControlPointList    &GetColorControlPoints() const;
@@ -171,12 +195,11 @@ public:
     OpacityModes                   GetOpacityMode() const;
     const GaussianControlPointList &GetOpacityControlPoints() const;
           GaussianControlPointList &GetOpacityControlPoints();
-    bool                           GetResampleFlag() const;
+    ResampleType                   GetResampleType() const;
     int                            GetResampleTarget() const;
+    ResampleCentering              GetResampleCentering() const;
     const std::string              &GetOpacityVariable() const;
           std::string              &GetOpacityVariable();
-    const std::string              &GetCompactVariable() const;
-          std::string              &GetCompactVariable();
     const unsigned char            *GetFreeformOpacity() const;
           unsigned char            *GetFreeformOpacity();
     bool                           GetUseColorVarMin() const;
@@ -212,6 +235,16 @@ public:
 protected:
     static std::string Renderer_ToString(int);
 public:
+    static std::string ResampleType_ToString(ResampleType);
+    static bool ResampleType_FromString(const std::string &, ResampleType &);
+protected:
+    static std::string ResampleType_ToString(int);
+public:
+    static std::string ResampleCentering_ToString(ResampleCentering);
+    static bool ResampleCentering_FromString(const std::string &, ResampleCentering &);
+protected:
+    static std::string ResampleCentering_ToString(int);
+public:
     static std::string GradientType_ToString(GradientType);
     static bool GradientType_FromString(const std::string &, GradientType &);
 protected:
@@ -242,6 +275,11 @@ public:
 protected:
     static std::string LowGradientLightingReduction_ToString(int);
 public:
+    static std::string OSPRayRenderTypes_ToString(OSPRayRenderTypes);
+    static bool OSPRayRenderTypes_FromString(const std::string &, OSPRayRenderTypes &);
+protected:
+    static std::string OSPRayRenderTypes_ToString(int);
+public:
 
     // Keyframing methods
     virtual std::string               GetFieldName(int index) const;
@@ -250,6 +288,7 @@ public:
     virtual bool                      FieldsEqual(int index, const AttributeGroup *rhs) const;
 
     // User-defined methods
+    virtual void ProcessOldVersions(DataNode *parentNode, const char *configVersion);
     bool ChangesRequireRecalculation(const VolumeAttributes &obj) const;
     void GetTransferFunction(unsigned char *rgba) const;
     void SetDefaultColorControlPoints();
@@ -263,26 +302,29 @@ public:
 
     // IDs that can be used to identify fields in case statements
     enum {
-        ID_osprayShadowsEnabledFlag = 0,
-        ID_osprayUseGridAcceleratorFlag,
-        ID_osprayPreIntegrationFlag,
-        ID_ospraySingleShadeFlag,
-        ID_osprayOneSidedLightingFlag,
-        ID_osprayAoTransparencyEnabledFlag,
-        ID_ospraySpp,
-        ID_osprayAoSamples,
-        ID_osprayAoDistance,
-        ID_osprayMinContribution,
+        ID_OSPRayEnabledFlag = 0,
+        ID_OSPRayRenderType,
+        ID_OSPRayShadowsEnabledFlag,
+        ID_OSPRayUseGridAcceleratorFlag,
+        ID_OSPRayPreIntegrationFlag,
+        ID_OSPRaySingleShadeFlag,
+        ID_OSPRayOneSidedLightingFlag,
+        ID_OSPRayAOTransparencyEnabledFlag,
+        ID_OSPRaySPP,
+        ID_OSPRayAOSamples,
+        ID_OSPRayAODistance,
+        ID_OSPRayMinContribution,
+        ID_OSPRayMaxContribution,
         ID_legendFlag,
         ID_lightingFlag,
         ID_colorControlPoints,
         ID_opacityAttenuation,
         ID_opacityMode,
         ID_opacityControlPoints,
-        ID_resampleFlag,
+        ID_resampleType,
         ID_resampleTarget,
+        ID_resampleCentering,
         ID_opacityVariable,
-        ID_compactVariable,
         ID_freeformOpacity,
         ID_useColorVarMin,
         ID_colorVarMin,
@@ -309,26 +351,29 @@ public:
     };
 
 private:
-    bool                     osprayShadowsEnabledFlag;
-    bool                     osprayUseGridAcceleratorFlag;
-    bool                     osprayPreIntegrationFlag;
-    bool                     ospraySingleShadeFlag;
-    bool                     osprayOneSidedLightingFlag;
-    bool                     osprayAoTransparencyEnabledFlag;
-    int                      ospraySpp;
-    int                      osprayAoSamples;
-    double                   osprayAoDistance;
-    double                   osprayMinContribution;
+    bool                     OSPRayEnabledFlag;
+    int                      OSPRayRenderType;
+    bool                     OSPRayShadowsEnabledFlag;
+    bool                     OSPRayUseGridAcceleratorFlag;
+    bool                     OSPRayPreIntegrationFlag;
+    bool                     OSPRaySingleShadeFlag;
+    bool                     OSPRayOneSidedLightingFlag;
+    bool                     OSPRayAOTransparencyEnabledFlag;
+    int                      OSPRaySPP;
+    int                      OSPRayAOSamples;
+    double                   OSPRayAODistance;
+    double                   OSPRayMinContribution;
+    double                   OSPRayMaxContribution;
     bool                     legendFlag;
     bool                     lightingFlag;
     ColorControlPointList    colorControlPoints;
     float                    opacityAttenuation;
     int                      opacityMode;
     GaussianControlPointList opacityControlPoints;
-    bool                     resampleFlag;
+    int                      resampleType;
     int                      resampleTarget;
+    int                      resampleCentering;
     std::string              opacityVariable;
-    std::string              compactVariable;
     unsigned char            freeformOpacity[256];
     bool                     useColorVarMin;
     float                    colorVarMin;
@@ -356,6 +401,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define VOLUMEATTRIBUTES_TMFS "bbbbbbiiddbbafiabissUbfbfbfbfbiiiidiifibdD"
+#define VOLUMEATTRIBUTES_TMFS "bibbbbbbiidddbbafiaiiisUbfbfbfbfbiiiidiifibdD"
 
 #endif
