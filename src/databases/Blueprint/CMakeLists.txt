@@ -20,6 +20,7 @@ ${COMMON_SOURCES}
 avtBlueprintFileFormat.C
 avtBlueprintDataAdaptor.C
 avtBlueprintTreeCache.C
+avtBlueprintOptions.C
 )
 
 SET(LIBE_SOURCES
@@ -29,6 +30,7 @@ avtBlueprintFileFormat.C
 avtBlueprintDataAdaptor.C
 avtBlueprintTreeCache.C
 avtBlueprintWriter.C
+avtBlueprintOptions.C
 )
 
 INCLUDE_DIRECTORIES(
@@ -58,6 +60,9 @@ ${VISIT_INCLUDE_DIR}/visit_vtk/full
 ${VISIT_INCLUDE_DIR}/visit_vtk/lightweight
 )
 
+
+ADD_DEFINITIONS(-DCONDUIT_HAVE_PARTITION_FLATTEN=${CONDUIT_HAVE_PARTITION_FLATTEN})
+
 LINK_DIRECTORIES(${VISIT_LIBRARY_DIR} ${MFEM_LIBRARY_DIR} ${CONDUIT_LIBRARY_DIR} )
 
 ADD_LIBRARY(IBlueprintDatabase ${LIBI_SOURCES})
@@ -78,7 +83,7 @@ SET(INSTALLTARGETS ${INSTALLTARGETS} EBlueprintDatabase_ser)
 
 IF(VISIT_PARALLEL)
     ADD_PARALLEL_LIBRARY(EBlueprintDatabase_par ${LIBE_SOURCES})
-    TARGET_LINK_LIBRARIES(EBlueprintDatabase_par visitcommon avtdatabase_par avtpipeline_par ${CONDUIT_LIB} ${MFEM_LIB} conduit_relay_mpi )
+    TARGET_LINK_LIBRARIES(EBlueprintDatabase_par visitcommon avtdatabase_par avtpipeline_par ${CONDUIT_LIB} ${MFEM_LIB} conduit_blueprint_mpi conduit_relay_mpi )
     ADD_TARGET_DEFINITIONS(EBlueprintDatabase_par ENGINE)
     SET(INSTALLTARGETS ${INSTALLTARGETS} EBlueprintDatabase_par)
 ENDIF(VISIT_PARALLEL)

@@ -31,7 +31,7 @@
 //
 //----------------------------------------------------------------------------
 
-avtCellLocator::avtCellLocator( vtkDataSet* ds ) : dataSet(NULL)
+avtCellLocator::avtCellLocator( vtkDataSet* ds ) : dataSet(nullptr)
 {
     SetDataSet(ds);
 }
@@ -57,16 +57,16 @@ avtCellLocator::SetDataSet(vtkDataSet *ds)
 {
     ReleaseDataSet();
     dataSet = ds;
-    dataSet->Register( NULL );
+    dataSet->Register( nullptr );
 
-    cellPtr = NULL;
-    strDimPtr  = NULL;
+    cellPtr = nullptr;
+    strDimPtr  = nullptr;
     normal2D = false;
     normal3D = false;
 
     if( vtkUnstructuredGrid* ug = vtkUnstructuredGrid::SafeDownCast( dataSet ) )
     {
-        cellPtr = vtk::TakeSmartPointer(ug->GetCells()->NewIterator());
+        cellPtr = ug->GetCells();
     }
     else if( vtkStructuredGrid* sg = vtkStructuredGrid::SafeDownCast( dataSet ) )
     {
@@ -77,8 +77,8 @@ avtCellLocator::SetDataSet(vtkDataSet *ds)
             normal3D = true;
     }
 
-    fCoordPtr = NULL;
-    dCoordPtr = NULL;
+    fCoordPtr = nullptr;
+    dCoordPtr = nullptr;
 
     if( vtkPointSet* ps = vtkPointSet::SafeDownCast( dataSet ) )
     {
@@ -97,7 +97,7 @@ avtCellLocator::SetDataSet(vtkDataSet *ds)
         }
     }
 
-    ghostPtr = NULL;
+    ghostPtr = nullptr;
 
     if( vtkUnsignedCharArray* gd = vtkUnsignedCharArray::SafeDownCast( ds->GetCellData()->GetArray( "avtGhostZones" ) ) )
         ghostPtr = gd->GetPointer(0);
@@ -115,7 +115,7 @@ avtCellLocator::~avtCellLocator()
 //  Method: avtCellLocator::ReleaseDataSet
 //
 //  Purpose:
-//      Release data set. This is needed for the load on demand to release 
+//      Release data set. This is needed for the load on demand to release
 //    the data and it will be resigned if we load it again.
 //
 //  Programmer: David Camp
@@ -129,17 +129,17 @@ avtCellLocator::ReleaseDataSet()
     if(dataSet)
     {
         dataSet->Delete();
-        dataSet = NULL;
+        dataSet = nullptr;
 
-        cellPtr = NULL;
-        strDimPtr  = NULL;
+        cellPtr = nullptr;
+        strDimPtr  = nullptr;
         normal2D = false;
         normal3D = false;
 
-        fCoordPtr = NULL;
-        dCoordPtr = NULL;
-        
-        ghostPtr = NULL;
+        fCoordPtr = nullptr;
+        dCoordPtr = nullptr;
+
+        ghostPtr = nullptr;
     }
 }
 
@@ -147,7 +147,7 @@ avtCellLocator::ReleaseDataSet()
 //  Method: avtCellLocator::Destruct
 //
 //  Purpose:
-//      A routine that a void_ref_ptr can call to cleanly destruct a cell 
+//      A routine that a void_ref_ptr can call to cleanly destruct a cell
 //      locator.
 //
 //  Programmer: Hank Childs
@@ -181,7 +181,7 @@ bool avtCellLocator::TestCell( vtkIdType cellid, const double pos[3],
     // ignore ghost cells if indicated
     if( ignoreGhostCells && ghostPtr && ghostPtr[cellid] )
         return false;
-        
+
     // check if we can take a fast path
     switch( dataSet->GetCellType( cellid ) )
     {
@@ -217,7 +217,7 @@ bool avtCellLocator::TestCell( vtkIdType cellid, const double pos[3],
     std::vector<double> w(npts);
     int subid;
 
-    int result = cell->EvaluatePosition( const_cast<double*>(pos), 0, 
+    int result = cell->EvaluatePosition( const_cast<double*>(pos), 0,
                                          subid, lcoord, tmp, &w[0]);
 
     // if this is the cell containing pos, compute indices and derivatives
@@ -244,7 +244,7 @@ bool avtCellLocator::TestCell( vtkIdType cellid, const double pos[3],
 //
 // ---------------------------------------------------------------------------
 
-void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids, 
+void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
                                double pts[][3] ) const
 {
     vtkIdType npts = 0;
@@ -256,9 +256,18 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
         vtkIdType* direct = cellPtr->GetCellAtId(cellid)->GetPointer(0);
 
         npts = *(direct++);
+        vtkIdList* tmp = vtkIdList::New();
+#if VTK_VERSION_NUMBER < 90000000000ULL
+        dataSet->GetCellPoints( cellid, tmp ); // VTK 8
+#else
+        cellPtr->GetCellAtId(cellid, tmp);  // VTK 9
+#endif
+        npts = tmp->GetNumberOfIds();
 
         for( vtkIdType i=0; i<npts; ++i )
-            ids[i] = direct[i];
+            ids[i] = tmp->GetId(i);
+
+        tmp->Delete();
     }
     else if( strDimPtr )
     {
@@ -271,7 +280,7 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
             int idx = i + j*strDimPtr[0] + k*strDimPtr[0]*strDimPtr[1];
             int d0 = strDimPtr[0];
             int d1 = strDimPtr[0]*strDimPtr[1];
-    
+
             ids[0] = idx;
             ids[1] = idx+1;
             ids[2] = idx+1+d0;
@@ -281,7 +290,7 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
             ids[5] = idx+1;
             ids[6] = idx+1+d0;
             ids[7] = idx+d0;
-    
+
             npts = 8;
         }
         else if (normal2D)
@@ -304,7 +313,7 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
             {
                 int j = cellid % (strDimPtr[1] - 1);
                 int k = cellid / (strDimPtr[1] - 1);
-        
+
                 idx = j + k*strDimPtr[1];
                 d0 = strDimPtr[1];
             }
@@ -312,7 +321,7 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
             {
                 int i = cellid % (strDimPtr[0] - 1);
                 int k = cellid / (strDimPtr[0] - 1);
-        
+
                 idx = i + k*strDimPtr[0];
                 d0 = strDimPtr[0];
             }
@@ -331,7 +340,7 @@ void avtCellLocator::CopyCell( vtkIdType cellid, vtkIdType* ids,
     {
         vtkIdList* tmp = vtkIdList::New();
         dataSet->GetCellPoints( cellid, tmp );
-        
+
         npts = tmp->GetNumberOfIds();
 
         for( vtkIdType i=0; i<npts; ++i )
@@ -368,7 +377,7 @@ bool avtCellLocator::TestVoxel( vtkIdType cellid, const double pos[3],
     double pts[8][3];
 
     CopyCell( cellid, ids, pts );
-    
+
     // bounding box test
 
     if (pos[0] < pts[0][0] || pos[0] > pts[7][0])
@@ -565,7 +574,7 @@ bool avtCellLocator::TestPrism( vtkIdType cellid, const double pos[3],
                    pts[4][i]*c[0]*c[2] +
                    pts[5][i]*c[1]*c[2] - pos[i];
 
-            D[0][i] = d[1]*( pts[1][i] - pts[0][i] ) + 
+            D[0][i] = d[1]*( pts[1][i] - pts[0][i] ) +
                       c[2]*( pts[4][i] - pts[3][i] );
 
             D[1][i] = d[1]*( pts[2][i] - pts[0][i] ) +
@@ -625,7 +634,7 @@ bool avtCellLocator::TestPrism( vtkIdType cellid, const double pos[3],
 
 // --------------------------------------------------------------------------
 
-inline static double inv3( const double A[4][3], 
+inline static double inv3( const double A[4][3],
                            const double b[3],
                            double r[3] )
 {
@@ -658,7 +667,7 @@ bool avtCellLocator::TestTet( vtkIdType cellid, const double pos[3],
                               avtInterpolationWeights* weights ) const
 {
     const double epsilon = 1e-5;
-        
+
     vtkIdType ids[4];
     double pts[4][3];
 
@@ -693,7 +702,7 @@ bool avtCellLocator::TestTet( vtkIdType cellid, const double pos[3],
         c[i] /= vol;
 
     // coefficients inside?
-    if( c[0] < -epsilon || c[1] < -epsilon || 
+    if( c[0] < -epsilon || c[1] < -epsilon ||
         c[2] < -epsilon || c[3] < -epsilon )
         return false;
 
@@ -711,4 +720,3 @@ bool avtCellLocator::TestTet( vtkIdType cellid, const double pos[3],
 
     return true;
 }
-

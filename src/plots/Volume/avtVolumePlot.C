@@ -26,6 +26,7 @@
 #include <VolumeAttributes.h>
 
 #include <DebugStream.h>
+#include <InvalidLimitsException.h>
 #include <ImproperUseException.h>
 #include <LostConnectionException.h>
 
@@ -240,6 +241,10 @@ avtVolumePlot::Create()
 //    Have the legend reflect the scaling (log, linear, skew).  Also make sure
 //    that accurate numbers are put the legends range.
 //
+//    Kathleen Biagas, Mon Feb 7, 2022
+//    Only set the legend range when mapper has input. Also added checks
+//    for valid ranges.
+//
 // ****************************************************************************
 
 void
@@ -254,22 +259,28 @@ avtVolumePlot::SetAtts(const AttributeGroup *a)
 
     SetLegendOpacities();
 
-    double min = 0., max = 1.;
-    if (*(mapper->GetInput()) != nullptr)
+    // SetAtts can be called before the mapper has data, so don't set
+    // legend's range unless there is input, as invalid ranges can cause
+    // vtkError messages
+    if (*(mapper->GetInput()) != NULL)
+    {
+        double min = 0., max = 1.;
         mapper->GetRange(min, max);
 
-    if (atts.GetUseColorVarMin())
-    {
-        min = atts.GetColorVarMin();
+        if (atts.GetUseColorVarMin())
+        {
+            min = atts.GetColorVarMin();
+        }
+        if (atts.GetUseColorVarMax())
+        {
+            max = atts.GetColorVarMax();
+        }
+        if (min > max)
+        {
+            EXCEPTION1(InvalidLimitsException, false);
+        }
+        varLegend->SetRange(min, max);
     }
-
-    if (atts.GetUseColorVarMax())
-    {
-        max = atts.GetColorVarMax();
-    }
-
-    varLegend->SetRange(min, max);
-
     if (atts.GetScaling() == VolumeAttributes::Linear)
         varLegend->SetScaling(0);
     else if (atts.GetScaling() == VolumeAttributes::Log)
