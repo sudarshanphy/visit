@@ -1780,6 +1780,9 @@ avtXRayFilter::CartesianExecute(vtkDataSet *ds, int &nLinesPerDataset,
 //    Kathleen Biagas, Thu Mar 29 07:48:13 PDT 2012
 //    Templatized this method, for double-precision support.
 //
+//    Matt Larsen, Mon June  21 08:03:32 PDT 2021
+//    Log the total number of degenerate intersections 
+//
 // ****************************************************************************
 
 template <typename T>
@@ -1809,6 +1812,7 @@ avtXRayFilter::CylindricalExecute(vtkDataSet *ds, int &nLinesPerDataset,
     //
     // Loop over the lines.
     //
+    int total_errors = 0; 
     vector<int> cells_matched;
     for (i = 0 ; i < linesForThisPass ; i++)
     {
@@ -1847,6 +1851,7 @@ avtXRayFilter::CylindricalExecute(vtkDataSet *ds, int &nLinesPerDataset,
             vtkCell *cell = ds->GetCell(id);
             vector<double> inter;
             int nEdges = cell->GetNumberOfEdges();
+
             for (int k = 0 ; k < nEdges ; k++)
             {
                 vtkCell *edge = cell->GetEdge(k);
@@ -1880,6 +1885,7 @@ avtXRayFilter::CylindricalExecute(vtkDataSet *ds, int &nLinesPerDataset,
             }
             else
             {
+                total_errors++;
                 // So this is technically an error state.  We have
                 // intersected the shape an odd number of times, which
                 // should mean that we are inside the shape.  We constructed
@@ -1895,6 +1901,8 @@ avtXRayFilter::CylindricalExecute(vtkDataSet *ds, int &nLinesPerDataset,
         }
           
     }
+
+    debug1 << "[XRayFilter] total errors: " << total_errors << std::endl;
 
     nLinesPerDataset = (int)cells_matched.size();
 
@@ -3000,6 +3008,12 @@ avtXRayFilter::CollectFragments(int root, int nFragments, int *fragmentSizes,
 //    Matt Larsen, Mon May 7th, 15:33:01 PDT 2018
 //    Altering previous fix to work via a tolerance
 //  
+//    Matt Larsen, Mon June 21st, 8:00:01 PDT 2021
+//    Further relaxing tolerence based on a use case where 
+//    nodes are slightly perturbed from nearly uniform positions.
+//    This fixes the case where the error was astronomical at the 
+//    beginning of a simulation
+//  
 // ****************************************************************************
 
 int
@@ -3029,9 +3043,10 @@ IntersectLineWithRevolvedSegment(const double *line_pt,
     if(seg_p1[0] != seg_p2[0])
     {
         double slope = (seg_p1[1] - seg_p2[1]) / (seg_p1[0] - seg_p2[0]);
-        if(slope > 1e10 || slope < -1e10)
+        const double vertical_eps = 1e3;
+        if(fabs(slope) > vertical_eps)
         {
-          near_vertical = true;
+            near_vertical = true;
         }
     }
 
