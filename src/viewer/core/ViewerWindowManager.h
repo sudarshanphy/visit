@@ -407,6 +407,9 @@ typedef struct {
 //    Kathleen Biagas, Thu Dec 18 15:17:21 PST 2014
 //    Added SetRemoveDuplicateNodes.
 //
+//    Kathleen Biagas, Wed Mar 2, 2022
+//    Added CheckForOSPRayRendering.
+//
 // ****************************************************************************
 
 class VIEWERCORE_API ViewerWindowManager : public ViewerBase
@@ -589,7 +592,6 @@ public:
                      const std::string &);
     static bool SessionContainsErrors(DataNode *);
 
-public:
     avtImage_p CreateSingleImage(int pixelData, int windowIndex,
                                  int width, int height, bool screenCapture,
                                  bool leftEye);
@@ -598,7 +600,6 @@ public:
                                      int windowIndex, int width, int height,
                                      bool screenCapture, bool leftEye);
 
-public:
     static ViewerWindowManagerAttributes *GetWindowAtts();
     static void                          ViewCallback(VisWindow *);
     static void                          RenderInformationCallback(void *data);
@@ -622,6 +623,8 @@ public:
     static void                          SetDefaultInteractorAttsFromClient();
 
     void GetDatabasesForWindows(const intVector &,stringVector &, bool) const;
+
+    void CheckForOSPRayRendering(void) const;
 
   protected:
     ViewerWindowManager();

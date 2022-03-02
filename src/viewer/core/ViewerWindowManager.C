@@ -10023,3 +10023,37 @@ void ViewerWindowManager::SetRemoveDuplicateNodes(bool newVal)
         GetViewerState()->GetGlobalAttributes()->Notify();
     }
 }
+
+
+// ****************************************************************************
+//  Method: ViewerWindowManager::CheckForOSPRayRendering
+//
+//  Purpose: Checks if ospray was enabled from the command line via avtCallback
+//           and sets the RenderingAtts and ViewerWindow states accordingly.
+//
+//  Note:    Should be called after session files are processed, so that the
+//           session file settings for rendering atts don't override the
+//           command line
+//
+//  Programmer: Kathleen Biagas
+//  Creation:   March 2, 2022 
+//
+// ****************************************************************************
+
+void
+ViewerWindowManager::CheckForOSPRayRendering() const
+{
+#ifdef HAVE_OSPRAY
+    if(avtCallback::GetUseOSPRay())
+    {
+        GetViewerState()->GetRenderingAttributes()->SetOsprayRendering(true);
+        GetViewerState()->GetRenderingAttributes()->Notify();
+        for (int i = 0; i < maxWindows; i++)
+        {
+            if (windows[i] != 0)
+                windows[i]->SetOsprayRendering(true);
+        }
+    }
+#endif
+}
+

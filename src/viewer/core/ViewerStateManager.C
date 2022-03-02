@@ -748,6 +748,11 @@ ViewerStateManager::CreateNode(DataNode *parentNode, bool detailed)
 //    Brad Whitlock, Wed Jul 18 10:43:39 PDT 2018
 //    Read the file and pass its contents to the other RestoreSession method.
 //
+//    Kathleen Biagas, Wed Mar 2, 2022
+//    Added call to ViewerWindowManager:::CheckForOSPRayRendering after
+//    session file is restored, to ensure -ospray from command line is
+//    preserved.
+//
 // ****************************************************************************
 
 void
@@ -814,6 +819,9 @@ ViewerStateManager::RestoreSession(const std::string &hostname,
     {
         // We have some session contents. Try and process it.
         RestoreSession(file2, sessionContents, sources);
+
+        // This checks if -ospray was specified on command line
+        ViewerWindowManager::Instance()->CheckForOSPRayRendering();
     }
 }
 
