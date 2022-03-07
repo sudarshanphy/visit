@@ -6,7 +6,7 @@
     Parallel launch options
     ---------------------------------------------------------------------------
         Notes: All of these options are ordinarily obtained from host profiles.
-        However, the command line options override anything in the profiles. 
+        However, the command line options override anything in the profiles.
 
         When parallel arguments are added but the engine is not the
         component being launched, -launchengine is implied.  Explicitly
@@ -37,7 +37,7 @@
     ---------------------------------------------------------------------------
         Notes: These options should only be used with parallel clusters that
         have graphics cards.  If you are using a serial version of VisIt, you
-        are already getting hardware acceleration and these options are not 
+        are already getting hardware acceleration and these options are not
         needed.  Furthermore, you must be in scalable rendering mode for VisIt
         to utilize a cluster's GPUs.  By default, VisIt is configured to
         switch into scalable rendering mode when rendering complexity exceeds
@@ -47,7 +47,6 @@
         will do this automatically if you specify the -launch-x parameter,
         but you can customize the process with the -x-args and -display
         parameters, which respect %l and %n formatters.
-
     ---------------------------------------------------------------------------
         -hw-accel              Tells VisIt that it should use graphics cards.
         -n-gpus-per-node <int> Number of GPUs per node of the cluster (1).
@@ -55,6 +54,14 @@
         -no-launch-x           Let the cluster manager X servers [default]
         -display               Tells VisIt which display to use.
         -x-args '<string>'     Extra arguments to X server.
+
+    Software rendering options
+    ---------------------------------------------------------------------------
+        Note: This option can only be used if the local version of VisIt/VTK
+        was built with OSPRay support.
+    ---------------------------------------------------------------------------
+        -ospray                Tells the VisIt rendering to use OSPRay
+                               by default.
 
     Load balance options
     ---------------------------------------------------------------------------
@@ -74,9 +81,9 @@
                              by the same processor but can also lead to poor
                              balance when only a subset of domains is selected.
         -lb-random           Randomly assign domains to processors.
-        -allowdynamic        Dedicate one processor to spreading the work 
+        -allowdynamic        Dedicate one processor to spreading the work
                              dynamically among the other processors.  This mode
-                             has limitations in the types of queries it can 
+                             has limitations in the types of queries it can
                              perform.  Under development.
         -lb-stream           Similar to -lb-block, but have the domains travel
                              down the pipeline one at a time, instead of all
@@ -109,7 +116,7 @@
 
         Note that the differences VisIt will compute in this mode are single
         precision. This is true regardless of whether the input data is itself
-        double precision. VisIt will convert double precision to single 
+        double precision. VisIt will convert double precision to single
         precision before processing it. Although this is a result of earlier
         visualization-specific design requirements and constraints, the intention
         is that eventually double precision will be supported.
@@ -148,7 +155,7 @@
         -verbose             Prints status information during pipeline
                              execution.
         -dir <directory>     Run the version of VisIt in the specified directory.
-                             The directory argument should specify the 
+                             The directory argument should specify the
                              path to a VisIt installation directory.
                              /bin is automatically appended to this path.
         -startdir <dir>      Ensure that VisIt starts running in the specified
@@ -182,7 +189,7 @@
                              is used as the cycle number. Do a 'man 7 regex'
                              to get more information on regular expression
                              syntax.
-        -ui-bcast-thresholds <int1> <int2> 
+        -ui-bcast-thresholds <int1> <int2>
                              Two integers controlling behavior of parallel
                              engine waiting in a broadcast for the next RPC
                              from the viewer. VisIt used to rely solely upon
@@ -228,7 +235,7 @@
                              hang around, tying up parallel compute resources,
                              following an exit-triggering error condition on
                              any one process.
-                     
+
     Developer options (most for xml2... tools)
     ---------------------------------------------------------------------------
         -public              xml2cmake: force install plugins publicly
@@ -241,7 +248,7 @@
 
     Debugging options
     ---------------------------------------------------------------------------
-        Note: Debugging options may degrade performance 
+        Note: Debugging options may degrade performance
     ---------------------------------------------------------------------------
         -debug <level>       Run with <level> levels of output logging.
                              <level> must be between 1 and 5. This will generate
@@ -290,11 +297,11 @@
         -env                 Print env. variables VisIt will use when run.
         -dump (dump_dir)     Dump intermediate results from AVT filters,
                              scalably rendered images, and html pages.
-                             Takes an optional argument that specifies the 
+                             Takes an optional argument that specifies the
                              directory for -dump output files.
-        -info-dump (dump_dir) 
-                             Dump html pages only. 
-                             Takes an optional argument that specifies the 
+        -info-dump (dump_dir)
+                             Dump html pages only.
+                             Takes an optional argument that specifies the
                              directory for -info-dump output files.
         -break <funcname>    Add the specified breakpoint in gdb.
         -xterm               With -gdb-something, run gdb in an xterm window.
@@ -311,7 +318,7 @@
                              Run Cuda Memcheck with <args> on component <comp>.
                              Default <args> is whitespace.
         -vtune <args> <comp> Run VTune (amplxe-cl) with <args> on component <comp>.
-                             Default <args> is -collect hotspot -quiet 
+                             Default <args> is -collect hotspot -quiet
                                  -user-data-dir vtune_<comp>.
                              For parallel engines, these additional args are passed
                                  -trace-mpi -r <pid>
@@ -365,7 +372,7 @@
                              Run with MallocDebug:
                              Perl does not seem to be happy with libMallocDebug
                              so you can run the GUI like this:
-                             % visit -cli 
+                             % visit -cli
                              >>> OpenGUI('-debug-malloc', 'MallocDebug', 'gui')
                              Connect to the gui with MallocDebug and do your
                              sampling.
