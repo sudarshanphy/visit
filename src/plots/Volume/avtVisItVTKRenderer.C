@@ -311,7 +311,7 @@ avtVisItVTKRenderer::UpdateRenderingState(vtkDataSet * in_ds,
     StackTimer t0("VisItVTKRenderer Rendering");
 
 #ifndef HAVE_OSPRAY
-    if( m_atts.GetOSPRayEnabledFlag(() )
+    if( m_atts.GetOSPRayEnabledFlag() )
     {
         avtCallback::IssueWarning("Trying to use OSPRay when VTK was not built with OSPRay support. The default VTK renderering will be used.");
     }
