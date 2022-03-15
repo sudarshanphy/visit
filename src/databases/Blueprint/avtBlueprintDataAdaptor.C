@@ -633,6 +633,20 @@ StructuredTopologyToVTKStructuredGrid(const Node &n_coords,
 //  I fixed a bug where it was copying the entire connectivity array in each
 //  iteration of the for loop.
 // ****************************************************************************
+//  Method: HomogeneousShapeTopologyToVTKCellArray
+//
+//  Purpose:
+//   Translates the blueprint connectivity array to a VTK connectivity array
+//
+//  Programmer:
+//  Creation:
+//
+//  Modifications:
+//
+//  Chris Laganella, Fri Nov  5 17:21:05 EDT 2021
+//  I fixed a bug where it was copying the entire connectivity array in each
+//  iteration of the for loop.
+// ****************************************************************************
 vtkCellArray *
 HomogeneousShapeTopologyToVTKCellArray(const Node &n_topo,
                                        int /* npts -- UNUSED */)
@@ -666,8 +680,6 @@ HomogeneousShapeTopologyToVTKCellArray(const Node &n_topo,
 
         // Extract connectivity as int array, using 'to_int_array' if needed.
         int_array topo_conn;
-        ida->SetNumberOfTuples(ncells * (csize + 1));
-
         Node n_tmp;
         if(n_topo["elements/connectivity"].dtype().is_int())
         {
@@ -717,6 +729,49 @@ UnstructuredTopologyToVTKUnstructuredGrid(const Node &n_coords,
 
 // ****************************************************************************
 vtkDataSet *
+PointsTopologyToVTKUnstructuredGrid(const Node &n_coords,
+                                    const Node &n_topo)
+{
+    vtkPoints *points = ExplicitCoordsToVTKPoints(n_coords);
+
+    vtkUnstructuredGrid *ugrid = vtkUnstructuredGrid::New();
+    ugrid->SetPoints(points);
+    points->Delete();
+
+    int npoints = points->GetNumberOfPoints();
+
+    //
+    // Now, add explicit topology
+    //
+    vtkCellArray *ca = vtkCellArray::New();
+    vtkIdTypeArray *ida = vtkIdTypeArray::New();
+
+    ida->SetNumberOfTuples(npoints * 2);
+    // Create cell array that ranges from 0 to n-1.
+    for (int i = 0; i < npoints; i++)
+    {
+        ida->SetComponent(2 * i, 0, 1);
+        ida->SetComponent(2 * i + 1, 0, i);
+    }
+    ca->SetCells(npoints, ida);
+    ida->Delete();
+
+    ugrid->SetCells(VTK_VERTEX, ca);
+    ca->Delete();
+
+    return ugrid;
+}
+
+// ****************************************************************************
+//  Method: MeshToVTK
+//
+//  Modifications:
+//    Justin Privitera, Fri 04 Mar 2022 05:57:49 PM PST
+//    Added support for points topology type; see
+//    PointsTopologyToVTKUnstructuredGrid as well.
+//
+// ****************************************************************************
+vtkDataSet *
 avtBlueprintDataAdaptor::VTK::MeshToVTK(const Node &n_mesh)
 {
     //NOTE: this assumes one coordset and one topo
@@ -745,6 +800,11 @@ avtBlueprintDataAdaptor::VTK::MeshToVTK(const Node &n_mesh)
         {
             BP_PLUGIN_INFO("BlueprintVTK::MeshToVTKDataSet StructuredTopologyToVTKStructuredGrid");
             res = StructuredTopologyToVTKStructuredGrid(n_coords, n_topo);
+        }
+        else if (n_topo["type"].as_string() == "points")
+        {
+            BP_PLUGIN_INFO("BlueprintVTK::MeshToVTKDataSet PointsTopologyToVTKUnstructuredGrid");
+            res = PointsTopologyToVTKUnstructuredGrid(n_coords, n_topo);
         }
         else
         {
