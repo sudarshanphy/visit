@@ -283,6 +283,13 @@ ViewerWindow::ViewerWindow(int windowIndex) : ViewerBase(),
     plotList = new ViewerPlotList(this);
     plotList->SetAnimationAttributes(*GetViewerState()->GetAnimationAttributes());
 
+    #ifdef VISIT_ANARI
+        if(avtCallback::GetUseAnari())
+        {
+            GetViewerState()->GetRenderingAttributes()->SetAnariRendering(true);
+        }
+    #endif 
+
     pickFunction = 0;
     pickFunctionData = 0;
 
@@ -415,6 +422,13 @@ ViewerWindow::SetVisWindow(VisWindow *vw)
     LINE_OUT_INFO *ldata = new LINE_OUT_INFO;
     ldata->callbackData = this;
     visWindow->SetLineoutCB(ViewerWindow::PerformLineoutCallback, ldata);
+
+#ifdef VISIT_ANARI
+    if(avtCallback::GetUseAnari())
+    {
+        SetAnariRendering(true);
+    }
+#endif
 
     //
     // Initialize the view information.
@@ -6529,6 +6543,16 @@ debug5 << "GetWindowAttributes: size=" << size[0] << ", " << size[1] << endl;
     renderAtts.SetOsprayAO(GetOsprayAO());
 #endif
 
+#ifdef VISIT_ANARI
+    renderAtts.SetAnariRendering(GetAnariRendering());
+    renderAtts.SetAnariSPP(GetAnariSPP());
+    renderAtts.SetAnariAO(GetAnariAO());
+    renderAtts.SetAnariLibrary(GetAnariLibraryName());
+    renderAtts.SetAnariLibrarySubtype(GetAnariLibrarySubtype());
+    renderAtts.SetAnariRendererSubtype(GetAnariRendererSubtype());
+    renderAtts.SetUseAnariDenoiser(GetUseAnariDenoiser());
+#endif 
+
     winAtts.SetRenderAtts(renderAtts);
 
     //
@@ -8648,6 +8672,236 @@ bool
 ViewerWindow::GetOsprayShadows() const
 {
     return visWindow->GetOsprayShadows();
+}
+#endif
+
+#ifdef VISIT_ANARI
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariRendering
+//
+// Purpose: Set/Get ANARI rendering flag
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri 01 Apr 2022 10:47:52 AM PDT
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariRendering(const bool enabled)
+{
+    visWindow->SetAnariRendering(enabled);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariRendering
+//
+// Purpose: Set/Get ANARI rendering flag
+//
+// Programmer:  Kevin Griffin
+// Creation:    
+//
+// ****************************************************************************
+
+bool
+ViewerWindow::GetAnariRendering() const
+{
+    return visWindow->GetAnariRendering();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetUseAnariDenoiser
+//
+// Purpose: Set/Get ANARI denoiser flag
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri 01 Apr 2022 10:47:52 AM PDT
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetUseAnariDenoiser(const bool enabled)
+{
+    visWindow->SetUseAnariDenoiser(enabled);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetUseAnariDenoiser
+//
+// Purpose: Set/Get ANARI denoiser flag
+//
+// Programmer:  Kevin Griffin
+// Creation:    
+//
+// ****************************************************************************
+
+bool
+ViewerWindow::GetUseAnariDenoiser() const
+{
+    return visWindow->GetUseAnariDenoiser();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariSPP
+//
+// Purpose: Set ANARI samples per pixel
+//
+// Programmer:  Kevin Griffin
+// Creation: 
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariSPP(const int val)
+{
+    visWindow->SetAnariSPP(val);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariSPP
+//
+// Purpose: Get ANARI samples per pixel
+//
+// Programmer:  Kevin Griffin
+// Creation:    
+//
+// ****************************************************************************
+
+int
+ViewerWindow::GetAnariSPP() const
+{
+    return visWindow->GetAnariSPP();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariAO
+//
+// Purpose: Set ANARI ambient occlusion samples per pixel
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariAO(const int val)
+{
+    visWindow->SetAnariAO(val);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariAO
+//
+// Purpose: Get ANARI ambient occlusion samples per pixel
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+int
+ViewerWindow::GetAnariAO() const
+{
+    return visWindow->GetAnariAO();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariLibraryName
+//
+// Purpose: Set ANARI back-end device library name
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariLibraryName(const std::string name)
+{
+    visWindow->SetAnariLibraryName(name);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariLibraryName
+//
+// Purpose: Get ANARI back-end device library name
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+std::string
+ViewerWindow::GetAnariLibraryName() const
+{
+    return visWindow->GetAnariLibraryName();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariLibrarySubtype
+//
+// Purpose: Set ANARI back-end device library subtype name
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariLibrarySubtype(const std::string subtype)
+{
+    visWindow->SetAnariLibrarySubtype(subtype);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariLibrarySubtype
+//
+// Purpose: Get ANARI back-end device library subtype name
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+std::string
+ViewerWindow::GetAnariLibrarySubtype() const
+{
+    return visWindow->GetAnariLibrarySubtype();
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::SetAnariRendererSubtype
+//
+// Purpose: Set ANARI back-end device renderer subtype
+//
+// Arguments:
+//   subtype the renderer subtype name
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariRendererSubtype(const std::string subtype)
+{
+    visWindow->SetAnariRendererSubtype(subtype);
+}
+
+// ****************************************************************************
+// Method:  ViewerWindow::GetAnariRendererSubtype
+//
+// Purpose: Get ANARI back-end renderer subtype
+//
+// Programmer:  Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+std::string
+ViewerWindow::GetAnariRendererSubtype() const
+{
+    return visWindow->GetAnariRendererSubtype();
 }
 #endif
 

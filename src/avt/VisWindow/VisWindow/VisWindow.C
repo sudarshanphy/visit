@@ -6954,6 +6954,302 @@ VisWindow::GetOsprayShadows() const
 }
 #endif
 
+#ifdef VISIT_ANARI
+// ****************************************************************************
+// Method: VisWindow::SetAnariRendering
+//
+// Purpose:
+//   Sets the ANARI rendering flag
+//
+// Arguments:
+//   enabled    if true enable ANARI rendering, otherwise disable ANARI 
+//              rendering
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariRendering(const bool enabled)
+{
+    if (enabled != rendering->GetAnariRendering())
+    {
+        rendering->SetAnariRendering(enabled);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariRendering
+//
+// Purpose:
+//   Returns the ANARI rendering flag
+//
+// Returns:    The ANARI rendering flag
+//
+// Programmer: Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+bool
+VisWindow::GetAnariRendering() const
+{
+    return rendering->GetAnariRendering();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetUseAnariDenoiser
+//
+// Purpose:
+//   Sets the ANARI denoiser flag
+//
+// Arguments:
+//   enabled    if true enable the denoiser during rendering.
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// ****************************************************************************
+
+void
+VisWindow::SetUseAnariDenoiser(const bool enabled)
+{
+    if (enabled != rendering->GetUseAnariDenoiser())
+    {
+        rendering->SetUseAnariDenoiser(enabled);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetUseAnariDenoiser
+//
+// Purpose:
+//   Returns the ANARI denoiser flag
+//
+// Returns:    The ANARI denoiser flag
+//
+// Programmer: Kevin Griffin
+// Creation:
+//
+// ****************************************************************************
+
+bool
+VisWindow::GetUseAnariDenoiser() const
+{
+    return rendering->GetUseAnariDenoiser();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetAnariSPP
+//
+// Purpose:
+//   Sets the ANARI samples per pixel
+//
+// Arguments:
+//   val : The new number of samples per pixel
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariSPP(const int val)
+{
+    if (val != rendering->GetAnariSPP())
+    {
+        rendering->SetAnariSPP(val);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariSPP
+//
+// Purpose:
+//   Returns the ANARI samples per pixel
+//
+// Returns:    The ANARI samples per pixel
+//
+// Programmer:
+// Creation:
+//
+// ****************************************************************************
+
+int
+VisWindow::GetAnariSPP() const
+{
+    return rendering->GetAnariSPP();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetAnariAO
+//
+// Purpose:
+//   Sets the ANARI ambient occlusion samples
+//
+// Arguments:
+//   val : The new number of ambient occlusion samples
+//
+// Programmer: 
+// Creation:
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariAO(const int val)
+{
+    if (val != rendering->GetAnariAO())
+    {
+        rendering->SetAnariAO(val);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariAO
+//
+// Purpose:
+//   Returns the ANARI ambient occlusion samples
+//
+// Returns:    The ANARI ambient occlusion samples
+//
+// Programmer: 
+// Creation:
+//
+// ****************************************************************************
+
+int
+VisWindow::GetAnariAO() const
+{
+    return rendering->GetAnariAO();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetAnariLibraryName
+//
+// Purpose:
+//   Set ANARI back-end rendering library name
+//
+// Arguments:
+//   name : back-end rendering library name
+//
+// Programmer: 
+// Creation:
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariLibraryName(const std::string name)
+{
+    if(name.compare(rendering->GetAnariLibraryName()) != 0)
+    {
+        rendering->SetAnariLibraryName(name);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariLibraryName
+//
+// Purpose:
+//   Returns the ANARI back-end rendering library name
+//
+// Returns:    the ANARI back-end rendering library name
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+std::string
+VisWindow::GetAnariLibraryName() const
+{
+    return rendering->GetAnariLibraryName();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetAnariLibrarySubtype
+//
+// Purpose:
+//   Set ANARI back-end rendering library subtype name
+//
+// Arguments:
+//   name : back-end rendering library subtype name
+//
+// Programmer: 
+// Creation:
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariLibrarySubtype(const std::string name)
+{
+    if(name.compare(rendering->GetAnariLibrarySubtype()) != 0)
+    {
+        rendering->SetAnariLibrarySubtype(name);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariLibrarySubtype
+//
+// Purpose:
+//   Returns the ANARI back-end rendering library subtype name
+//
+// Returns:    the ANARI back-end rendering library subtype name
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+std::string
+VisWindow::GetAnariLibrarySubtype() const
+{
+    return rendering->GetAnariLibrarySubtype();
+}
+
+// ****************************************************************************
+// Method: VisWindow::SetAnariRendererSubtype
+//
+// Purpose:
+//   Set ANARI back-end renderer subtype
+//
+// Arguments:
+//   subtype    back-end renderer subtype
+//
+// Programmer: 
+// Creation:
+//
+// ****************************************************************************
+
+void
+VisWindow::SetAnariRendererSubtype(const std::string subtype)
+{
+    if(subtype.compare(rendering->GetAnariRendererSubtype()) != 0)
+    {
+        rendering->SetAnariRendererSubtype(subtype);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWindow::GetAnariRendererSubtype
+//
+// Purpose:
+//   Returns the ANARI back-end renderer subtype
+//
+// Returns:    the ANARI back-end renderer subtype
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+std::string
+VisWindow::GetAnariRendererSubtype() const
+{
+    return rendering->GetAnariRendererSubtype();
+}
+#endif
 
 // ****************************************************************************
 // Method: VisWindow::CreateToolbar

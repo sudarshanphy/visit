@@ -183,6 +183,10 @@ void RenderingAttributes::Init()
     ospraySPP = 1;
     osprayAO = 0;
     osprayShadows = false;
+    anariRendering = false;
+    anariSPP = 1;
+    anariAO = 0;
+    useAnariDenoiser = false;
 
     RenderingAttributes::SelectAll();
 }
@@ -245,6 +249,13 @@ void RenderingAttributes::Copy(const RenderingAttributes &obj)
     ospraySPP = obj.ospraySPP;
     osprayAO = obj.osprayAO;
     osprayShadows = obj.osprayShadows;
+    anariRendering = obj.anariRendering;
+    anariSPP = obj.anariSPP;
+    anariAO = obj.anariAO;
+    anariLibrary = obj.anariLibrary;
+    anariLibrarySubtype = obj.anariLibrarySubtype;
+    anariRendererSubtype = obj.anariRendererSubtype;
+    useAnariDenoiser = obj.useAnariDenoiser;
 
     RenderingAttributes::SelectAll();
 }
@@ -448,7 +459,14 @@ RenderingAttributes::operator == (const RenderingAttributes &obj) const
             (osprayRendering == obj.osprayRendering) &&
             (ospraySPP == obj.ospraySPP) &&
             (osprayAO == obj.osprayAO) &&
-            (osprayShadows == obj.osprayShadows));
+            (osprayShadows == obj.osprayShadows) &&
+            (anariRendering == obj.anariRendering) &&
+            (anariSPP == obj.anariSPP) &&
+            (anariAO == obj.anariAO) &&
+            (anariLibrary == obj.anariLibrary) &&
+            (anariLibrarySubtype == obj.anariLibrarySubtype) &&
+            (anariRendererSubtype == obj.anariRendererSubtype) &&
+            (useAnariDenoiser == obj.useAnariDenoiser));
 }
 
 // ****************************************************************************
@@ -627,6 +645,13 @@ RenderingAttributes::SelectAll()
     Select(ID_ospraySPP,                    (void *)&ospraySPP);
     Select(ID_osprayAO,                     (void *)&osprayAO);
     Select(ID_osprayShadows,                (void *)&osprayShadows);
+    Select(ID_anariRendering,               (void *)&anariRendering);
+    Select(ID_anariSPP,                     (void *)&anariSPP);
+    Select(ID_anariAO,                      (void *)&anariAO);
+    Select(ID_anariLibrary,                 (void *)&anariLibrary);
+    Select(ID_anariLibrarySubtype,          (void *)&anariLibrarySubtype);
+    Select(ID_anariRendererSubtype,         (void *)&anariRendererSubtype);
+    Select(ID_useAnariDenoiser,             (void *)&useAnariDenoiser);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -871,6 +896,48 @@ RenderingAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool fo
         node->AddNode(new DataNode("osprayShadows", osprayShadows));
     }
 
+    if(completeSave || !FieldsEqual(ID_anariRendering, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariRendering", anariRendering));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariSPP, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariSPP", anariSPP));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariAO, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariAO", anariAO));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariLibrary, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariLibrary", anariLibrary));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariLibrarySubtype, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariLibrarySubtype", anariLibrarySubtype));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariRendererSubtype, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariRendererSubtype", anariRendererSubtype));
+    }
+
+    if(completeSave || !FieldsEqual(ID_useAnariDenoiser, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("useAnariDenoiser", useAnariDenoiser));
+    }
+
 
     // Add the node to the parent node.
     if(addToParent || forceAdd)
@@ -1047,6 +1114,20 @@ RenderingAttributes::SetFromNode(DataNode *parentNode)
         SetOsprayAO(node->AsInt());
     if((node = searchNode->GetNode("osprayShadows")) != 0)
         SetOsprayShadows(node->AsBool());
+    if((node = searchNode->GetNode("anariRendering")) != 0)
+        SetAnariRendering(node->AsBool());
+    if((node = searchNode->GetNode("anariSPP")) != 0)
+        SetAnariSPP(node->AsInt());
+    if((node = searchNode->GetNode("anariAO")) != 0)
+        SetAnariAO(node->AsInt());
+    if((node = searchNode->GetNode("anariLibrary")) != 0)
+        SetAnariLibrary(node->AsString());
+    if((node = searchNode->GetNode("anariLibrarySubtype")) != 0)
+        SetAnariLibrarySubtype(node->AsString());
+    if((node = searchNode->GetNode("anariRendererSubtype")) != 0)
+        SetAnariRendererSubtype(node->AsString());
+    if((node = searchNode->GetNode("useAnariDenoiser")) != 0)
+        SetUseAnariDenoiser(node->AsBool());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1302,6 +1383,55 @@ RenderingAttributes::SetOsprayShadows(bool osprayShadows_)
     Select(ID_osprayShadows, (void *)&osprayShadows);
 }
 
+void
+RenderingAttributes::SetAnariRendering(bool anariRendering_)
+{
+    anariRendering = anariRendering_;
+    Select(ID_anariRendering, (void *)&anariRendering);
+}
+
+void
+RenderingAttributes::SetAnariSPP(int anariSPP_)
+{
+    anariSPP = anariSPP_;
+    Select(ID_anariSPP, (void *)&anariSPP);
+}
+
+void
+RenderingAttributes::SetAnariAO(int anariAO_)
+{
+    anariAO = anariAO_;
+    Select(ID_anariAO, (void *)&anariAO);
+}
+
+void
+RenderingAttributes::SetAnariLibrary(const std::string &anariLibrary_)
+{
+    anariLibrary = anariLibrary_;
+    Select(ID_anariLibrary, (void *)&anariLibrary);
+}
+
+void
+RenderingAttributes::SetAnariLibrarySubtype(const std::string &anariLibrarySubtype_)
+{
+    anariLibrarySubtype = anariLibrarySubtype_;
+    Select(ID_anariLibrarySubtype, (void *)&anariLibrarySubtype);
+}
+
+void
+RenderingAttributes::SetAnariRendererSubtype(const std::string &anariRendererSubtype_)
+{
+    anariRendererSubtype = anariRendererSubtype_;
+    Select(ID_anariRendererSubtype, (void *)&anariRendererSubtype);
+}
+
+void
+RenderingAttributes::SetUseAnariDenoiser(bool useAnariDenoiser_)
+{
+    useAnariDenoiser = useAnariDenoiser_;
+    Select(ID_useAnariDenoiser, (void *)&useAnariDenoiser);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Get property methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1534,6 +1664,66 @@ RenderingAttributes::GetOsprayShadows() const
     return osprayShadows;
 }
 
+bool
+RenderingAttributes::GetAnariRendering() const
+{
+    return anariRendering;
+}
+
+int
+RenderingAttributes::GetAnariSPP() const
+{
+    return anariSPP;
+}
+
+int
+RenderingAttributes::GetAnariAO() const
+{
+    return anariAO;
+}
+
+const std::string &
+RenderingAttributes::GetAnariLibrary() const
+{
+    return anariLibrary;
+}
+
+std::string &
+RenderingAttributes::GetAnariLibrary()
+{
+    return anariLibrary;
+}
+
+const std::string &
+RenderingAttributes::GetAnariLibrarySubtype() const
+{
+    return anariLibrarySubtype;
+}
+
+std::string &
+RenderingAttributes::GetAnariLibrarySubtype()
+{
+    return anariLibrarySubtype;
+}
+
+const std::string &
+RenderingAttributes::GetAnariRendererSubtype() const
+{
+    return anariRendererSubtype;
+}
+
+std::string &
+RenderingAttributes::GetAnariRendererSubtype()
+{
+    return anariRendererSubtype;
+}
+
+bool
+RenderingAttributes::GetUseAnariDenoiser() const
+{
+    return useAnariDenoiser;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Select property methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1554,6 +1744,24 @@ void
 RenderingAttributes::SelectEndCuePoint()
 {
     Select(ID_endCuePoint, (void *)endCuePoint, 3);
+}
+
+void
+RenderingAttributes::SelectAnariLibrary()
+{
+    Select(ID_anariLibrary, (void *)&anariLibrary);
+}
+
+void
+RenderingAttributes::SelectAnariLibrarySubtype()
+{
+    Select(ID_anariLibrarySubtype, (void *)&anariLibrarySubtype);
+}
+
+void
+RenderingAttributes::SelectAnariRendererSubtype()
+{
+    Select(ID_anariRendererSubtype, (void *)&anariRendererSubtype);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1615,6 +1823,13 @@ RenderingAttributes::GetFieldName(int index) const
     case ID_ospraySPP:                    return "ospraySPP";
     case ID_osprayAO:                     return "osprayAO";
     case ID_osprayShadows:                return "osprayShadows";
+    case ID_anariRendering:               return "anariRendering";
+    case ID_anariSPP:                     return "anariSPP";
+    case ID_anariAO:                      return "anariAO";
+    case ID_anariLibrary:                 return "anariLibrary";
+    case ID_anariLibrarySubtype:          return "anariLibrarySubtype";
+    case ID_anariRendererSubtype:         return "anariRendererSubtype";
+    case ID_useAnariDenoiser:             return "useAnariDenoiser";
     default:  return "invalid index";
     }
 }
@@ -1674,6 +1889,13 @@ RenderingAttributes::GetFieldType(int index) const
     case ID_ospraySPP:                    return FieldType_int;
     case ID_osprayAO:                     return FieldType_int;
     case ID_osprayShadows:                return FieldType_bool;
+    case ID_anariRendering:               return FieldType_bool;
+    case ID_anariSPP:                     return FieldType_int;
+    case ID_anariAO:                      return FieldType_int;
+    case ID_anariLibrary:                 return FieldType_string;
+    case ID_anariLibrarySubtype:          return FieldType_string;
+    case ID_anariRendererSubtype:         return FieldType_string;
+    case ID_useAnariDenoiser:             return FieldType_bool;
     default:  return FieldType_unknown;
     }
 }
@@ -1733,6 +1955,13 @@ RenderingAttributes::GetFieldTypeName(int index) const
     case ID_ospraySPP:                    return "int";
     case ID_osprayAO:                     return "int";
     case ID_osprayShadows:                return "bool";
+    case ID_anariRendering:               return "bool";
+    case ID_anariSPP:                     return "int";
+    case ID_anariAO:                      return "int";
+    case ID_anariLibrary:                 return "string";
+    case ID_anariLibrarySubtype:          return "string";
+    case ID_anariRendererSubtype:         return "string";
+    case ID_useAnariDenoiser:             return "bool";
     default:  return "invalid index";
     }
 }
@@ -1942,6 +2171,41 @@ RenderingAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_osprayShadows:
         {  // new scope
         retval = (osprayShadows == obj.osprayShadows);
+        }
+        break;
+    case ID_anariRendering:
+        {  // new scope
+        retval = (anariRendering == obj.anariRendering);
+        }
+        break;
+    case ID_anariSPP:
+        {  // new scope
+        retval = (anariSPP == obj.anariSPP);
+        }
+        break;
+    case ID_anariAO:
+        {  // new scope
+        retval = (anariAO == obj.anariAO);
+        }
+        break;
+    case ID_anariLibrary:
+        {  // new scope
+        retval = (anariLibrary == obj.anariLibrary);
+        }
+        break;
+    case ID_anariLibrarySubtype:
+        {  // new scope
+        retval = (anariLibrarySubtype == obj.anariLibrarySubtype);
+        }
+        break;
+    case ID_anariRendererSubtype:
+        {  // new scope
+        retval = (anariRendererSubtype == obj.anariRendererSubtype);
+        }
+        break;
+    case ID_useAnariDenoiser:
+        {  // new scope
+        retval = (useAnariDenoiser == obj.useAnariDenoiser);
         }
         break;
     default: retval = false;

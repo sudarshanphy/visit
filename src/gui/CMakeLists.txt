@@ -400,6 +400,7 @@ avtdbatts
 winutil
 ${GUI_QT_LIBS}
 ${QWT_LIBRARY}
+$<$<BOOL:${VISIT_ANARI}>:anari::anari>
 )
 
 IF(APPLE)

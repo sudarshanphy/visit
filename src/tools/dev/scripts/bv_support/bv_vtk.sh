@@ -1564,7 +1564,8 @@ function build_vtk
     fi
 
     vopts=""
-    vtk_build_mode="${VISIT_BUILD_MODE}"
+    # vtk_build_mode="${VISIT_BUILD_MODE}"
+    vtk_build_mode="Debug"
     vtk_inst_path="${VISITDIR}/${VTK_INSTALL_DIR}/${VTK_VERSION}/${VISITARCH}"
     vtk_debug_leaks="false"
 
@@ -1713,6 +1714,10 @@ function build_vtk
         vopts="${vopts} -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}"
         vopts="${vopts} -Dembree_DIR=${EMBREE_INSTALL_DIR}"
     fi
+
+    # Use ANARI
+    vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=ON"
+    vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/0.2.0/linux-x86_64_gcc-9.4/lib/cmake/anari-0.2.0"
 
     # zlib support, use the one we build
     vopts="${vopts} -DVTK_USE_SYSTEM_ZLIB:BOOL=ON"

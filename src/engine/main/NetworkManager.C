@@ -6782,6 +6782,16 @@ NetworkManager::RenderSetup(avtImageType imgT, int windowID, intVector& plotIds,
     renderState.window->SetOsprayShadows(renderAtts.GetOsprayShadows());
 #endif
 
+#ifdef VISIT_ANARI
+    renderState.window->SetAnariRendering(renderAtts.GetAnariRendering());
+    renderState.window->SetAnariSPP(renderAtts.GetAnariSPP());
+    renderState.window->SetAnariAO(renderAtts.GetAnariAO());
+    renderState.window->SetAnariLibraryName(renderAtts.GetAnariLibrary());
+    renderState.window->SetAnariLibrarySubtype(renderAtts.GetAnariLibrarySubtype());
+    renderState.window->SetAnariRendererSubtype(renderAtts.GetAnariRendererSubtype());
+    renderState.window->SetUseAnariDenoiser(renderAtts.GetUseAnariDenoiser());
+#endif
+
     // Apply any rendering-related changes to the annotation attributes.
     // This may mean turning some of them off, etc. Keep track of whether
     // we need to restore them later.

@@ -153,6 +153,13 @@ private slots:
     void ospraySPPChanged(int);
     void osprayAOChanged(int);
     void osprayShadowsToggled(bool);
+    void anariRenderingToggled(bool);
+    void anariSPPChanged(int);
+    void anariAOChanged(int);
+    void anariLibraryChanged(QString);
+    void anariLibrarySubtypeChanged(QString);
+    void anariRendererSubtypeChanged(QString);
+    void anariDenoiserToggled(bool);
 
 private:
     QWidget *CreateBasicPage();
@@ -228,6 +235,19 @@ private:
     QLabel            *osprayAOLabel;
     QSpinBox          *osprayAO;
     QCheckBox         *osprayShadowsToggle;
+#ifdef VISIT_ANARI
+    QGroupBox         *m_anariRenderingGroup;
+    QLabel            *m_anariSPPLabel;
+    QSpinBox          *m_anariSPP;
+    QLabel            *m_anariAOLabel;
+    QSpinBox          *m_anariAO;
+    QLabel            *m_anariLibraryLabel;
+    QComboBox         *m_anariLibraryNames;
+    QPushButton       *m_anariLibraryDetails;
+    QComboBox         *m_anariLibrarySubtypes;
+    QComboBox         *m_anariRendererSubtypes;
+    QCheckBox         *m_anariDenoiserToggle;
+#endif
 
     // Labels to display renderer information.
     QLabel            *scalrenUsingLabel;

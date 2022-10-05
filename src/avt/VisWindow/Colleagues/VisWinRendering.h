@@ -21,6 +21,10 @@
 #include <vtkOSPRayPass.h>
 #endif
 
+#ifdef VISIT_ANARI
+#include <vtkAnariPass.h>
+#endif
+
 class vtkInteractorStyle;
 class vtkPolyDataMapper2D;
 class vtkRenderer;
@@ -392,7 +396,22 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     bool                     GetOsprayShadows() const
                                  { return osprayShadows; };
 #endif
-
+#ifdef VISIT_ANARI
+    void                    SetAnariRendering(const bool);
+    bool                    GetAnariRendering() const { return m_anariRendering; }
+    void                    SetAnariSPP(const int);
+    int                     GetAnariSPP() const { return m_anariSPP; }
+    void                    SetAnariAO(const int);
+    int                     GetAnariAO() const { return m_anariAO; }
+    void                    SetAnariLibraryName(const std::string);
+    std::string             GetAnariLibraryName() const { return m_anariLibraryName; }
+    void                    SetAnariLibrarySubtype(const std::string);
+    std::string             GetAnariLibrarySubtype() const { return m_anariLibrarySubtype; }
+    void                    SetAnariRendererSubtype(const std::string);
+    std::string             GetAnariRendererSubtype() const { return m_anariRendererSubtype; }
+    void                    SetUseAnariDenoiser(const bool);
+    bool                    GetUseAnariDenoiser() const { return m_useAnariDenoiser; }
+#endif
     virtual void            *CreateToolbar(const char *) { return 0; };
     virtual void             SetLargeIcons(bool) { };
     virtual void             SetCursorForMode(INTERACTION_MODE) { };
@@ -440,7 +459,16 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     bool                          osprayShadows;
     bool                          modeIsPerspective;
 #endif
-
+#ifdef VISIT_ANARI
+    bool                        m_anariRendering;
+    int                         m_anariSPP;
+    int                         m_anariAO;
+    std::string                 m_anariLibraryName;
+    std::string                 m_anariLibrarySubtype;
+    std::string                 m_anariRendererSubtype;
+    bool                        m_useAnariDenoiser;
+    vtkAnariPass                *m_anariPass;
+#endif
     void(*renderInfo)(void *);
     void                         *renderInfoData;
     void                          (*renderEvent)(void *,bool);

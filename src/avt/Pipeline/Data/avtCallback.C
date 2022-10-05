@@ -33,6 +33,9 @@ bool                          avtCallback::safeMode = false;
 #ifdef VISIT_OSPRAY
 bool                          avtCallback::useOSPRay = false;
 #endif
+#ifdef VISIT_ANARI
+bool                          avtCallback::m_useAnari = false;
+#endif
 
 GlobalAttributes::BackendType avtCallback::backendType = GlobalAttributes::VTK;
 

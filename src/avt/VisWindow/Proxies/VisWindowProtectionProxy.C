@@ -1236,3 +1236,77 @@ VisWindowProtectionProxy::ProxiedGetOsprayShadows()
     return viswin->GetOsprayShadows();
 }
 #endif
+
+#ifdef VISIT_ANARI
+// ****************************************************************************
+// Method: VisWindowProtectionProxy::ProxiedGetAnariRendering
+//
+// Purpose:     Get the ANARI rendering flag
+//
+// Returns:     true if ANARI rendering is selected, false otherwise
+//
+// Programmer:  Kevin Griffin
+// Creation:    Wed 30 Mar 2022 03:43:48 PM PDT
+//
+// ****************************************************************************
+
+bool
+VisWindowProtectionProxy::ProxiedGetAnariRendering()
+{
+    return viswin->GetAnariRendering();
+}
+
+// ****************************************************************************
+// Method: VisWindowProtectionProxy::ProxiedGetAnariSPP
+//
+// Purpose:     Get the ANARI samples per pixel
+//
+// Returns:     samples per pixel
+//
+// Programmer:  Kevin Griffin
+// Creation:    Wed 30 Mar 2022 03:43:48 PM PDT
+//
+// ****************************************************************************
+
+int
+VisWindowProtectionProxy::ProxiedGetAnariSPP()
+{
+    return viswin->GetAnariSPP();
+}
+
+// ****************************************************************************
+// Method: VisWindowProtectionProxy::ProxiedGetAnariAO
+//
+// Purpose:     Get the ambient occlusion samples
+//
+// Returns:     AO samples
+//
+// Programmer:  Kevin Griffin
+// Creation:    Wed 30 Mar 2022 03:43:48 PM PDT
+//
+// ****************************************************************************
+
+int
+VisWindowProtectionProxy::ProxiedGetAnariAO()
+{
+    return viswin->GetAnariAO();
+}
+
+// ****************************************************************************
+// Method: VisWindowProtectionProxy::ProxiedGetAnariLibraryName
+//
+// Purpose:     Get ANARI back-end library name
+//
+// Returns:     back-end library name
+//
+// Programmer:  Kevin Griffin
+// Creation:    Wed 30 Mar 2022 03:43:48 PM PDT
+//
+// ****************************************************************************
+
+std::string
+VisWindowProtectionProxy::ProxiedGetAnariLibraryName()
+{
+    return viswin->GetAnariLibraryName();
+}
+#endif

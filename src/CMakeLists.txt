@@ -1280,6 +1280,7 @@ ENDIF(VISIT_THREAD)
 
 
 include(${VISIT_SOURCE_DIR}/CMake/FindOSPRay.cmake)
+include(${VISIT_SOURCE_DIR}/CMake/FindANARI.cmake)
 
 
 #-----------------------------------------------------------------------------

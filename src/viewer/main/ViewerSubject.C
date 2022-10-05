@@ -2619,6 +2619,13 @@ ViewerSubject::ProcessCommandLine(int argc, char **argv)
             avtCallback::SetOSPRayMode(true);
         }
 #endif
+#ifdef VISIT_ANARI
+        else if(strcmp(argv[i], "-anari") == 0)
+        {
+            debug5 << "Viewer launching with ANARI" << std::endl;
+            avtCallback::SetUseAnari(true);
+        }
+#endif
         else if (strcmp(argv[i], "-fullscreen") == 0)
         {
             GetViewerProperties()->SetWindowFullScreen(true);

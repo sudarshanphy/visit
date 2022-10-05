@@ -52,6 +52,13 @@
 #include <vtkVisItViewNodeFactory.h>
 #endif
 
+#ifdef VISIT_ANARI    
+    #include <vtkAnariRendererNode.h>
+    #include <vtkAnariPass.h>
+    #include <vtkAnariVisItViewNodeFactory.h>
+    #include <vtkViewNodeFactory.h>
+#endif
+
 #include <limits>
 using std::numeric_limits;
 
@@ -211,6 +218,33 @@ VisWinRendering::VisWinRendering(VisWindowColleagueProxy &p) :
                               vtkVisItViewNodeFactory::cube_axes_act_maker);
     factory->RegisterOverride("vtkVisItAxisActor",
                               vtkVisItViewNodeFactory::axis_act_maker);
+#endif
+
+#ifdef VISIT_ANARI
+    m_anariRendering = false;
+    m_anariSPP = 1;
+    m_anariAO = 0;
+    m_anariLibraryName = "";
+    m_anariLibrarySubtype = "";
+    m_anariRendererSubtype = "";
+
+    canvas->SetPass(0);
+    m_anariPass = vtkAnariPass::New();
+
+    vtkViewNodeFactory *factory = m_anariPass->GetViewNodeFactory();
+    factory->RegisterOverride("vtkDataSetMapper", vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkPointGlyphMapper",
+                              vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkMultiRepMapper",
+                              vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkMeshPlotMapper",
+                              vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkOpenGLMeshPlotMapper",
+                              vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkVisItCubeAxesActor",
+                              vtkAnariVisItViewNodeFactory::cube_axes_act_maker);
+    factory->RegisterOverride("vtkVisItAxisActor",
+                              vtkAnariVisItViewNodeFactory::axis_act_maker);
 #endif
 }
 
@@ -1111,7 +1145,17 @@ VisWinRendering::Realize(void)
 void
 VisWinRendering::RenderRenderWindow(void)
 {
-#ifdef VISIT_OSPRAY
+#ifdef VISIT_ANARI
+    if(GetAnariRendering())
+    {
+        // Set a custom render pass (ANARI)
+        canvas->SetPass(m_anariPass);
+    }
+    else
+    {
+        canvas->SetPass(0);
+    }
+#elif VISIT_OSPRAY
     if (GetOsprayRendering() && modeIsPerspective)
     {
         canvas->SetPass(osprayPass);
@@ -2931,6 +2975,185 @@ VisWinRendering::SetOsprayShadows(bool enabled)
     else
     {
         canvas->SetUseShadows(false);
+    }
+}
+#endif
+
+#ifdef VISIT_ANARI
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariRendering
+//
+// Purpose: 
+//   Sets the ANARI rendering flag
+//
+// Arguments:
+//   enabled : true if ANARI rendering is enabled, otherwise false
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariRendering(const bool enabled)
+{
+    m_anariRendering = enabled;
+
+    if (enabled)
+    {
+        canvas->SetPass(m_anariPass);
+    }
+    else
+    {
+        canvas->SetPass(0);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetUseAnariDenoiser
+//
+// Purpose: 
+//   Sets the ANARI denoiser flag
+//
+// Arguments:
+//   enabled : true if the denoiser is enabled for rendering
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// ****************************************************************************
+
+void
+VisWinRendering::SetUseAnariDenoiser(const bool enabled)
+{
+    if(enabled != m_useAnariDenoiser)
+    {
+        m_useAnariDenoiser = enabled;
+        int value = enabled ? 1 : 0;
+        vtkAnariRendererNode::SetUseDenoiser(value, canvas);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariSPP
+//
+// Purpose: 
+//   Sets the ANARI samples per pixel
+//
+// Arguments:
+//   val : The new number of samples per pixel
+//
+// Programmer: Kevin Griffin
+// Creation:
+//   
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariSPP(const int val)
+{
+    if(val != m_anariSPP)
+    {
+        m_anariSPP = val;
+        vtkAnariRendererNode::SetSamplesPerPixel(val, canvas);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariAO
+//
+// Purpose: 
+//   Sets the ANARI ambient occlusion samples
+//
+// Arguments:
+//   val : the new number of ambient occlusion samples
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//   
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariAO(const int val)
+{
+    if(val != m_anariAO)
+    {
+        m_anariAO = val;
+        vtkAnariRendererNode::SetAmbientSamples(val, canvas);
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariLibraryName
+//
+// Purpose: 
+//   Sets the ANARI library name
+//
+// Arguments:
+//   name : The ANARI back-end library name
+//
+// Programmer: Kevin Griffin
+// Creation:
+//   
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariLibraryName(const std::string name)
+{
+    if(m_anariLibraryName.compare(name) != 0)
+    {
+        m_anariLibraryName = name;
+        vtkAnariRendererNode::SetLibraryName(name.c_str(), canvas);
+        std::cout << "Library Name: " << name.c_str() << std::endl;
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariLibrarySubtype
+//
+// Purpose: 
+//   Sets the ANARI Library subtype
+//
+// Arguments:
+//   subtype : 
+//
+// Programmer: Kevin Griffin
+// Creation:
+//   
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariLibrarySubtype(const std::string subtype)
+{
+    if(m_anariLibrarySubtype.compare(subtype) != 0)
+    {
+        m_anariLibrarySubtype = subtype;
+        vtkAnariRendererNode::SetDeviceSubtype(subtype.c_str(), canvas);
+        std::cout << "Library subtype: " << subtype.c_str() << std::endl;
+    }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::SetAnariRendererSubtype
+//
+// Purpose: 
+//   Sets the ANARI renderer subtype name
+//
+// Arguments:
+//   subtype : The ANARI renderer subtype name
+//
+// Programmer: Kevin Griffin
+// Creation:
+//   
+// ****************************************************************************
+
+void
+VisWinRendering::SetAnariRendererSubtype(const std::string subtype)
+{
+    if(m_anariRendererSubtype.compare(subtype) != 0)
+    {
+        m_anariRendererSubtype = subtype;
+        vtkAnariRendererNode::SetRendererSubtype(subtype.c_str(), canvas);
     }
 }
 #endif

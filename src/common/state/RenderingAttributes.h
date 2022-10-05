@@ -81,6 +81,9 @@ public:
     void SelectSpecularColor();
     void SelectStartCuePoint();
     void SelectEndCuePoint();
+    void SelectAnariLibrary();
+    void SelectAnariLibrarySubtype();
+    void SelectAnariRendererSubtype();
 
     // Property setting methods
     void SetAntialiasing(bool antialiasing_);
@@ -118,6 +121,13 @@ public:
     void SetOspraySPP(int ospraySPP_);
     void SetOsprayAO(int osprayAO_);
     void SetOsprayShadows(bool osprayShadows_);
+    void SetAnariRendering(bool anariRendering_);
+    void SetAnariSPP(int anariSPP_);
+    void SetAnariAO(int anariAO_);
+    void SetAnariLibrary(const std::string &anariLibrary_);
+    void SetAnariLibrarySubtype(const std::string &anariLibrarySubtype_);
+    void SetAnariRendererSubtype(const std::string &anariRendererSubtype_);
+    void SetUseAnariDenoiser(bool useAnariDenoiser_);
 
     // Property getting methods
     bool                 GetAntialiasing() const;
@@ -158,6 +168,16 @@ public:
     int                  GetOspraySPP() const;
     int                  GetOsprayAO() const;
     bool                 GetOsprayShadows() const;
+    bool                 GetAnariRendering() const;
+    int                  GetAnariSPP() const;
+    int                  GetAnariAO() const;
+    const std::string    &GetAnariLibrary() const;
+          std::string    &GetAnariLibrary();
+    const std::string    &GetAnariLibrarySubtype() const;
+          std::string    &GetAnariLibrarySubtype();
+    const std::string    &GetAnariRendererSubtype() const;
+          std::string    &GetAnariRendererSubtype();
+    bool                 GetUseAnariDenoiser() const;
 
     // Persistence methods
     virtual bool CreateNode(DataNode *node, bool completeSave, bool forceAdd);
@@ -227,6 +247,13 @@ public:
         ID_ospraySPP,
         ID_osprayAO,
         ID_osprayShadows,
+        ID_anariRendering,
+        ID_anariSPP,
+        ID_anariAO,
+        ID_anariLibrary,
+        ID_anariLibrarySubtype,
+        ID_anariRendererSubtype,
+        ID_useAnariDenoiser,
         ID__LAST
     };
 
@@ -266,11 +293,18 @@ private:
     int            ospraySPP;
     int            osprayAO;
     bool           osprayShadows;
+    bool           anariRendering;
+    int            anariSPP;
+    int            anariAO;
+    std::string    anariLibrary;
+    std::string    anariLibrarySubtype;
+    std::string    anariRendererSubtype;
+    bool           useAnariDenoiser;
 
     // Static class format string for type map.
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define RENDERINGATTRIBUTES_TMFS "bbiiiibdibfibibiibffabdbbDDibiibiib"
+#define RENDERINGATTRIBUTES_TMFS "bbiiiibdibfibibiibffabdbbDDibiibiibbiisssb"
 
 #endif

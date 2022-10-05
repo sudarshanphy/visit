@@ -249,6 +249,13 @@ class VISWINDOW_API VisWindowColleagueProxy : public VisWindowProtectionProxy
     bool                GetOsprayRendering()
                              { return ProxiedGetOsprayRendering(); };
 #endif
+
+#ifdef VISIT_ANARI
+    bool        GetAnariRendering()     { return ProxiedGetAnariRendering(); }
+    int         GetAnariSPP()           { return ProxiedGetAnariSPP(); }
+    int         GetAnariAO()            { return ProxiedGetAnariAO(); }
+    std::string GetAnariLibraryName()   { return ProxiedGetAnariLibraryName(); }
+#endif
 };
 
 #endif

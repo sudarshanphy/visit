@@ -734,7 +734,22 @@ public:
     void SetOsprayShadows(bool);
     bool GetOsprayShadows() const;
 #endif
-
+#ifdef VISIT_ANARI
+    void                SetAnariRendering(const bool enabled);
+    bool                GetAnariRendering() const;
+    void                SetAnariSPP(const int val);
+    int                 GetAnariSPP() const;
+    void                SetAnariAO(const int val);
+    int                 GetAnariAO() const;
+    void                SetAnariLibraryName(const std::string);
+    std::string         GetAnariLibraryName() const;
+    void                SetAnariLibrarySubtype(const std::string);
+    std::string         GetAnariLibrarySubtype() const;
+    void                SetAnariRendererSubtype(const std::string);
+    std::string         GetAnariRendererSubtype() const;
+    void                SetUseAnariDenoiser(const bool enabled);
+    bool                GetUseAnariDenoiser() const;
+#endif
     void Lineout(const bool);
 
     void SetInteractorAtts(const InteractorAttributes *);

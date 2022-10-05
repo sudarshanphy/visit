@@ -128,6 +128,24 @@
     <Field name="osprayShadows" label="OSPRay shadows" type="bool">
       false
     </Field>
+    <Field name="anariRendering" label="ANARI Rendering" type="bool">
+      false
+    </Field>
+    <Field name="anariSPP" label="ANARI Samples Per Pixel" type="int">
+      1
+    </Field>
+    <Field name="anariAO" label="ANARI Ambient Occlusion Samples" type="int">
+      0
+    </Field>
+    <Field name="anariLibrary" label="ANARI Library" type="string">
+    </Field>
+    <Field name="anariLibrarySubtype" label="ANARI Library Subtype" type="string">
+    </Field>
+    <Field name="anariRendererSubtype" label="ANARI Renderer Subtype" type="string">
+    </Field>
+    <Field name="useAnariDenoiser" label="ANARI Denoiser" type="bool">
+      false
+    </Field>
     <Function name="GetEffectiveScalableThreshold" user="true" member="true">
     </Function>
     <Function name="GetEffectiveCompactDomainsThreshold" user="true" member="true">

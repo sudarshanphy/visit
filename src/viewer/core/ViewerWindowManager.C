@@ -3597,6 +3597,23 @@ ViewerWindowManager::SetRenderingAttributes(int windowIndex)
             windows[index]->SetOsprayShadows(ratts->GetOsprayShadows());
 #endif
 
+#ifdef VISIT_ANARI
+    if (windows[index]->GetAnariRendering() != ratts->GetAnariRendering())
+        windows[index]->SetAnariRendering(ratts->GetAnariRendering());
+    if (windows[index]->GetAnariSPP() != ratts->GetAnariSPP())
+        windows[index]->SetAnariSPP(ratts->GetAnariSPP());
+    if (windows[index]->GetAnariAO() != ratts->GetAnariAO())
+        windows[index]->SetAnariAO(ratts->GetAnariAO());
+    if (windows[index]->GetAnariLibraryName().compare(ratts->GetAnariLibrary()) != 0)
+        windows[index]->SetAnariLibraryName(ratts->GetAnariLibrary());
+    if (windows[index]->GetAnariLibrarySubtype().compare(ratts->GetAnariLibrarySubtype()) != 0)
+        windows[index]->SetAnariLibrarySubtype(ratts->GetAnariLibrarySubtype());
+    if (windows[index]->GetAnariRendererSubtype().compare(ratts->GetAnariRendererSubtype()) != 0)
+        windows[index]->SetAnariRendererSubtype(ratts->GetAnariRendererSubtype());
+    if (windows[index]->GetUseAnariDenoiser() != ratts->GetUseAnariDenoiser())
+        windows[index]->SetUseAnariDenoiser(ratts->GetUseAnariDenoiser());
+#endif
+
         // If the updatesEnabled flag was true before we temporarily disabled
         // updates, turn updates back on and force the window to redraw so the
         // rendering options such as the surface representation and antialiasing
@@ -5210,6 +5227,16 @@ ViewerWindowManager::UpdateRenderingAtts(int windowIndex)
         GetViewerState()->GetRenderingAttributes()->SetOspraySPP(win->GetOspraySPP());
         GetViewerState()->GetRenderingAttributes()->SetOsprayAO(win->GetOsprayAO());
         GetViewerState()->GetRenderingAttributes()->SetOsprayShadows(win->GetOsprayShadows());
+#endif
+
+#ifdef VISIT_ANARI
+        GetViewerState()->GetRenderingAttributes()->SetAnariRendering(win->GetAnariRendering());
+        GetViewerState()->GetRenderingAttributes()->SetAnariSPP(win->GetAnariSPP());
+        GetViewerState()->GetRenderingAttributes()->SetAnariAO(win->GetAnariAO());
+        GetViewerState()->GetRenderingAttributes()->SetAnariLibrary(win->GetAnariLibraryName());
+        GetViewerState()->GetRenderingAttributes()->SetAnariLibrarySubtype(win->GetAnariLibrarySubtype());
+        GetViewerState()->GetRenderingAttributes()->SetAnariRendererSubtype(win->GetAnariRendererSubtype());
+        GetViewerState()->GetRenderingAttributes()->SetUseAnariDenoiser(win->GetUseAnariDenoiser());
 #endif
 
         // Tell the client about the new rendering information.

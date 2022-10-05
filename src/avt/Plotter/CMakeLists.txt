@@ -67,6 +67,9 @@
 #
 #   Kathleen Biagas, Tue Apr 13 2021
 #   Add vtk/vtkVisItDatasetMapper.
+#
+#   Kevin Griffin, Wed 05 Oct 2022 10:14:14 AM PDT
+#   Added support for vtkRenderingAnari
 # 
 #****************************************************************************/
 
@@ -104,6 +107,14 @@ if(VISIT_OSPRAY)
          vtk/vtkOSPRayVisItAxisActorNode.C
          vtk/vtkVisItViewNodeFactory.C
         )
+endif()
+
+if(VISIT_ANARI)
+    list(APPEND AVTPLOTTER_VTK_SOURCES
+        vtk/vtkAnariVisItCubeAxesActorNode.C
+        vtk/vtkAnariVisItAxisActorNode.C
+        vtk/vtkAnariVisItViewNodeFactory.C
+    )
 endif()
 
 SET(AVTPLOTTER_SOURCES
@@ -180,10 +191,9 @@ TARGET_LINK_LIBRARIES(avtplotter_ser
     visitcommon avtmath avtview avtfilters_ser avtpipeline_ser visit_vtk 
     lightweight_visit_vtk vtkCommonExecutionModel vtkFiltersHybrid
     vtkRenderingCore vtkRenderingFreeType vtkRenderingOpenGL2
-    ${OPENGL_LIBRARIES})
-if(VISIT_OSPRAY)
-    target_link_libraries(avtplotter_ser vtkRenderingOSPRay)
-endif()
+    ${OPENGL_LIBRARIES}
+    $<$<BOOL:${VISIT_OSPRAY}>:vtkRenderingOSPRay>
+    $<$<BOOL:${VISIT_ANARI}>:vtkRenderingAnari>)
 VISIT_INSTALL_TARGETS(avtplotter_ser)
 
 #********************************* PARALLEL **********************************
@@ -193,10 +203,9 @@ IF(VISIT_PARALLEL)
         visitcommon avtmath avtview avtfilters_par avtpipeline_par visit_vtk
         lightweight_visit_vtk vtkCommonExecutionModel vtkFiltersHybrid
         vtkRenderingCore vtkRenderingFreeType vtkRenderingOpenGL2
-        ${OPENGL_LIBRARIES})
-    if(VISIT_OSPRAY)
-        target_link_libraries(avtplotter_par vtkRenderingOSPRay)
-    endif()
+        ${OPENGL_LIBRARIES}
+        $<$<BOOL:${VISIT_OSPRAY}>:vtkRenderingOSPRay>
+        $<$<BOOL:${VISIT_ANARI}>:vtkRenderingAnari>)
     VISIT_INSTALL_TARGETS(avtplotter_par)
 ENDIF(VISIT_PARALLEL)
 
