@@ -16,6 +16,9 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QTabWidget>
+#include <QGroupBox>
+#include <QComboBox>
+#include <QPushButton>
 
 #include <RenderingAttributes.h>
 #include <ViewerProxy.h>

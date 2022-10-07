@@ -19,6 +19,9 @@ class RenderingAttributes;
 class WindowInformation;
 class QvisOpacitySlider;
 class QLineEdit;
+class QGroupBox;
+class QComboBox;
+class QPushButton;
 
 // ****************************************************************************
 // Class: QvisRenderingWindow

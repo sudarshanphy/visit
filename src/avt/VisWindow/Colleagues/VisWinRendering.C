@@ -232,7 +232,9 @@ VisWinRendering::VisWinRendering(VisWindowColleagueProxy &p) :
     m_anariPass = vtkAnariPass::New();
 
     vtkViewNodeFactory *factory = m_anariPass->GetViewNodeFactory();
-    factory->RegisterOverride("vtkDataSetMapper", vtkAnariVisItViewNodeFactory::pd_maker);
+    // factory->RegisterOverride("vtkDataSetMapper", vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkVisItDataSetMapper", 
+                              vtkAnariVisItViewNodeFactory::pd_maker);
     factory->RegisterOverride("vtkPointGlyphMapper",
                               vtkAnariVisItViewNodeFactory::pd_maker);
     factory->RegisterOverride("vtkMultiRepMapper",
