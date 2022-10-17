@@ -411,6 +411,8 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     std::string             GetAnariRendererSubtype() const { return m_anariRendererSubtype; }
     void                    SetUseAnariDenoiser(const bool);
     bool                    GetUseAnariDenoiser() const { return m_useAnariDenoiser; }
+
+    vtkAnariPass            *CreateAnariPass();
 #endif
     virtual void            *CreateToolbar(const char *) { return 0; };
     virtual void             SetLargeIcons(bool) { };
@@ -468,6 +470,7 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     std::string                 m_anariRendererSubtype;
     bool                        m_useAnariDenoiser;
     vtkAnariPass                *m_anariPass;
+    bool                        m_anariPassValid;
 #endif
     void(*renderInfo)(void *);
     void                         *renderInfoData;

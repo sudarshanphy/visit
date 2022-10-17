@@ -229,24 +229,8 @@ VisWinRendering::VisWinRendering(VisWindowColleagueProxy &p) :
     m_anariRendererSubtype = "";
 
     canvas->SetPass(0);
-    m_anariPass = vtkAnariPass::New();
-
-    vtkViewNodeFactory *factory = m_anariPass->GetViewNodeFactory();
-    // factory->RegisterOverride("vtkDataSetMapper", vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkVisItDataSetMapper", 
-                              vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkPointGlyphMapper",
-                              vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkMultiRepMapper",
-                              vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkMeshPlotMapper",
-                              vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkOpenGLMeshPlotMapper",
-                              vtkAnariVisItViewNodeFactory::pd_maker);
-    factory->RegisterOverride("vtkVisItCubeAxesActor",
-                              vtkAnariVisItViewNodeFactory::cube_axes_act_maker);
-    factory->RegisterOverride("vtkVisItAxisActor",
-                              vtkAnariVisItViewNodeFactory::axis_act_maker);
+    m_anariPass = CreateAnariPass();
+    m_anariPassValid = true;
 #endif
 }
 
@@ -269,6 +253,14 @@ VisWinRendering::VisWinRendering(VisWindowColleagueProxy &p) :
 
 VisWinRendering::~VisWinRendering()
 {
+#ifdef VISIT_ANARI
+    if(m_anariPass != nullptr)
+    {
+        m_anariPass->Delete();
+        m_anariPass = nullptr;
+    }
+#endif
+
     if (canvas != NULL)
     {
         canvas->Delete();
@@ -1147,17 +1139,7 @@ VisWinRendering::Realize(void)
 void
 VisWinRendering::RenderRenderWindow(void)
 {
-#ifdef VISIT_ANARI
-    if(GetAnariRendering())
-    {
-        // Set a custom render pass (ANARI)
-        canvas->SetPass(m_anariPass);
-    }
-    else
-    {
-        canvas->SetPass(0);
-    }
-#elif VISIT_OSPRAY
+#ifdef VISIT_OSPRAY
     if (GetOsprayRendering() && modeIsPerspective)
     {
         canvas->SetPass(osprayPass);
@@ -1166,6 +1148,23 @@ VisWinRendering::RenderRenderWindow(void)
     {
         canvas->SetUseShadows(false);
         canvas->SetPass(0);
+    }
+#endif
+
+#ifdef VISIT_ANARI
+    if(GetAnariRendering())
+    {
+        if(!m_anariPassValid)
+        {     
+            if(m_anariPass != nullptr)
+            {
+                m_anariPass->Delete();
+            }
+
+            m_anariPass = CreateAnariPass();
+            canvas->SetPass(m_anariPass);
+            m_anariPassValid = true;
+        }
     }
 #endif
 
@@ -3098,7 +3097,7 @@ VisWinRendering::SetAnariAO(const int val)
 // Creation:
 //   
 // ****************************************************************************
-
+ 
 void
 VisWinRendering::SetAnariLibraryName(const std::string name)
 {
@@ -3106,7 +3105,7 @@ VisWinRendering::SetAnariLibraryName(const std::string name)
     {
         m_anariLibraryName = name;
         vtkAnariRendererNode::SetLibraryName(name.c_str(), canvas);
-        std::cout << "Library Name: " << name.c_str() << std::endl;
+        m_anariPassValid = false;
     }
 }
 
@@ -3131,7 +3130,7 @@ VisWinRendering::SetAnariLibrarySubtype(const std::string subtype)
     {
         m_anariLibrarySubtype = subtype;
         vtkAnariRendererNode::SetDeviceSubtype(subtype.c_str(), canvas);
-        std::cout << "Library subtype: " << subtype.c_str() << std::endl;
+        m_anariPassValid = false;
     }
 }
 
@@ -3157,5 +3156,44 @@ VisWinRendering::SetAnariRendererSubtype(const std::string subtype)
         m_anariRendererSubtype = subtype;
         vtkAnariRendererNode::SetRendererSubtype(subtype.c_str(), canvas);
     }
+}
+
+// ****************************************************************************
+// Method: VisWinRendering::CreateAnariPass
+//
+// Purpose: 
+//   Sets the ANARI renderer subtype name
+//
+// Arguments:
+//   subtype : The ANARI renderer subtype name
+//
+// Programmer: Kevin Griffin
+// Creation:
+//   
+// ****************************************************************************
+
+vtkAnariPass *
+VisWinRendering::CreateAnariPass()
+{
+    vtkAnariPass *anariPass = vtkAnariPass::New();
+
+    vtkViewNodeFactory *factory = anariPass->GetViewNodeFactory();
+    // factory->RegisterOverride("vtkDataSetMapper", vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkVisItDataSetMapper", 
+                            vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkPointGlyphMapper",
+                            vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkMultiRepMapper",
+                            vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkMeshPlotMapper",
+                            vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkOpenGLMeshPlotMapper",
+                            vtkAnariVisItViewNodeFactory::pd_maker);
+    factory->RegisterOverride("vtkVisItCubeAxesActor",
+                            vtkAnariVisItViewNodeFactory::cube_axes_act_maker);
+    factory->RegisterOverride("vtkVisItAxisActor",
+                            vtkAnariVisItViewNodeFactory::axis_act_maker);
+
+    return anariPass;
 }
 #endif

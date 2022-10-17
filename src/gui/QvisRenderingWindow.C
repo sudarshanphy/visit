@@ -640,6 +640,10 @@ QvisRenderingWindow::CreateAdvancedPage()
                 m_anariLibrarySubtypes->addItem(*d);
             }
         }
+        else 
+        {
+            m_anariLibrarySubtypes->addItem("default");
+        }
     }
 
     connect(m_anariLibrarySubtypes, SIGNAL(currentIndexChanged(QString)),
@@ -658,7 +662,8 @@ QvisRenderingWindow::CreateAdvancedPage()
 
     if(anariLibrary != nullptr)
     {
-        const char **renderers = anariGetObjectSubtypes(anariLibrary, "default", ANARI_RENDERER);
+        auto libSubtype = m_anariLibrarySubtypes->itemText(0).toStdString();
+        const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
 
         if(renderers)
         {
@@ -666,6 +671,10 @@ QvisRenderingWindow::CreateAdvancedPage()
             {
                 m_anariRendererSubtypes->addItem(*d);
             }
+        }
+        else
+        {
+            m_anariRendererSubtypes->addItem("default");
         }
 
         anariUnloadLibrary(anariLibrary);
@@ -2688,7 +2697,38 @@ QvisRenderingWindow::anariAOChanged(int val)
 void 
 QvisRenderingWindow::anariLibrarySubtypeChanged(QString subtype)
 {
-    renderAtts->SetAnariLibrarySubtype(subtype.toStdString());
+    auto libSubtype = subtype.toStdString();
+
+#ifdef VISIT_ANARI   
+    auto libName = m_anariLibraryNames->itemText(0).toStdString();
+    auto anariLibrary = anari::loadLibrary(libName.c_str());
+
+    // Update renderers
+    m_anariRendererSubtypes->blockSignals(true);
+    m_anariRendererSubtypes->clear();
+    const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
+
+    if(renderers)
+    {
+        for(const char **d = renderers; *d != NULL; d++)
+        {
+            m_anariRendererSubtypes->addItem(*d);
+        }
+    }
+    else
+    {
+        m_anariRendererSubtypes->addItem("default");
+    }
+
+    auto rendererSubtype = m_anariRendererSubtypes->itemText(0).toStdString();
+    renderAtts->SetAnariRendererSubtype(rendererSubtype);
+
+    m_anariRendererSubtypes->blockSignals(false);
+
+    anariUnloadLibrary(anariLibrary);
+#endif
+
+    renderAtts->SetAnariLibrarySubtype(libSubtype);
     SetUpdate(false);
     Apply();
 }
@@ -2736,10 +2776,10 @@ QvisRenderingWindow::anariRendererSubtypeChanged(QString subtype)
 void 
 QvisRenderingWindow::anariLibraryChanged(QString name)
 {
-    std::string libName = name.toStdString();
+    auto libName = name.toStdString();
 
 #ifdef VISIT_ANARI   
-    anari::Library anariLibrary = anari::loadLibrary(libName.c_str());
+    auto anariLibrary = anari::loadLibrary(libName.c_str());
 
     // Update back-end subtypes
     m_anariLibrarySubtypes->blockSignals(true);
@@ -2752,16 +2792,21 @@ QvisRenderingWindow::anariLibraryChanged(QString name)
         {
             m_anariLibrarySubtypes->addItem(*d);
         }
-
-        auto libSubtype = m_anariLibrarySubtypes->itemText(0).toStdString();
-        renderAtts->SetAnariLibrarySubtype(libSubtype);
     }
+    else
+    {
+        m_anariLibrarySubtypes->addItem("default");
+    }
+
+    auto libSubtype = m_anariLibrarySubtypes->itemText(0).toStdString();
+    renderAtts->SetAnariLibrarySubtype(libSubtype);
+
     m_anariLibrarySubtypes->blockSignals(false);
 
     // Update renderers
     m_anariRendererSubtypes->blockSignals(true);
     m_anariRendererSubtypes->clear();
-    const char **renderers = anariGetObjectSubtypes(anariLibrary, "default", ANARI_RENDERER);
+    const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
 
     if(renderers)
     {
@@ -2769,10 +2814,15 @@ QvisRenderingWindow::anariLibraryChanged(QString name)
         {
             m_anariRendererSubtypes->addItem(*d);
         }
-
-        auto rendererSubtype = m_anariRendererSubtypes->itemText(0).toStdString();
-        renderAtts->SetAnariRendererSubtype(rendererSubtype);
     }
+    else
+    {
+        m_anariRendererSubtypes->addItem("default");
+    }
+
+    auto rendererSubtype = m_anariRendererSubtypes->itemText(0).toStdString();
+    renderAtts->SetAnariRendererSubtype(rendererSubtype);
+
     m_anariRendererSubtypes->blockSignals(false);
 
     anariUnloadLibrary(anariLibrary);
