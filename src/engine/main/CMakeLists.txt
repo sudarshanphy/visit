@@ -118,7 +118,7 @@ ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
 ${VTK_INCLUDE_DIRS}
 )
 
-if(HAVE_OSMESA OR HAVE_EGL)
+if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
   include_directories(${VISIT_SOURCE_DIR}/visit_vtk/offscreen)
 endif()
 
@@ -159,7 +159,7 @@ if(CONDUIT_FOUND AND MFEM_FOUND)
 endif()
 
 
-if(HAVE_OSMESA OR HAVE_EGL)
+if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
     target_link_libraries(engine_ser visit_vtk_offscreen)
 endif()
 
@@ -266,7 +266,7 @@ if(VISIT_PARALLEL)
             )
     endif()
 
-    if(HAVE_OSMESA OR HAVE_EGL)
+    if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
         target_link_libraries(engine_par visit_vtk_offscreen)
     endif()
 

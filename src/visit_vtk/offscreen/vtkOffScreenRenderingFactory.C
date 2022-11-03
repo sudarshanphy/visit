@@ -4,12 +4,11 @@
 
 #include "vtkOffScreenRenderingFactory.h"
 #include <visit-config.h>
+#if LIB_VERSION_LE(VTK, 8,1,0)
 #if defined(HAVE_OSMESA)
   #include <vtkOSOpenGLRenderWindow.h>
   VTK_CREATE_CREATE_FUNCTION(vtkOSOpenGLRenderWindow);
-#elif defined(HAVE_EGL)
-  #include <vtkEGLRenderWindow.h>
-  VTK_CREATE_CREATE_FUNCTION(vtkEGLRenderWindow);
+#endif
 #endif
 
 
@@ -42,18 +41,14 @@ vtkOffScreenRenderingFactory::vtkOffScreenRenderingFactory()
     // OSMesa or EGL.
     //
 
+#if LIB_VERSION_LE(VTK,8,1,0)
 #if defined(HAVE_OSMESA)
     this->RegisterOverride("vtkXOpenGLRenderWindow",
                            "vtkOSOpenGLRenderWindow",
                            "Render Window Hijack Overrride",
                            1,
                            vtkObjectFactoryCreatevtkOSOpenGLRenderWindow);
-#elif defined(HAVE_EGL)
-    this->RegisterOverride("vtkXOpenGLRenderWindow",
-                           "vtkEGLRenderWindow",
-                           "Render Window Hijack Overrride",
-                           1,
-                           vtkObjectFactoryCreatevtkEGLRenderWindow);
+#endif
 #endif
 }
 
@@ -71,8 +66,9 @@ vtkOffScreenRenderingFactory::vtkOffScreenRenderingFactory()
 void
 vtkOffScreenRenderingFactory::ForceOffScreen()
 {
-#if defined(HAVE_OSMESA) || defined(HAVE_EGL)
+#if defined(HAVE_OSMESA) 
     vtkOffScreenRenderingFactory *os_factory = vtkOffScreenRenderingFactory::New();
+    cerr << "  VTK SourceVersion: " << os_factory->GetVTKSourceVersion() << endl;
     vtkObjectFactory::RegisterFactory(os_factory);
     os_factory->Delete();
 #endif

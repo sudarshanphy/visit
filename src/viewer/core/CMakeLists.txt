@@ -137,7 +137,7 @@ avtwriter_ser
 ${CMAKE_THREAD_LIBS}
 )
 
-if(HAVE_OSMESA OR HAVE_EGL)
+if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
     target_link_libraries(viewercore_ser visit_vtk_offscreen)
 endif()
 
@@ -162,7 +162,7 @@ if(VISIT_PARALLEL)
     ${CMAKE_THREAD_LIBS}
     )
 
-    if(HAVE_OSMESA OR HAVE_EGL)
+    if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
         target_link_libraries(viewercore_par visit_vtk_offscreen)
     endif()
 

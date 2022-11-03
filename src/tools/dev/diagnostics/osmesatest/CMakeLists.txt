@@ -47,14 +47,20 @@ ADD_EXECUTABLE(osmesatest_ser osmesatest.cpp)
 TARGET_LINK_LIBRARIES(osmesatest_ser ${VISIT_EXE_LINKER_FLAGS} ${OSMESA_LIBRARIES} ${LIBDL} ${PTHREAD})
 
 ADD_EXECUTABLE(osmesavtktest_ser osmesavtktest.cpp)
-TARGET_LINK_LIBRARIES(osmesavtktest_ser ${VISIT_EXE_LINKER_FLAGS} visit_vtk_offscreen visitcommon ${REQUIRED_VTK_LIBS} ${LIBDL} ${PTHREAD})
+TARGET_LINK_LIBRARIES(osmesavtktest_ser ${VISIT_EXE_LINKER_FLAGS} visitcommon ${REQUIRED_VTK_LIBS} ${LIBDL} ${PTHREAD})
+if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
+    target_link_libraries(osmesavtktest_ser visit_vtk_offscreen)
+endif()
 
 IF(VISIT_PARALLEL)
     ADD_PARALLEL_EXECUTABLE(osmesatest_par osmesatest.cpp)
     PARALLEL_EXECUTABLE_LINK_LIBRARIES(osmesatest_par ${OSMESA_LIBRARIES} ${LIBDL} ${PTHREAD})
 
     ADD_PARALLEL_EXECUTABLE(osmesavtktest_par osmesavtktest.cpp)
-    PARALLEL_EXECUTABLE_LINK_LIBRARIES(osmesavtktest_par visit_vtk_offscreen visitcommon ${REQUIRED_VTK_LIBS} ${LIBDL} ${PTHREAD})
+    PARALLEL_EXECUTABLE_LINK_LIBRARIES(osmesavtktest_par visitcommon ${REQUIRED_VTK_LIBS} ${LIBDL} ${PTHREAD})
+    if(HAVE_OSMESA AND VTK_VERSION VERSION_EQUAL "8.1.0")
+        target_link_libraries(osmesavtktest_ser visit_vtk_offscreen)
+    endif()
 
     SET(TARGETS ${TARGETS} osmesatest_par osmesavtktest_par)
 ENDIF(VISIT_PARALLEL)

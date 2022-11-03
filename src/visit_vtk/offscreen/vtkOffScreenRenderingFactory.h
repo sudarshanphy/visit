@@ -16,7 +16,7 @@ public:
   vtkOffScreenRenderingFactory();
   static void ForceOffScreen();
   static vtkOffScreenRenderingFactory* New() { return new vtkOffScreenRenderingFactory;}
-  virtual const char* GetVTKSourceVersion() { return VTK_SOURCE_VERSION; }
+  virtual const char* GetVTKSourceVersion() { return GetVTKVersion(); }
   const char* GetDescription() { return "vtkOffScreenRenderingFactory"; }
 };
 

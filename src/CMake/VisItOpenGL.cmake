@@ -2,18 +2,6 @@
 # Project developers.  See the top-level LICENSE file for dates and other
 # details.  No copyright assignment is required to contribute to VisIt.
 
-if(VISIT_MESAGL_DIR)
-    # MesaGL, GLU, LLVM libs
-    include(${VISIT_SOURCE_DIR}/CMake/FindMesaGL.cmake)
-    # OSMesa, LLVM libs
-    set(VISIT_OSMESA_DIR ${VISIT_MESAGL_DIR})
-    include(${VISIT_SOURCE_DIR}/CMake/FindOSMesa.cmake)
-    unset(VISIT_OSMESA_DIR)
-elseif(VISIT_OSMESA_DIR)
-    # OSMesa, LLVM libs
-    include(${VISIT_SOURCE_DIR}/CMake/FindOSMesa.cmake)
-endif()
-
 if(WIN32 AND VISIT_MESA_REPLACE_OPENGL)
     # Standard find of system GL, still needed in this instance.
     include(${CMAKE_ROOT}/Modules/FindOpenGL.cmake)
@@ -21,48 +9,56 @@ if(WIN32 AND VISIT_MESA_REPLACE_OPENGL)
     return()
 endif()
 
+if(VISIT_MESAGL_DIR)
+    # MesaGL, GLU, LLVM libs
+    include(${VISIT_SOURCE_DIR}/CMake/FindMesaGL.cmake)
+    # OSMesa, LLVM libs
+    #set(VISIT_OSMESA_DIR ${VISIT_MESAGL_DIR})
+    #include(${VISIT_SOURCE_DIR}/CMake/FindOSMesa.cmake)
+    #unset(VISIT_OSMESA_DIR)
+elseif(VISIT_OSMESA_DIR)
+    # OSMesa, LLVM libs
+    include(${VISIT_SOURCE_DIR}/CMake/FindOSMesa.cmake)
 
-if(NOT VISIT_MESAGL_DIR)
-    if(VISIT_OPENGL_DIR)
-        # not sure if this section is still needed ????
-        set(OPENGL_FOUND ON)
-        set(OPENGL_GLU_FOUND ON)
-        set(OPENGL_INCLUDE_DIR ${VISIT_OPENGL_DIR}/include)
+elseif(VISIT_OPENGL_DIR)
+    # not sure if this section is still needed ????
+    set(OPENGL_FOUND ON)
+    set(OPENGL_GLU_FOUND ON)
+    set(OPENGL_INCLUDE_DIR ${VISIT_OPENGL_DIR}/include)
 
-        if(VISIT_OPENGL_LIBRARY)
-            set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_LIBRARY})
-        else()
-            # Hack for BG/Q.
-            if(BLUEGENEQ)
-                set(LIBGL OSMesa)
-            else()
-                set(LIBGL GL)
-            endif()
-            IF(VISIT_STATIC)
-                set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_DIR}/lib/lib${LIBGL}.a)
-            else()
-                set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_DIR}/lib/lib${LIBGL}.so)
-            endif()
-        endif()
-
-        if(VISIT_GLU_LIBRARY)
-            set(OPENGL_glu_LIBRARY ${VISIT_GLU_LIBRARY})
-        else()
-            if(VISIT_STATIC)
-                set(OPENGL_glu_LIBRARY ${VISIT_OPENGL_DIR}/lib/libGLU.a)
-            else()
-                set(OPENGL_glu_LIBRARY ${VISIT_OPENGL_DIR}/lib/libGLU.so)
-            endif()
-        endif()
-
-        set(OPENGL_LIBRARIES ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
-        message(STATUS "Found OpenGL ${OPENGL_gl_LIBRARY}")
-        message(STATUS "Found GLU ${OPENGL_glu_LIBRARY}")
+    if(VISIT_OPENGL_LIBRARY)
+        set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_LIBRARY})
     else()
-        # Standard find of system GL
-        message(STATUS "Using CMake's OpenGL locator!")
-        include(${CMAKE_ROOT}/Modules/FindOpenGL.cmake)
+        # Hack for BG/Q.
+        if(BLUEGENEQ)
+            set(LIBGL OSMesa)
+        else()
+            set(LIBGL GL)
+        endif()
+        IF(VISIT_STATIC)
+            set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_DIR}/lib/lib${LIBGL}.a)
+        else()
+            set(OPENGL_gl_LIBRARY ${VISIT_OPENGL_DIR}/lib/lib${LIBGL}.so)
+        endif()
     endif()
+
+    if(VISIT_GLU_LIBRARY)
+        set(OPENGL_glu_LIBRARY ${VISIT_GLU_LIBRARY})
+    else()
+        if(VISIT_STATIC)
+            set(OPENGL_glu_LIBRARY ${VISIT_OPENGL_DIR}/lib/libGLU.a)
+        else()
+            set(OPENGL_glu_LIBRARY ${VISIT_OPENGL_DIR}/lib/libGLU.so)
+        endif()
+    endif()
+
+    set(OPENGL_LIBRARIES ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+    message(STATUS "Found OpenGL ${OPENGL_gl_LIBRARY}")
+    message(STATUS "Found GLU ${OPENGL_glu_LIBRARY}")
+else()
+    # Standard find of system GL
+    message(STATUS "Using CMake's OpenGL locator!")
+    include(${CMAKE_ROOT}/Modules/FindOpenGL.cmake)
 endif()
 
 
