@@ -202,6 +202,11 @@ WidgetDataNode.C
 mini3D.C
 )
 
+if(VISIT_ANARI)
+    list(APPEND GUILIB_SOURCES
+            anari/AnariRenderingWidget.C)
+endif(VISIT_ANARI)
+
 # The subset of the sources that have Q_OBJECT in their header.
 SET(GUILIB_MOC_SOURCES
 QvisAbstractOpacityBar.h
@@ -340,6 +345,11 @@ QvisViewportWidget.h
 QvisXRayImageQueryWidget.h
 )
 
+if(VISIT_ANARI)
+    list(APPEND GUILIB_MOC_SOURCES
+            anari/AnariRenderingWidget.h)
+endif(VISIT_ANARI)
+
 QT_WRAP_CPP(gui GUILIB_SOURCES ${GUILIB_MOC_SOURCES})
 
 IF (NOT WIN32)
@@ -349,6 +359,7 @@ ENDIF (NOT WIN32)
 
 INCLUDE_DIRECTORIES(
 ${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/anari
 ${VISIT_COMMON_INCLUDES}
 ${VISIT_SOURCE_DIR}/avt/DBAtts/MetaData
 ${VISIT_SOURCE_DIR}/avt/DBAtts/SIL

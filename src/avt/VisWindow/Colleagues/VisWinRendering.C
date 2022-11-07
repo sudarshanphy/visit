@@ -3162,10 +3162,10 @@ VisWinRendering::SetAnariRendererSubtype(const std::string subtype)
 // Method: VisWinRendering::CreateAnariPass
 //
 // Purpose: 
-//   Sets the ANARI renderer subtype name
-//
-// Arguments:
-//   subtype : The ANARI renderer subtype name
+//   Creates the ANARI rendering pass that can be put into a vtkRenderWindow 
+//   which makes it use the back-end loaded with ANARI instead of OpenGL to 
+//   render. Adding or removing the pass will swap back and forth between the 
+//   two.
 //
 // Programmer: Kevin Griffin
 // Creation:

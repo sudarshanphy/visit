@@ -3,6 +3,7 @@
 // details.  No copyright assignment is required to contribute to VisIt.
 
 #include <QvisRenderingWindow.h>
+
 #include <float.h>
 #include <limits.h>
 
@@ -26,7 +27,7 @@
 #include <QvisOpacitySlider.h>
 
 #ifdef VISIT_ANARI
-    #include <anari/anari_cpp.hpp>
+    #include <AnariRenderingWidget.h>
 #endif
 
 #include <DebugStream.h>
@@ -574,156 +575,11 @@ QvisRenderingWindow::CreateAdvancedPage()
     advLayout->addWidget(separator, row, 0, 2, 4); // row, col, rowspan, colspan
     row += 2;
 
-    // ANARI Group
-    m_anariRenderingGroup = new QGroupBox(tr("ANARI Rendering"), advancedOptions);
-    m_anariRenderingGroup->setCheckable(true);
-    m_anariRenderingGroup->setChecked(false);
-    connect(m_anariRenderingGroup, SIGNAL(toggled(bool)),
-            this, SLOT(anariRenderingToggled(bool)));
-    advLayout->addWidget(m_anariRenderingGroup, row, 0, 5, 4);
-    row += 5;
+    m_anariRenderingWidget = new AnariRenderingWidget(this, renderAtts, advancedOptions);
+    int anariRowCount = m_anariRenderingWidget->GetRowCount();
+    advLayout->addWidget(m_anariRenderingWidget, row, 0, anariRowCount, 4);
 
-    // ANARI Group Layout
-    QGridLayout *anariRenderingGroupLayout = new QGridLayout(m_anariRenderingGroup);
-    anariRenderingGroupLayout->setMargin(5);
-    anariRenderingGroupLayout->setSpacing(5);
-
-    int anariRow = 0;
-
-    // Back-end and subtype
-    m_anariLibraryLabel = new QLabel(tr("Back-end")); 
-    m_anariLibraryLabel->setToolTip(tr("ANARI back-end device"));
-    anariRenderingGroupLayout->addWidget(m_anariLibraryLabel, anariRow, 0, 1, 1);
-
-    m_anariLibraryNames = new QComboBox();
-    m_anariLibraryNames->setInsertPolicy(QComboBox::InsertPolicy::InsertAlphabetically);
-    #ifdef HAVE_ANARI_EXAMPLE
-    m_anariLibraryNames->addItem("example");
-    #endif
-    #ifdef HAVE_ANARI_VISRTX
-    m_anariLibraryNames->addItem("visrtx");
-    #endif
-    #ifdef HAVE_ANARI_USD
-    m_anariLibraryNames->addItem("usd");
-    #endif
-    connect(m_anariLibraryNames, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(anariLibraryChanged(QString)));
-
-    anariRenderingGroupLayout->addWidget(m_anariLibraryNames, anariRow, 1, 1, 1);
-
-    anari::Library anariLibrary = nullptr;
-
-    if(m_anariLibraryNames->count() > 0)
-    {
-        auto libName = m_anariLibraryNames->itemText(0).toStdString();
-        anariLibrary = anariLoadLibrary(libName.c_str());
-
-        renderAtts->SetAnariLibrary(libName);
-    }
-
-    // Back-end subtype
-    QLabel *subTypeLabel = new QLabel(tr("Back-end subtype"));  
-    subTypeLabel->setToolTip(tr("Device back-end subtype"));
-    anariRenderingGroupLayout->addWidget(subTypeLabel, anariRow, 2, 1, 1);
-
-    m_anariLibrarySubtypes = new QComboBox();    
-    m_anariLibrarySubtypes->setInsertPolicy(QComboBox::InsertPolicy::InsertAlphabetically);
-
-    if(anariLibrary != nullptr)
-    {
-        const char **devices = anariGetDeviceSubtypes(anariLibrary);
-        
-        if(devices)
-        {
-            for(const char **d = devices; *d != NULL; d++)
-            {
-                m_anariLibrarySubtypes->addItem(*d);
-            }
-        }
-        else 
-        {
-            m_anariLibrarySubtypes->addItem("default");
-        }
-    }
-
-    connect(m_anariLibrarySubtypes, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(anariLibrarySubtypeChanged(QString)));
-    anariRenderingGroupLayout->addWidget(m_anariLibrarySubtypes, anariRow, 3, 1, 1);
-
-    anariRow++;
-
-    // Renderer
-    auto rendererLabel = new QLabel(tr("Renderer"));
-    rendererLabel->setToolTip(tr("Renderer subtype"));
-    anariRenderingGroupLayout->addWidget(rendererLabel, anariRow, 0, 1, 1);
-
-    m_anariRendererSubtypes = new QComboBox();    
-    m_anariRendererSubtypes->setInsertPolicy(QComboBox::InsertPolicy::InsertAlphabetically);
-
-    if(anariLibrary != nullptr)
-    {
-        auto libSubtype = m_anariLibrarySubtypes->itemText(0).toStdString();
-        const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
-
-        if(renderers)
-        {
-            for(const char **d = renderers; *d != NULL; d++)
-            {
-                m_anariRendererSubtypes->addItem(*d);
-            }
-        }
-        else
-        {
-            m_anariRendererSubtypes->addItem("default");
-        }
-
-        anariUnloadLibrary(anariLibrary);
-    }
-
-    connect(m_anariRendererSubtypes, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(anariRendererSubtypeChanged(QString)));
-    anariRenderingGroupLayout->addWidget(m_anariRendererSubtypes, anariRow, 1, 1, 1);
-
-    anariRow++;
-
-    // Samples Per Pixel
-    m_anariSPPLabel = new QLabel("SPP");
-    m_anariSPPLabel->setToolTip(tr("Samples Per Pixel"));
-    anariRenderingGroupLayout->addWidget(m_anariSPPLabel, anariRow, 0, 1, 1);
-
-    m_anariSPP = new QSpinBox();
-    m_anariSPP->setMinimum(1);
-    connect(m_anariSPP, SIGNAL(valueChanged(int)),
-            this, SLOT(anariSPPChanged(int)));
-    anariRenderingGroupLayout->addWidget(m_anariSPP, anariRow, 1, 1, 1);
-
-    // Ambient Occulsion
-    m_anariAOLabel = new QLabel(tr("AO Samples"));
-    m_anariAOLabel->setToolTip(tr("Ambient Occlusion Samples"));
-    anariRenderingGroupLayout->addWidget(m_anariAOLabel, anariRow, 2, 1, 1);
-    m_anariAO = new QSpinBox();
-    m_anariAO->setMinimum(0);
-    connect(m_anariAO, SIGNAL(valueChanged(int)),
-            this, SLOT(anariAOChanged(int)));
-    anariRenderingGroupLayout->addWidget(m_anariAO, anariRow, 3, 1, 1);    
-
-    anariRow++;
-
-    // Denoiser
-    m_anariDenoiserToggle = new QCheckBox(tr("Denoiser"));
-    m_anariDenoiserToggle->setChecked(renderAtts->GetUseAnariDenoiser());
-    m_anariDenoiserToggle->setToolTip(tr("Enable the OptiX denoiser"));
-    connect(m_anariDenoiserToggle, SIGNAL(toggled(bool)),
-            this, SLOT(anariDenoiserToggled(bool)));
-    anariRenderingGroupLayout->addWidget(m_anariDenoiserToggle, anariRow, 0, 1, 2);
-    
-    anariRow++;
-
-    // Library Details
-    m_anariLibraryDetails = new QPushButton(tr("View Capabilities"));
-    anariRenderingGroupLayout->addWidget(m_anariLibraryDetails, anariRow, 2, 1, 2);
-
-    m_anariRenderingGroup->setLayout(anariRenderingGroupLayout);    
+    row += anariRowCount;
 #endif 
 
 #ifdef VISIT_OSPRAY
@@ -1076,74 +932,27 @@ QvisRenderingWindow::UpdateOptions(bool doAll)
             break;
 #endif
 #ifdef VISIT_ANARI
-        case RenderingAttributes::ID_anariRendering:
-            m_anariRenderingGroup->setChecked(renderAtts->GetAnariRendering());   
+        case RenderingAttributes::ID_anariRendering:  
+            m_anariRenderingWidget->SetChecked(renderAtts->GetAnariRendering());
             break;    
         case RenderingAttributes::ID_anariSPP:
-            m_anariSPP->blockSignals(true);
-            m_anariSPP->setValue(renderAtts->GetAnariSPP());
-            m_anariSPP->blockSignals(false);
+            m_anariRenderingWidget->UpdateSamplesPerPixel(renderAtts->GetAnariSPP());
             break;
         case RenderingAttributes::ID_anariAO:
-            m_anariAO->blockSignals(true);
-            m_anariAO->setValue(renderAtts->GetAnariAO());
-            m_anariAO->blockSignals(false);
+            m_anariRenderingWidget->UpdateAOSamples(renderAtts->GetAnariAO());
             break;
         case RenderingAttributes::ID_useAnariDenoiser:
-            m_anariDenoiserToggle->blockSignals(true);
-            m_anariDenoiserToggle->setChecked(renderAtts->GetUseAnariDenoiser());
-            m_anariDenoiserToggle->blockSignals(false);
-        case RenderingAttributes::ID_anariLibrary:   
-        {   
-            m_anariLibraryNames->blockSignals(true);
-            QString textItem = QString::fromStdString(renderAtts->GetAnariLibrary());
-            int index = m_anariLibraryNames->findText(textItem);
-
-            if(index == -1)
-            {                
-                m_anariLibraryNames->addItem(textItem);
-            }  
-            else 
-            {
-                m_anariLibraryNames->setCurrentIndex(index);
-            }
-            m_anariLibraryNames->blockSignals(false);   
-        }      
-        break;
+            m_anariRenderingWidget->UpdateDenoiserSelection(renderAtts->GetUseAnariDenoiser());
+            break;
+        case RenderingAttributes::ID_anariLibrary:
+            m_anariRenderingWidget->UpdateLibraryNames(renderAtts->GetAnariLibrary());
+            break;
         case RenderingAttributes::ID_anariLibrarySubtype:
-        {
-            m_anariLibrarySubtypes->blockSignals(true);
-            QString textItem = QString::fromStdString(renderAtts->GetAnariLibrarySubtype());
-            int index = m_anariLibrarySubtypes->findText(textItem);
-
-            if(index == -1)
-            {
-                m_anariLibrarySubtypes->addItem(textItem);                
-            }
-            else
-            {
-                m_anariLibrarySubtypes->setCurrentIndex(index);
-            }
-            m_anariLibrarySubtypes->blockSignals(false);
-        }
-        break;
+            m_anariRenderingWidget->UpdateLibrarySubtypes(renderAtts->GetAnariLibrarySubtype());
+            break;
         case RenderingAttributes::ID_anariRendererSubtype:
-        {
-            m_anariRendererSubtypes->blockSignals(true);
-            QString textItem = QString::fromStdString(renderAtts->GetAnariRendererSubtype());
-            int index = m_anariRendererSubtypes->findText(textItem);
-            
-            if(index == -1)
-            {
-                m_anariRendererSubtypes->addItem(textItem);
-            }
-            else 
-            {
-                m_anariRendererSubtypes->setCurrentIndex(index);
-            }
-            m_anariRendererSubtypes->blockSignals(false);
-        }
-        break;
+            m_anariRenderingWidget->UpdateRendererSubtypes(renderAtts->GetAnariRendererSubtype());
+            break;
 #endif
         case RenderingAttributes::ID_scalableActivationMode:
             { // new scope
@@ -1267,7 +1076,6 @@ QvisRenderingWindow::UpdateOptions(bool doAll)
 
     UpdateWindowSensitivity();
 }
-
 
 // ****************************************************************************
 //  Method:  QvisRenderingWindow::UpdateWindowSensitivity
@@ -2578,257 +2386,6 @@ void
 QvisRenderingWindow::osprayShadowsToggled(bool val)
 {
     renderAtts->SetOsprayShadows(val);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariRenderingToggled
-//
-// Purpose: 
-//      Triggered when ANARI rendering is toggled.
-//
-// Arguments:
-//      val when true use ANARI for rendering
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void
-QvisRenderingWindow::anariRenderingToggled(bool val)
-{
-    renderAtts->SetAnariRendering(val);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariDenoiserToggled
-//
-// Purpose: 
-//      Triggered when ANARI denoiser is toggled.
-//
-// Arguments:
-//      val when true use the OptiX denoiser when rendering
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void
-QvisRenderingWindow::anariDenoiserToggled(bool val)
-{
-    renderAtts->SetUseAnariDenoiser(val);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariSPPChanged
-//
-// Purpose: 
-//      Triggered when ANARI samples per pixel has changed.
-//
-// Arguments:
-//      val     new samples per pixel value
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void 
-QvisRenderingWindow::anariSPPChanged(int val)
-{
-    renderAtts->SetAnariSPP(val);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariAOChanged
-//
-// Purpose: 
-//      Triggered when ANARI ambient occlusion samples has changed.
-//
-// Arguments:
-//      val     new ANARI ambient occlucsion sample count
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void 
-QvisRenderingWindow::anariAOChanged(int val)
-{
-    renderAtts->SetAnariAO(val);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariLibrarySubtypeChanged
-//
-// Purpose: 
-//      Triggered when ANARI Library subtype has changed.
-//
-// Arguments:
-//      subtype the new library subtype
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void 
-QvisRenderingWindow::anariLibrarySubtypeChanged(QString subtype)
-{
-    auto libSubtype = subtype.toStdString();
-
-#ifdef VISIT_ANARI   
-    auto libName = m_anariLibraryNames->itemText(0).toStdString();
-    auto anariLibrary = anari::loadLibrary(libName.c_str());
-
-    // Update renderers
-    m_anariRendererSubtypes->blockSignals(true);
-    m_anariRendererSubtypes->clear();
-    const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
-
-    if(renderers)
-    {
-        for(const char **d = renderers; *d != NULL; d++)
-        {
-            m_anariRendererSubtypes->addItem(*d);
-        }
-    }
-    else
-    {
-        m_anariRendererSubtypes->addItem("default");
-    }
-
-    auto rendererSubtype = m_anariRendererSubtypes->itemText(0).toStdString();
-    renderAtts->SetAnariRendererSubtype(rendererSubtype);
-
-    m_anariRendererSubtypes->blockSignals(false);
-
-    anariUnloadLibrary(anariLibrary);
-#endif
-
-    renderAtts->SetAnariLibrarySubtype(libSubtype);
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariRendererSubtypeChanged
-//
-// Purpose: 
-//      Triggered when ANARI renderer subtype has changed.
-//
-// Arguments:
-//      subtype the new renderer subtype
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void 
-QvisRenderingWindow::anariRendererSubtypeChanged(QString subtype)
-{
-    renderAtts->SetAnariRendererSubtype(subtype.toStdString());
-    SetUpdate(false);
-    Apply();
-}
-
-// ****************************************************************************
-// Method: QvisRenderingWindow::anariLibraryChanged
-//
-// Purpose: 
-//      Triggered when ANARI Back-end rendering library has changed.
-//
-// Argument:
-//      name    ANARI back-end library name
-//
-// Programmer:  Kevin Griffin
-// Creation:    Fri Mar 11 12:27:45 PDT 2022
-//
-// Modifications:
-//   
-// ****************************************************************************
-
-void 
-QvisRenderingWindow::anariLibraryChanged(QString name)
-{
-    auto libName = name.toStdString();
-
-#ifdef VISIT_ANARI   
-    auto anariLibrary = anari::loadLibrary(libName.c_str());
-
-    // Update back-end subtypes
-    m_anariLibrarySubtypes->blockSignals(true);
-    m_anariLibrarySubtypes->clear();
-    const char **devices = anariGetDeviceSubtypes(anariLibrary);
-
-    if(devices)
-    {
-        for(const char **d = devices; *d != NULL; d++)
-        {
-            m_anariLibrarySubtypes->addItem(*d);
-        }
-    }
-    else
-    {
-        m_anariLibrarySubtypes->addItem("default");
-    }
-
-    auto libSubtype = m_anariLibrarySubtypes->itemText(0).toStdString();
-    renderAtts->SetAnariLibrarySubtype(libSubtype);
-
-    m_anariLibrarySubtypes->blockSignals(false);
-
-    // Update renderers
-    m_anariRendererSubtypes->blockSignals(true);
-    m_anariRendererSubtypes->clear();
-    const char **renderers = anariGetObjectSubtypes(anariLibrary, libSubtype.c_str(), ANARI_RENDERER);
-
-    if(renderers)
-    {
-        for(const char **d = renderers; *d != NULL; d++)
-        {
-            m_anariRendererSubtypes->addItem(*d);
-        }
-    }
-    else
-    {
-        m_anariRendererSubtypes->addItem("default");
-    }
-
-    auto rendererSubtype = m_anariRendererSubtypes->itemText(0).toStdString();
-    renderAtts->SetAnariRendererSubtype(rendererSubtype);
-
-    m_anariRendererSubtypes->blockSignals(false);
-
-    anariUnloadLibrary(anariLibrary);
-#endif
-
-    renderAtts->SetAnariLibrary(libName);    
     SetUpdate(false);
     Apply();
 }

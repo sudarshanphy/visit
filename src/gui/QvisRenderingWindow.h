@@ -22,6 +22,7 @@ class QLineEdit;
 class QGroupBox;
 class QComboBox;
 class QPushButton;
+class AnariRenderingWidget;
 
 // ****************************************************************************
 // Class: QvisRenderingWindow
@@ -112,6 +113,10 @@ public:
 
     void ConnectRenderingAttributes(RenderingAttributes *);
     void ConnectWindowInformation(WindowInformation *);
+
+#ifdef VISIT_ANARI
+    void ApplyAnariChanges(const bool val) { SetUpdate(val); Apply(); }
+#endif
 protected slots:
     virtual void apply();
 protected:
@@ -156,13 +161,6 @@ private slots:
     void ospraySPPChanged(int);
     void osprayAOChanged(int);
     void osprayShadowsToggled(bool);
-    void anariRenderingToggled(bool);
-    void anariSPPChanged(int);
-    void anariAOChanged(int);
-    void anariLibraryChanged(QString);
-    void anariLibrarySubtypeChanged(QString);
-    void anariRendererSubtypeChanged(QString);
-    void anariDenoiserToggled(bool);
 
 private:
     QWidget *CreateBasicPage();
@@ -238,18 +236,9 @@ private:
     QLabel            *osprayAOLabel;
     QSpinBox          *osprayAO;
     QCheckBox         *osprayShadowsToggle;
+
 #ifdef VISIT_ANARI
-    QGroupBox         *m_anariRenderingGroup;
-    QLabel            *m_anariSPPLabel;
-    QSpinBox          *m_anariSPP;
-    QLabel            *m_anariAOLabel;
-    QSpinBox          *m_anariAO;
-    QLabel            *m_anariLibraryLabel;
-    QComboBox         *m_anariLibraryNames;
-    QPushButton       *m_anariLibraryDetails;
-    QComboBox         *m_anariLibrarySubtypes;
-    QComboBox         *m_anariRendererSubtypes;
-    QCheckBox         *m_anariDenoiserToggle;
+    AnariRenderingWidget    *m_anariRenderingWidget;
 #endif
 
     // Labels to display renderer information.
