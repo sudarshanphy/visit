@@ -2,9 +2,8 @@
 // Project developers.  See the top-level LICENSE file for dates and other
 // details.  No copyright assignment is required to contribute to VisIt.
 
-#include "AnariRenderingWidget.h"
-#include "QvisRenderingWindow.h"
-
+#include <AnariRenderingWidget.h>
+#include <QvisRenderingWindow.h>
 #include <RenderingAttributes.h>
 #include <DebugStream.h>
 
@@ -24,8 +23,9 @@
 #include <QDir>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QMessageBox>
 
-#include <anari/anari_cpp.hpp>
+#include <algorithm>
 
 
 // ****************************************************************************
@@ -54,7 +54,22 @@ AnariRenderingWidget::AnariRenderingWidget(QvisRenderingWindow *renderingWindow,
     QWidget(parent),
     m_renderingWindow(renderingWindow),
     m_renderingAttributes(renderingAttributes),    
-    m_backendStackedLayout(nullptr)
+    m_backendStackedLayout(nullptr),
+    m_rendererParams(),
+    m_totalRows(0),
+    m_renderingGroup(nullptr),
+    m_libraryNames(nullptr),
+    m_librarySubtypes(nullptr),
+    m_rendererSubtypes(nullptr),
+    m_samplesPerPixel(nullptr),
+    m_aoSamples(nullptr),
+    m_lightFalloff(nullptr),
+    m_ambientIntensity(nullptr),
+    m_maxDepth(nullptr),
+    m_rValue(nullptr),
+    m_debugMethod(nullptr),
+    m_denoiserToggle(nullptr),
+    m_outputDir()
 {
     // row, col, rowspan, colspan
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -69,7 +84,6 @@ AnariRenderingWidget::AnariRenderingWidget(QvisRenderingWindow *renderingWindow,
             this, &AnariRenderingWidget::renderingToggled);
     
     QVBoxLayout *renderingGroupVBoxLayout = new QVBoxLayout(m_renderingGroup);
-    m_totalRows = 0;
     int rows = m_totalRows;
 
     renderingGroupVBoxLayout->addWidget(CreateGeneralWidget(rows));
@@ -181,7 +195,7 @@ AnariRenderingWidget::CreateGeneralWidget(int &rows)
     // Initialize UI components
     if(m_libraryNames->count() > 0)
     {
-        libraryChanged(m_libraryNames->itemText(0));
+        libraryChanged(m_libraryNames->currentText());
     }
 
     return generalOptionsWidget;
@@ -218,6 +232,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     // pixelSamples (ANARI_INT32) - all
     m_samplesPerPixel = new QSpinBox();
     m_samplesPerPixel->setMinimum(1);
+    m_samplesPerPixel->setValue(m_renderingAttributes->GetAnariSPP());
+
     connect(m_samplesPerPixel, QOverload<int>::of(&QSpinBox::valueChanged), 
             this, &AnariRenderingWidget::samplesPerPixelChanged);
 
@@ -230,6 +246,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     // ambientSamples ANARI_INT32 - scivis, ao
     m_aoSamples = new QSpinBox();
     m_aoSamples->setMinimum(0);
+    m_aoSamples->setValue(m_renderingAttributes->GetAnariAO());
+
     connect(m_aoSamples, QOverload<int>::of(&QSpinBox::valueChanged), 
             this, &AnariRenderingWidget::aoSamplesChanged);
 
@@ -245,6 +263,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     QDoubleValidator *dv0 = new QDoubleValidator();
     dv0->setDecimals(4);
     m_lightFalloff->setValidator(dv0);
+    m_lightFalloff->setText(QString::number(m_renderingAttributes->GetAnariLightFalloff()));
+
     connect(m_lightFalloff, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::lightFalloffChanged);
 
@@ -258,6 +278,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     m_ambientIntensity = new QLineEdit("0.0", widget);
     QDoubleValidator *dv1 = new QDoubleValidator(0.0, 1.0, 4);
     m_ambientIntensity->setValidator(dv1);
+    m_ambientIntensity->setText(QString::number(m_renderingAttributes->GetAnariAmbientIntensity()));
+
     connect(m_ambientIntensity, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::ambientIntensityChanged);
 
@@ -270,7 +292,9 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     // Row 3
     // maxDepth ANRI_INT32 - dpt
     m_maxDepth = new QSpinBox();
-    m_maxDepth->setMinimum(1);
+    m_maxDepth->setMinimum(0);
+    m_maxDepth->setValue(m_renderingAttributes->GetAnariMaxDepth());
+
     connect(m_maxDepth, QOverload<int>::of(&QSpinBox::valueChanged), 
             this, &AnariRenderingWidget::maxDepthChanged);
 
@@ -284,6 +308,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     m_rValue = new QLineEdit("0.0", widget);
     QDoubleValidator *dv2 = new QDoubleValidator(0.0, 1.0, 4);
     m_rValue->setValidator(dv2);
+    m_rValue->setText(QString::number(m_renderingAttributes->GetAnariRValue()));
+
     connect(m_rValue, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::rValueChanged);
 
@@ -324,6 +350,7 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
             this, &AnariRenderingWidget::denoiserToggled);
     gridLayout->addWidget(m_denoiserToggle, rows++, 2, 1, 2);
 
+    UpdateUI();
     return widget;
 }
 
@@ -347,20 +374,10 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
 QWidget *
 AnariRenderingWidget::CreateUSDWidget(int &rows)
 {
-    // vtkAnariRendererNode::GetUSDOutputLocation(this->Owner->GetRenderer());
-//   const char *location = "/home/kgriffin/Desktop";  
-//   // vtkAnariRendererNode::GetUSDOutputBinary()
-//   bool outputBinary = false;   
-//   // vtkAnariRendererNode::GetUSDOutputMaterial()
-//   bool outputMaterial = true;
-//   bool outputPreviewSurface = true;
-//   bool outputMdl = true;
-//   bool outputDisplayColors = true;
-//   bool outputMdlColors = true;
-//   bool writeAtCommit = false;
-
     QWidget *widget = new QWidget(this);
-    QGridLayout *gridLayout = new QGridLayout(widget);
+    QVBoxLayout *mainLayout = new QVBoxLayout(widget);
+
+    QGridLayout *gridLayout = new QGridLayout();
     gridLayout->setSpacing(10);
     gridLayout->setMargin(10);
 
@@ -368,39 +385,259 @@ AnariRenderingWidget::CreateUSDWidget(int &rows)
 
     // row, col, rowspan, colspan
     // Output location for the USD files
-    m_outputDir = new QString(QDir::homePath());
+    m_outputDir.reset(new QString(QDir::homePath()));
 
+    // Row 1
     QLabel *locationLabel = new QLabel("Directory");
     locationLabel->setToolTip(tr("Output location for saving the USD files"));
 
-    m_dirLineEdit = new QLineEdit(*m_outputDir, widget);
-    connect(m_dirLineEdit, &QLineEdit::editingFinished, 
-            this, &AnariRenderingWidget::outputLocationChanged);    
+    m_dirLineEdit = new QLineEdit(*m_outputDir);
+    connect(m_dirLineEdit, &QLineEdit::editingFinished, this, &AnariRenderingWidget::outputLocationChanged);    
 
     QPushButton *dirSelectButton = new QPushButton("Select");
-    connect(dirSelectButton, &QPushButton::pressed,
-            this, &AnariRenderingWidget::selectButtonPressed);
+    connect(dirSelectButton, &QPushButton::pressed, this, &AnariRenderingWidget::selectButtonPressed);
 
     m_commitCheckBox = new QCheckBox(tr("commit"));
-    // m_commitCheckBox->setChecked(m_renderingAttributes->GetUseAnariDenoiser());
     m_commitCheckBox->setToolTip(tr("Write USD at ANARI commit call"));
+    m_commitCheckBox->setChecked(m_renderingAttributes->GetUsdAtCommit());
 
-    gridLayout->addWidget(locationLabel, rows, 0, 1, 1);
-    gridLayout->addWidget(m_dirLineEdit, rows, 1, 1, 2);
-    gridLayout->addWidget(dirSelectButton, rows, 3, 1, 1);
-    gridLayout->addWidget(m_commitCheckBox, rows++, 4, 1, 1);
+    connect(m_commitCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::commitToggled);
+
+    gridLayout->addWidget(locationLabel, 0, 0, 1, 1);
+    gridLayout->addWidget(m_dirLineEdit, 0, 1, 1, 2);
+    gridLayout->addWidget(dirSelectButton, 0, 3, 1, 1);
+    gridLayout->addWidget(m_commitCheckBox, 0, 4, 1, 1);
+
+    mainLayout->addLayout(gridLayout);
+
+    // Row 2
+    rows++;
+    QGroupBox *outputGroup = new QGroupBox(tr("Output"));
+
+    QGridLayout *gridLayout2 = new QGridLayout(outputGroup);
+    gridLayout2->setSpacing(10);
+    gridLayout2->setMargin(10);
+
+    m_binaryCheckBox = new QCheckBox(tr("Binary"));
+    m_binaryCheckBox->setToolTip(tr("Binary or text output"));
+    m_binaryCheckBox->setChecked(m_renderingAttributes->GetUsdOutputBinary());
+
+    connect(m_binaryCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::binaryToggled);
+    gridLayout2->addWidget(m_binaryCheckBox, 0, 0, 1, 1);
+
+    m_materialCheckBox = new QCheckBox(tr("Material"));
+    m_materialCheckBox->setToolTip(tr("Include material objects in the output"));
+    m_materialCheckBox->setChecked(m_renderingAttributes->GetUsdOutputMaterial());
+
+    connect(m_materialCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::materialToggled);
+    gridLayout2->addWidget(m_materialCheckBox, 0, 1, 1, 1);
+
+    m_previewCheckBox = new QCheckBox(tr("Preview Surface"));
+    m_previewCheckBox->setToolTip(tr("Include preview surface shader prims in the output for material objects"));
+    m_previewCheckBox->setChecked(m_renderingAttributes->GetUsdOutputPreviewSurface());
+
+    connect(m_previewCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::previewSurfaceToggled);
+    gridLayout2->addWidget(m_previewCheckBox, 0, 2, 1, 1);
+
+    // Row 3
+    rows++;
+
+    m_mdlCheckBox = new QCheckBox(tr("MDL"));
+    m_mdlCheckBox->setToolTip(tr("Include MDL shader prims in the output for material objects"));
+    m_mdlCheckBox->setChecked(m_renderingAttributes->GetUsdOutputMDL());
+
+    connect(m_mdlCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::mdlToggled);
+    gridLayout2->addWidget(m_mdlCheckBox, 1, 0, 1, 1);
+
+    m_mdlColorCheckBox = new QCheckBox(tr("MDL Colors"));
+    m_mdlColorCheckBox->setToolTip(tr("Include MDL colors in the output for material objects"));
+    m_mdlColorCheckBox->setChecked(m_renderingAttributes->GetUsdOutputMDLColors());
+
+    connect(m_mdlColorCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::mdlColorsToggled);
+    gridLayout2->addWidget(m_mdlColorCheckBox, 1, 1, 1, 1);
+
+    m_displayColorCheckBox = new QCheckBox(tr("Display Colors"));
+    m_displayColorCheckBox->setToolTip(tr("Include display colors in the output"));
+    m_displayColorCheckBox->setChecked(m_renderingAttributes->GetUsdOutputDisplayColors());
+
+    connect(m_displayColorCheckBox, &QCheckBox::toggled, this, &AnariRenderingWidget::displayColorsToggled);
+    gridLayout2->addWidget(m_displayColorCheckBox, 1, 2, 1, 1);
+
+    rows++;
+    mainLayout->addWidget(outputGroup);
 
     return widget;
 }
 
 // ****************************************************************************
+// Method: AnariRenderingWidget::GetBackendType
+//
+// Purpose:
+//   Gets the back-end type represented by libname.
+//
+// Arguments:
+//   libname the name of the back-end to load
+//
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+BackendType 
+AnariRenderingWidget::GetBackendType(const std::string &libname) const
+{
+    if(libname.compare("example") == 0)
+    {
+        return BackendType::EXAMPLE;
+    }
+    else if(libname.compare("usd") == 0)
+    {
+        return BackendType::USD;
+    }
+    else if(libname.compare("visrtx") == 0)
+    {
+        return BackendType::VISRTX;
+    }
+    
+    return BackendType::NONE;
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateUI
+//
+// Purpose:
+//   Update the state of the UI components
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateUI()
+{
+    auto start = m_rendererParams->begin();
+    auto stop = m_rendererParams->end();
+    auto result = std::find(start, stop, "pixelSamples");
+
+    if(m_samplesPerPixel != nullptr)
+    {        
+        m_samplesPerPixel->setEnabled(result != stop);
+    }
+
+    if(m_aoSamples != nullptr)
+    {
+        result = std::find(start, stop, "aoSamples");
+        auto result2 = std::find(start, stop, "ambientSamples");
+        m_aoSamples->setEnabled((result != stop) || (result2 != stop));
+    }
+
+    if(m_lightFalloff != nullptr)
+    {
+        result = std::find(start, stop, "lightFalloff");
+        m_lightFalloff->setEnabled(result != stop);
+    }
+
+    if(m_ambientIntensity != nullptr)
+    {
+        result = std::find(start, stop, "ambientIntensity");
+        m_ambientIntensity->setEnabled(result != stop);
+    }
+
+    if(m_maxDepth != nullptr)
+    {
+        result = std::find(start, stop, "maxDepth");
+        m_maxDepth->setEnabled(result != stop);
+    }
+    
+    if(m_rValue != nullptr)
+    {
+        result = std::find(start, stop, "R");
+        m_rValue->setEnabled(result != stop);
+    }
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateRendererParams
+//
+// Purpose:
+//   Update the list of supported parameters for a specific renderer subtype.
+//
+// Arguments:
+//   rendererSubtype the renderer subtype (e.g., scivis)
+//   library the ANARI library (e.g., visrtx)
+//
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateRendererParams(const std::string &rendererSubtype, anari::Library library)
+{
+    bool unloadLibrary = false;    
+
+    if(library == nullptr)
+    {
+        unloadLibrary = true;
+        auto libname = m_libraryNames->currentText().toStdString();
+        library = anari::loadLibrary(libname.c_str());
+    }    
+    
+    if(library)
+    {
+        auto libsubtype = m_librarySubtypes->currentText().toStdString();
+        const anari::Parameter *rendererParams = 
+            static_cast<const anari::Parameter *>(anariGetObjectInfo(library,
+                                                                     libsubtype.c_str(),
+                                                                     rendererSubtype.c_str(),
+                                                                     ANARI_RENDERER,
+                                                                     "parameter",
+                                                                     ANARI_PARAMETER_LIST));
+        // Clear old renderer parameters
+        m_rendererParams.reset(new std::vector<std::string>());
+
+        // Add new renderer parameters
+        if(rendererParams)
+        {
+            for(auto p = rendererParams; p->name != NULL; p++)
+            {
+                std::string param(p->name);
+                m_rendererParams->emplace_back(param);
+            }
+        }
+
+        if(unloadLibrary)
+        {
+            anariUnloadLibrary(library);
+        }
+    }
+    else 
+    {
+        debug1 << "Could not load the ANARI library to update the renderer parameters list." << std::endl;
+    }
+}
+
+// External Updates
+//----------------------------------------------------------------------------
+
+// ****************************************************************************
 // Method: AnariRenderingWidget::UpdateLibrarySubtypes
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Adds subtype to the library subtypes combo box. If subtype is already in
+//   the list, it will be ignored.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
+//   subtype the library subtype to add to the combo box
 //
 //
 // Programmer: Kevin Griffin
@@ -429,10 +666,10 @@ AnariRenderingWidget::UpdateLibrarySubtypes(const std::string subtype)
 // Method: AnariRenderingWidget::UpdateLibraryNames
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the list of available ANARI back-ends.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
+//   libname the name of the ANARI back-end
 //
 //
 // Programmer: Kevin Griffin
@@ -461,11 +698,11 @@ AnariRenderingWidget::UpdateLibraryNames(const std::string libname)
 // Method: AnariRenderingWidget::UpdateRendererSubtypes
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the list of available renderers. If subtype is already in the list
+//   it will not be added again.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
-//
+//   subtype the renderer subtype to add
 //
 // Programmer: Kevin Griffin
 // Creation:  
@@ -492,11 +729,11 @@ AnariRenderingWidget::UpdateRendererSubtypes(const std::string subtype)
 // Method: AnariRenderingWidget::SetChecked
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Sets the check state of the ANARI rendering group box.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
-//
+//   val    If true, surface rendering will be done by an ANARI back-end
+//          renderer, otherwise, the default rendering is used.
 //
 // Programmer: Kevin Griffin
 // Creation:  
@@ -515,11 +752,11 @@ AnariRenderingWidget::SetChecked(const bool val)
 // Method: AnariRenderingWidget::UpdateSamplesPerPixel
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the samples per pixel that will be used by the currently selected 
+//   renderer.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
-//
+//   val the new samples per pixel value
 //
 // Programmer: Kevin Griffin
 // Creation:  
@@ -540,11 +777,11 @@ AnariRenderingWidget::UpdateSamplesPerPixel(const int val)
 // Method: AnariRenderingWidget::UpdateAOSamples
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the ambient occulsion value that will be used by the currently
+//   selected renderer.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
-//
+//   val the new ambient occlusion value
 //
 // Programmer: Kevin Griffin
 // Creation:  
@@ -562,13 +799,145 @@ AnariRenderingWidget::UpdateAOSamples(const int val)
 }
 
 // ****************************************************************************
+// Method: AnariRenderingWidget::UpdateLightFalloff
+//
+// Purpose:
+//   Update the light falloff value that will be used by the currently
+//   selected renderer.
+//
+// Arguments:
+//   val the new light falloff value
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateLightFalloff(const float val)
+{
+    m_lightFalloff->blockSignals(true);
+    m_lightFalloff->setText(QString::number(val));
+    m_lightFalloff->blockSignals(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateAmbientIntensity
+//
+// Purpose:
+//   Update the ambient intensity value that will be used by the currently
+//   selected renderer.
+//
+// Arguments:
+//   val the new ambient intensity value
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateAmbientIntensity(const float val)
+{
+    m_ambientIntensity->blockSignals(true);
+    m_ambientIntensity->setText(QString::number(val));
+    m_ambientIntensity->blockSignals(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateMaxDepth
+//
+// Purpose:
+//   Updates the max depth value that will be used by the currently
+//   selected renderer.
+//
+// Arguments:
+//   val the new max depth value
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateMaxDepth(const int val)
+{
+    m_maxDepth->blockSignals(true);
+    m_maxDepth->setValue(val);
+    m_maxDepth->blockSignals(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateRValue
+//
+// Purpose:
+//   Update the R value that will be used by the currently selected renderer.
+//
+// Arguments:
+//   val the new R value
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateRValue(const float val)
+{
+    m_rValue->blockSignals(true);
+    m_rValue->setText(QString::number(val));
+    m_rValue->blockSignals(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateDebugMethod
+//
+// Purpose:
+//   Updates the debug method that will be used by the currently selected 
+//   renderer.
+//
+// Arguments:
+//   method the new debug method
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+AnariRenderingWidget::UpdateDebugMethod(const std::string method)
+{
+    m_debugMethod->blockSignals(true);
+    QString textItem = QString::fromStdString(method);
+    int index = m_debugMethod->findText(textItem);
+
+    if(index == -1)
+    {                
+        m_debugMethod->addItem(textItem);
+    }
+
+    m_debugMethod->blockSignals(false);
+}
+
+// ****************************************************************************
 // Method: AnariRenderingWidget::UpdateDenoiserSelection
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the checked state of the denoiser option.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
+//   val    if true, and the currently selected renderer supports it, a denoiser
+//   will be used to reduce visible noise in the rendered image.
 //
 //
 // Programmer: Kevin Griffin
@@ -587,49 +956,13 @@ AnariRenderingWidget::UpdateDenoiserSelection(const bool val)
 }
 
 // ****************************************************************************
-// Method: AnariRenderingWidget::GetBackendType
+// Method: AnariRenderingWidget::UpdateUSDOutputLocation
 //
 // Purpose:
-//   Creates the UI components used by ANARI back-ends.
+//   Updates the USD output location path.
 //
 // Arguments:
-//   rows keeps track of the total rows of UI components
-//
-//
-// Programmer: Kevin Griffin
-// Creation:  
-//
-// Modifications:
-//
-// ****************************************************************************
-
-BackendType 
-AnariRenderingWidget::GetBackendType(const std::string libname)
-{
-    if(libname.compare("example") == 0)
-    {
-        return BackendType::EXAMPLE;
-    }
-    else if(libname.compare("usd") == 0)
-    {
-        return BackendType::USD;
-    }
-    else if(libname.compare("visrtx") == 0)
-    {
-        return BackendType::VISRTX;
-    }
-    
-    return BackendType::NONE;
-}
-
-// ****************************************************************************
-// Method: AnariRenderingWidget::UpdateUI
-//
-// Purpose:
-//   Creates the UI components used by ANARI back-ends.
-//
-// Arguments:
-//   rows keeps track of the total rows of UI components
+//   path output location for saving the USD files
 //
 //
 // Programmer: Kevin Griffin
@@ -640,30 +973,81 @@ AnariRenderingWidget::GetBackendType(const std::string libname)
 // ****************************************************************************
 
 void
-AnariRenderingWidget::UpdateUI()
+AnariRenderingWidget::UpdateUSDOutputLocation(const std::string path)
 {
-    // TODO: enable/disable UI components based on back-end and renderer
+    QString directoryQStr = QString::fromStdString(path);
+    QDir directory(directoryQStr);
 
-    // Back-end 
-    // if(m_backendWidget != nullptr)
-    // {
-    //     m_backendWidget->setVisible(m_backendType != BackendType::USD);
+    if(directory.exists())
+    {
+        m_dirLineEdit->blockSignals(true);
+        m_dirLineEdit->setText(directoryQStr);
+        m_dirLineEdit->blockSignals(false);
+    }
+    else
+    {
+        debug5 << "AnariRenderingWidget::UpdateUSDOutputLocation: " << path << " does not exist" << std::endl;
+    }
+}
 
-    //     if(m_backendType == BackendType::EXAMPLE)
-    //     {
-    //         // TODO: Enable example back-end UI components
-    //     }
-    //     else if(m_backendType == BackendType::VISRTX)
-    //     {
-    //         // TODO: Enable visrtx back-end UI components
-    //     }
-    // }
+// ****************************************************************************
+// Method: AnariRenderingWidget::UpdateUSDParameter
+//
+// Purpose:
+//   Sets the checked state of the USD Ooutput parameter check boxes.
+//
+// Arguments:
+//   param  the USD output parameter to update
+//   bool   if true then param is selected
+//
+// Programmer: Kevin Griffin
+// Creation:  
+//
+// Modifications:
+//
+// ****************************************************************************
 
-    // USD
-    // if(m_usdWidget != nullptr)
-    // {
-    //     m_usdWidget->setVisible(m_backendType == BackendType::USD);
-    // }
+void
+AnariRenderingWidget::UpdateUSDParameter(const USDParameter param, const bool val)
+{
+    switch(param)
+    {
+        case USDParameter::COMMIT:
+            m_commitCheckBox->blockSignals(true);
+            m_commitCheckBox->setChecked(val);
+            m_commitCheckBox->blockSignals(false);
+            break;
+        case USDParameter::BINARY:
+            m_binaryCheckBox->blockSignals(true);
+            m_binaryCheckBox->setChecked(val);
+            m_binaryCheckBox->blockSignals(false);
+            break;
+        case USDParameter::MATERIAL:
+            m_materialCheckBox->blockSignals(true);
+            m_materialCheckBox->setChecked(val);
+            m_materialCheckBox->blockSignals(false);
+            break;
+        case USDParameter::PREVIEW:
+            m_previewCheckBox->blockSignals(true);
+            m_previewCheckBox->setChecked(val);
+            m_previewCheckBox->blockSignals(false);
+            break;
+        case USDParameter::MDL:
+            m_mdlCheckBox->blockSignals(true);
+            m_mdlCheckBox->setChecked(val);
+            m_mdlCheckBox->blockSignals(false);
+            break;
+        case USDParameter::MDLCOLORS:
+            m_mdlColorCheckBox->blockSignals(true);
+            m_mdlColorCheckBox->setChecked(val);
+            m_mdlColorCheckBox->blockSignals(false);
+            break;
+        case USDParameter::DISPLAY:
+            m_displayColorCheckBox->blockSignals(true);
+            m_displayColorCheckBox->setChecked(val);
+            m_displayColorCheckBox->blockSignals(false);
+            break;
+    }
 }
 
 // SLOTS
@@ -689,8 +1073,6 @@ void
 AnariRenderingWidget::renderingToggled(bool val)
 {
     m_renderingAttributes->SetAnariRendering(val);
-    // m_renderingWindow->SetUpdate(false);
-    // m_renderingWindow->Apply();
     m_renderingWindow->ApplyAnariChanges(false);
 }
 
@@ -738,7 +1120,7 @@ AnariRenderingWidget::libraryChanged(const QString &name)
         }
         m_librarySubtypes->blockSignals(false);
 
-        auto libSubtype = m_librarySubtypes->itemText(0).toStdString();
+        auto libSubtype = m_librarySubtypes->currentText().toStdString();
         m_renderingAttributes->SetAnariLibrarySubtype(libSubtype);
 
         // Update renderers
@@ -757,30 +1139,31 @@ AnariRenderingWidget::libraryChanged(const QString &name)
         {
             m_rendererSubtypes->addItem("default");
         }
+
+        auto rendererSubtype = m_rendererSubtypes->currentText().toStdString();
+        UpdateRendererParams(rendererSubtype, anariLibrary);
+
+        m_renderingAttributes->SetAnariRendererSubtype(rendererSubtype);
         m_rendererSubtypes->blockSignals(false);
 
-        auto rendererSubtype = m_rendererSubtypes->itemText(0).toStdString();
-        m_renderingAttributes->SetAnariRendererSubtype(rendererSubtype);
-
         anariUnloadLibrary(anariLibrary);
-
         auto backendType = GetBackendType(libname);
 
         if(backendType != BackendType::USD)
         {
             emit currentBackendChanged(0);
+            UpdateUI();
         }
         else
         {
             emit currentBackendChanged(1);
         }
 
-        UpdateUI();
         m_renderingWindow->ApplyAnariChanges(false);
     }
     else 
     {
-        debug1 << "Could not load the ANARI library (" << libname.c_str() << ") to update the Rendering UI." << endl;
+        debug1 << "Could not load the ANARI library (" << libname.c_str() << ") to update the Rendering UI." << std::endl;
     }
 }
 
@@ -805,7 +1188,7 @@ AnariRenderingWidget::librarySubtypeChanged(const QString &subtype)
 {
     auto libSubtype = subtype.toStdString();
    
-    auto libname = m_libraryNames->itemText(0).toStdString();
+    auto libname = m_libraryNames->currentText().toStdString();
     auto anariLibrary = anari::loadLibrary(libname.c_str());
 
     if(anariLibrary)
@@ -827,18 +1210,21 @@ AnariRenderingWidget::librarySubtypeChanged(const QString &subtype)
             m_rendererSubtypes->addItem("default");
         }
 
-        auto rendererSubtype = m_rendererSubtypes->itemText(0).toStdString();
+        auto rendererSubtype = m_rendererSubtypes->currentText().toStdString();
+        UpdateRendererParams(rendererSubtype, anariLibrary); 
+
         m_renderingAttributes->SetAnariRendererSubtype(rendererSubtype);
         m_rendererSubtypes->blockSignals(false);
 
         anariUnloadLibrary(anariLibrary);
-
+        UpdateUI();
+        
         m_renderingAttributes->SetAnariLibrarySubtype(libSubtype);
         m_renderingWindow->ApplyAnariChanges(false);
     }
     else
     {
-        debug1 << "Could not load the ANARI library (" << libname.c_str() << ") to update the Rendering UI." << endl;
+        debug1 << "Could not load the ANARI library (" << libname.c_str() << ") to update the Rendering UI." << std::endl;
     }
 }
 
@@ -861,7 +1247,12 @@ AnariRenderingWidget::librarySubtypeChanged(const QString &subtype)
 void 
 AnariRenderingWidget::rendererSubtypeChanged(const QString &subtype)
 {
-    m_renderingAttributes->SetAnariRendererSubtype(subtype.toStdString());
+    auto rendererSubtype = subtype.toStdString();
+
+    UpdateRendererParams(rendererSubtype);    
+    UpdateUI();
+
+    m_renderingAttributes->SetAnariRendererSubtype(rendererSubtype);
     m_renderingWindow->ApplyAnariChanges(false);
 }
 
@@ -952,18 +1343,16 @@ AnariRenderingWidget::lightFalloffChanged()
 {
     bool ok;
     QString text = m_lightFalloff->text();
-    double val = text.toDouble(&ok);
+    float val = text.toFloat(&ok);
 
     if(ok)
     {
-        std::cout << "lightFalloff = " << val << std::endl;
-        // TODO: implement
-        // m_renderingAttributes->SetAnariLightFalloff(val);
-        // m_renderingWindow->ApplyAnariChanges(false);
+        m_renderingAttributes->SetAnariLightFalloff(val);
+        m_renderingWindow->ApplyAnariChanges(false);
     }
     else
     {
-        debug5 << "Failed to convert Light Falloff input text (" << text.toStdString() << ") to a double" << std::endl;
+        debug5 << "Failed to convert Light Falloff input text (" << text.toStdString() << ") to a float" << std::endl;
     }
 }
 
@@ -985,18 +1374,16 @@ AnariRenderingWidget::ambientIntensityChanged()
 {
     bool ok;
     QString text = m_ambientIntensity->text();
-    double val = text.toDouble(&ok);
+    float val = text.toFloat(&ok);
 
     if(ok)
     {
-        std::cout << "ambient intensity = " << val << std::endl;
-        // TODO: implement
-        // m_renderingAttributes->SetAnariAmbientIntensity(val);
-        // m_renderingWindow->ApplyAnariChanges(false);
+        m_renderingAttributes->SetAnariAmbientIntensity(val);
+        m_renderingWindow->ApplyAnariChanges(false);
     }
     else
     {
-        debug5 << "Failed to convert Ambient Intensity input text (" << text.toStdString() << ") to a double" << std::endl;
+        debug5 << "Failed to convert Ambient Intensity input text (" << text.toStdString() << ") to a float" << std::endl;
     }
 }
 
@@ -1019,8 +1406,8 @@ AnariRenderingWidget::ambientIntensityChanged()
 void 
 AnariRenderingWidget::maxDepthChanged(int val)
 {
-    // m_renderingAttributes->SetAnariMaxDepth(val);
-    // m_renderingWindow->ApplyAnariChanges(false);
+    m_renderingAttributes->SetAnariMaxDepth(val);
+    m_renderingWindow->ApplyAnariChanges(false);
 }
 
 // ****************************************************************************
@@ -1041,18 +1428,16 @@ AnariRenderingWidget::rValueChanged()
 {
     bool ok;
     QString text = m_rValue->text();
-    double val = text.toDouble(&ok);
+    float val = text.toFloat(&ok);
 
     if(ok)
     {
-        std::cout << "R = " << val << std::endl;
-        // TODO: implement
-        // m_renderingAttributes->SetAnariR(val);
-        // m_renderingWindow->ApplyAnariChanges(false);
+        m_renderingAttributes->SetAnariRValue(val);
+        m_renderingWindow->ApplyAnariChanges(false);
     }
     else
     {
-        debug5 << "Failed to convert R value input text (" << text.toStdString() << ") to a double" << std::endl;
+        debug5 << "Failed to convert R value input text (" << text.toStdString() << ") to a float" << std::endl;
     }
 }
 
@@ -1075,15 +1460,15 @@ AnariRenderingWidget::rValueChanged()
 void 
 AnariRenderingWidget::debugMethodChanged(const QString &method)
 {
-    // m_renderingAttributes->SetAnariDebugMethod(method.toStdString());
-    // m_renderingWindow->ApplyAnariChanges(false);
+    m_renderingAttributes->SetAnariDebugMethod(method.toStdString());
+    m_renderingWindow->ApplyAnariChanges(false);
 }
 
 // ****************************************************************************
 // Method: AnariRenderingWidget::outputLocationChanged
 //
 // Purpose: 
-//      Triggered when the Output Directory changes
+//      Triggered when the USD output directory changes
 //
 // Programmer:  Kevin Griffin
 // Creation:    Fri Mar 11 12:27:45 PDT 2022
@@ -1095,22 +1480,26 @@ AnariRenderingWidget::debugMethodChanged(const QString &method)
 void
 AnariRenderingWidget::outputLocationChanged()
 {
-    auto dir = m_dirLineEdit->text().toStdString();
+    QDir directory(m_dirLineEdit->text());
+    *m_outputDir = directory.absolutePath();
 
-    std::cout << "USD Output Directory: " << dir << std::endl;
-    // TODO: implement
-    // m_renderingAttributes->SetAnariUSDDirectory(text.toStdString());
-    // m_renderingWindow->ApplyAnariChanges(false);
+    if(directory.exists())
+    {
+        m_renderingAttributes->SetUsdDir(m_outputDir->toStdString());
+        m_renderingWindow->ApplyAnariChanges(false);
+    }
+    else
+    {
+        QString message = tr("%1 doesn't exist").arg(*m_outputDir);
+        QMessageBox::critical(this, tr("USD Output Directory"), message);
+    }    
 }
 
 // ****************************************************************************
 // Method: AnariRenderingWidget::selectButtonPressed
 //
 // Purpose: 
-//      Triggered when the rendering debug method has changed.
-//
-// Arguments:
-//      method the selected debug method
+//      Triggered when the USD output directory select button is pressed.
 //
 // Programmer:  Kevin Griffin
 // Creation:    Fri Mar 11 12:27:45 PDT 2022
@@ -1132,4 +1521,173 @@ AnariRenderingWidget::selectButtonPressed()
         m_dirLineEdit->setText(dir);
         outputLocationChanged();
     }
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::commitToggled
+//
+// Purpose: 
+//      Triggered when USD commit is toggled.
+//
+// Arguments:
+//      val when true writing to USD will happen immediately at the anariCommit
+//          call, otherwise it will happen at anariRenderFrame.
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::commitToggled(bool val)
+{
+    m_renderingAttributes->SetUsdAtCommit(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::binaryToggled
+//
+// Purpose: 
+//      Triggered when output type is toggled (binary or text).
+//
+// Arguments:
+//      val if true USD output is binary, otherwise text
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::binaryToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputBinary(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::materialToggled
+//
+// Purpose: 
+//      Triggered when material checkbox is toggled to determine if material 
+//      objects are included in the USD output.
+//
+// Arguments:
+//      val if true material objects are included in the USD output
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::materialToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputMaterial(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::previewSurfaceToggled
+//
+// Purpose: 
+//      Triggered when preview surface checkbox is toggled to determine if  
+//      preview surface shader prims are included in the output for material 
+//      objects.
+//
+// Arguments:
+//      val if true preview surface shader prims are included in output for 
+//          material objects
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::previewSurfaceToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputPreviewSurface(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::mdlToggled
+//
+// Purpose: 
+//      Triggered when the mdl checkbox is toggled to determine if mdl shader 
+//      prims are included in the output for material objects.
+//
+// Arguments:
+//      val if true mdl shader prims are included in output for material objects
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::mdlToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputMDL(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::mdlColorsToggled
+//
+// Purpose: 
+//      Triggered when the mdl colors checkbox is toggled to determine if mdl 
+//      colors are included in the output for material objects.
+//
+// Arguments:
+//      val if true mdl colors are included in output for material objects
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::mdlColorsToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputMDLColors(val);
+    m_renderingWindow->ApplyAnariChanges(false);
+}
+
+// ****************************************************************************
+// Method: AnariRenderingWidget::displayColorsToggled
+//
+// Purpose: 
+//      Triggered when the display colors checkbox is toggled to determine if 
+//      display colors are included in the output.
+//
+// Arguments:
+//      val if true include display colors in the output
+//
+// Programmer:  Kevin Griffin
+// Creation:    Fri Mar 11 12:27:45 PDT 2022
+//
+// Modifications:
+//   
+// ****************************************************************************
+
+void
+AnariRenderingWidget::displayColorsToggled(bool val)
+{
+    m_renderingAttributes->SetUsdOutputDisplayColors(val);
+    m_renderingWindow->ApplyAnariChanges(false);
 }

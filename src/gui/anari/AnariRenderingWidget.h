@@ -8,8 +8,12 @@
 #include <gui_exports.h>
 #include <QWidget>
 
-class RenderingAttributes;
+#include <anari/anari_cpp.hpp>
 
+#include <vector>
+#include <memory>
+
+class RenderingAttributes;
 class QvisRenderingWindow;
 class QGroupBox;
 class QComboBox;
@@ -29,17 +33,20 @@ namespace anari
         VISRTX
     };
 
-    enum class RendererType
+    enum class USDParameter
     {
-        UNKNOWN,
-        SCIVIS,
-        AO,
-        RAYCAST,
-        DEBUG
+        COMMIT,
+        BINARY,
+        MATERIAL,
+        PREVIEW,
+        MDL,
+        MDLCOLORS,
+        DISPLAY
     };
 }
 
 using BackendType = anari::BackendType;
+using USDParameter = anari::USDParameter;
 
 class GUI_API AnariRenderingWidget : public QWidget
 {
@@ -50,20 +57,27 @@ public:
                          QWidget *parent = nullptr);
     ~AnariRenderingWidget() = default;
 
-    BackendType GetBackendType(const std::string);
     int GetRowCount() const { return m_totalRows; }
-    void UpdateUI();
-
+    
     // General
+    void SetChecked(const bool);
     void UpdateLibraryNames(const std::string);
     void UpdateLibrarySubtypes(const std::string);
-    void UpdateRendererSubtypes(const std::string);
-    void SetChecked(const bool);
+    void UpdateRendererSubtypes(const std::string);    
 
     // Back-end
     void UpdateSamplesPerPixel(const int);
-    void UpdateAOSamples(const int);
+    void UpdateAOSamples(const int);    
+    void UpdateLightFalloff(const float);
+    void UpdateAmbientIntensity(const float);
+    void UpdateMaxDepth(const int);
+    void UpdateRValue(const float);
+    void UpdateDebugMethod(const std::string);
     void UpdateDenoiserSelection(const bool);
+
+    // USD Back-end
+    void UpdateUSDOutputLocation(const std::string);
+    void UpdateUSDParameter(const USDParameter, const bool);
 
 signals:
     void currentBackendChanged(int);
@@ -87,16 +101,29 @@ private slots:
     // USD
     void outputLocationChanged();
     void selectButtonPressed();
+    void commitToggled(bool);
+    void binaryToggled(bool);
+    void materialToggled(bool);
+    void previewSurfaceToggled(bool);
+    void mdlToggled(bool);
+    void mdlColorsToggled(bool);
+    void displayColorsToggled(bool);
     
 private:
     QWidget *CreateGeneralWidget(int &);
     QWidget *CreateBackendWidget(int &);
     QWidget *CreateUSDWidget(int &);
 
+    BackendType GetBackendType(const std::string &) const;
+
+    void UpdateUI();
+    void UpdateRendererParams(const std::string &, anari::Library library = nullptr);
+
     QvisRenderingWindow *m_renderingWindow;
     RenderingAttributes *m_renderingAttributes;
     QStackedLayout *m_backendStackedLayout;
 
+    std::unique_ptr<std::vector<std::string>> m_rendererParams;
     int m_totalRows;
 
     // General Widget Components
@@ -114,12 +141,18 @@ private:
     QLineEdit   *m_rValue;
     QComboBox   *m_debugMethod;
     QCheckBox   *m_denoiserToggle;
-    // QPushButton       *m_anariLibraryDetails;
 
     // USD widget UI components
-    QString     *m_outputDir;
+    std::unique_ptr<QString>    m_outputDir;
+
     QLineEdit   *m_dirLineEdit;   
     QCheckBox   *m_commitCheckBox;  
+    QCheckBox   *m_binaryCheckBox;
+    QCheckBox   *m_materialCheckBox;
+    QCheckBox   *m_previewCheckBox;
+    QCheckBox   *m_mdlCheckBox;
+    QCheckBox   *m_mdlColorCheckBox;
+    QCheckBox   *m_displayColorCheckBox;
 }; 
 
 #endif

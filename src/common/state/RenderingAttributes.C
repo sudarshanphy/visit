@@ -187,6 +187,17 @@ void RenderingAttributes::Init()
     anariSPP = 1;
     anariAO = 0;
     useAnariDenoiser = false;
+    anariLightFalloff = 0;
+    anariAmbientIntensity = 1;
+    anariMaxDepth = 0;
+    anariRValue = 0;
+    usdAtCommit = false;
+    usdOutputBinary = true;
+    usdOutputMaterial = true;
+    usdOutputPreviewSurface = true;
+    usdOutputMDL = true;
+    usdOutputMDLColors = true;
+    usdOutputDisplayColors = true;
 
     RenderingAttributes::SelectAll();
 }
@@ -256,6 +267,19 @@ void RenderingAttributes::Copy(const RenderingAttributes &obj)
     anariLibrarySubtype = obj.anariLibrarySubtype;
     anariRendererSubtype = obj.anariRendererSubtype;
     useAnariDenoiser = obj.useAnariDenoiser;
+    anariLightFalloff = obj.anariLightFalloff;
+    anariAmbientIntensity = obj.anariAmbientIntensity;
+    anariMaxDepth = obj.anariMaxDepth;
+    anariRValue = obj.anariRValue;
+    anariDebugMethod = obj.anariDebugMethod;
+    usdDir = obj.usdDir;
+    usdAtCommit = obj.usdAtCommit;
+    usdOutputBinary = obj.usdOutputBinary;
+    usdOutputMaterial = obj.usdOutputMaterial;
+    usdOutputPreviewSurface = obj.usdOutputPreviewSurface;
+    usdOutputMDL = obj.usdOutputMDL;
+    usdOutputMDLColors = obj.usdOutputMDLColors;
+    usdOutputDisplayColors = obj.usdOutputDisplayColors;
 
     RenderingAttributes::SelectAll();
 }
@@ -466,7 +490,20 @@ RenderingAttributes::operator == (const RenderingAttributes &obj) const
             (anariLibrary == obj.anariLibrary) &&
             (anariLibrarySubtype == obj.anariLibrarySubtype) &&
             (anariRendererSubtype == obj.anariRendererSubtype) &&
-            (useAnariDenoiser == obj.useAnariDenoiser));
+            (useAnariDenoiser == obj.useAnariDenoiser) &&
+            (anariLightFalloff == obj.anariLightFalloff) &&
+            (anariAmbientIntensity == obj.anariAmbientIntensity) &&
+            (anariMaxDepth == obj.anariMaxDepth) &&
+            (anariRValue == obj.anariRValue) &&
+            (anariDebugMethod == obj.anariDebugMethod) &&
+            (usdDir == obj.usdDir) &&
+            (usdAtCommit == obj.usdAtCommit) &&
+            (usdOutputBinary == obj.usdOutputBinary) &&
+            (usdOutputMaterial == obj.usdOutputMaterial) &&
+            (usdOutputPreviewSurface == obj.usdOutputPreviewSurface) &&
+            (usdOutputMDL == obj.usdOutputMDL) &&
+            (usdOutputMDLColors == obj.usdOutputMDLColors) &&
+            (usdOutputDisplayColors == obj.usdOutputDisplayColors));
 }
 
 // ****************************************************************************
@@ -652,6 +689,19 @@ RenderingAttributes::SelectAll()
     Select(ID_anariLibrarySubtype,          (void *)&anariLibrarySubtype);
     Select(ID_anariRendererSubtype,         (void *)&anariRendererSubtype);
     Select(ID_useAnariDenoiser,             (void *)&useAnariDenoiser);
+    Select(ID_anariLightFalloff,            (void *)&anariLightFalloff);
+    Select(ID_anariAmbientIntensity,        (void *)&anariAmbientIntensity);
+    Select(ID_anariMaxDepth,                (void *)&anariMaxDepth);
+    Select(ID_anariRValue,                  (void *)&anariRValue);
+    Select(ID_anariDebugMethod,             (void *)&anariDebugMethod);
+    Select(ID_usdDir,                       (void *)&usdDir);
+    Select(ID_usdAtCommit,                  (void *)&usdAtCommit);
+    Select(ID_usdOutputBinary,              (void *)&usdOutputBinary);
+    Select(ID_usdOutputMaterial,            (void *)&usdOutputMaterial);
+    Select(ID_usdOutputPreviewSurface,      (void *)&usdOutputPreviewSurface);
+    Select(ID_usdOutputMDL,                 (void *)&usdOutputMDL);
+    Select(ID_usdOutputMDLColors,           (void *)&usdOutputMDLColors);
+    Select(ID_usdOutputDisplayColors,       (void *)&usdOutputDisplayColors);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -938,6 +988,84 @@ RenderingAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool fo
         node->AddNode(new DataNode("useAnariDenoiser", useAnariDenoiser));
     }
 
+    if(completeSave || !FieldsEqual(ID_anariLightFalloff, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariLightFalloff", anariLightFalloff));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariAmbientIntensity, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariAmbientIntensity", anariAmbientIntensity));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariMaxDepth, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariMaxDepth", anariMaxDepth));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariRValue, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariRValue", anariRValue));
+    }
+
+    if(completeSave || !FieldsEqual(ID_anariDebugMethod, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("anariDebugMethod", anariDebugMethod));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdDir, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdDir", usdDir));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdAtCommit, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdAtCommit", usdAtCommit));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputBinary, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputBinary", usdOutputBinary));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputMaterial, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputMaterial", usdOutputMaterial));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputPreviewSurface, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputPreviewSurface", usdOutputPreviewSurface));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputMDL, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputMDL", usdOutputMDL));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputMDLColors, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputMDLColors", usdOutputMDLColors));
+    }
+
+    if(completeSave || !FieldsEqual(ID_usdOutputDisplayColors, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("usdOutputDisplayColors", usdOutputDisplayColors));
+    }
+
 
     // Add the node to the parent node.
     if(addToParent || forceAdd)
@@ -1128,6 +1256,32 @@ RenderingAttributes::SetFromNode(DataNode *parentNode)
         SetAnariRendererSubtype(node->AsString());
     if((node = searchNode->GetNode("useAnariDenoiser")) != 0)
         SetUseAnariDenoiser(node->AsBool());
+    if((node = searchNode->GetNode("anariLightFalloff")) != 0)
+        SetAnariLightFalloff(node->AsFloat());
+    if((node = searchNode->GetNode("anariAmbientIntensity")) != 0)
+        SetAnariAmbientIntensity(node->AsFloat());
+    if((node = searchNode->GetNode("anariMaxDepth")) != 0)
+        SetAnariMaxDepth(node->AsInt());
+    if((node = searchNode->GetNode("anariRValue")) != 0)
+        SetAnariRValue(node->AsFloat());
+    if((node = searchNode->GetNode("anariDebugMethod")) != 0)
+        SetAnariDebugMethod(node->AsString());
+    if((node = searchNode->GetNode("usdDir")) != 0)
+        SetUsdDir(node->AsString());
+    if((node = searchNode->GetNode("usdAtCommit")) != 0)
+        SetUsdAtCommit(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputBinary")) != 0)
+        SetUsdOutputBinary(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputMaterial")) != 0)
+        SetUsdOutputMaterial(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputPreviewSurface")) != 0)
+        SetUsdOutputPreviewSurface(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputMDL")) != 0)
+        SetUsdOutputMDL(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputMDLColors")) != 0)
+        SetUsdOutputMDLColors(node->AsBool());
+    if((node = searchNode->GetNode("usdOutputDisplayColors")) != 0)
+        SetUsdOutputDisplayColors(node->AsBool());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1432,6 +1586,97 @@ RenderingAttributes::SetUseAnariDenoiser(bool useAnariDenoiser_)
     Select(ID_useAnariDenoiser, (void *)&useAnariDenoiser);
 }
 
+void
+RenderingAttributes::SetAnariLightFalloff(float anariLightFalloff_)
+{
+    anariLightFalloff = anariLightFalloff_;
+    Select(ID_anariLightFalloff, (void *)&anariLightFalloff);
+}
+
+void
+RenderingAttributes::SetAnariAmbientIntensity(float anariAmbientIntensity_)
+{
+    anariAmbientIntensity = anariAmbientIntensity_;
+    Select(ID_anariAmbientIntensity, (void *)&anariAmbientIntensity);
+}
+
+void
+RenderingAttributes::SetAnariMaxDepth(int anariMaxDepth_)
+{
+    anariMaxDepth = anariMaxDepth_;
+    Select(ID_anariMaxDepth, (void *)&anariMaxDepth);
+}
+
+void
+RenderingAttributes::SetAnariRValue(float anariRValue_)
+{
+    anariRValue = anariRValue_;
+    Select(ID_anariRValue, (void *)&anariRValue);
+}
+
+void
+RenderingAttributes::SetAnariDebugMethod(const std::string &anariDebugMethod_)
+{
+    anariDebugMethod = anariDebugMethod_;
+    Select(ID_anariDebugMethod, (void *)&anariDebugMethod);
+}
+
+void
+RenderingAttributes::SetUsdDir(const std::string &usdDir_)
+{
+    usdDir = usdDir_;
+    Select(ID_usdDir, (void *)&usdDir);
+}
+
+void
+RenderingAttributes::SetUsdAtCommit(bool usdAtCommit_)
+{
+    usdAtCommit = usdAtCommit_;
+    Select(ID_usdAtCommit, (void *)&usdAtCommit);
+}
+
+void
+RenderingAttributes::SetUsdOutputBinary(bool usdOutputBinary_)
+{
+    usdOutputBinary = usdOutputBinary_;
+    Select(ID_usdOutputBinary, (void *)&usdOutputBinary);
+}
+
+void
+RenderingAttributes::SetUsdOutputMaterial(bool usdOutputMaterial_)
+{
+    usdOutputMaterial = usdOutputMaterial_;
+    Select(ID_usdOutputMaterial, (void *)&usdOutputMaterial);
+}
+
+void
+RenderingAttributes::SetUsdOutputPreviewSurface(bool usdOutputPreviewSurface_)
+{
+    usdOutputPreviewSurface = usdOutputPreviewSurface_;
+    Select(ID_usdOutputPreviewSurface, (void *)&usdOutputPreviewSurface);
+}
+
+void
+RenderingAttributes::SetUsdOutputMDL(bool usdOutputMDL_)
+{
+    usdOutputMDL = usdOutputMDL_;
+    Select(ID_usdOutputMDL, (void *)&usdOutputMDL);
+}
+
+void
+RenderingAttributes::SetUsdOutputMDLColors(bool usdOutputMDLColors_)
+{
+    usdOutputMDLColors = usdOutputMDLColors_;
+    Select(ID_usdOutputMDLColors, (void *)&usdOutputMDLColors);
+}
+
+void
+RenderingAttributes::SetUsdOutputDisplayColors(bool usdOutputDisplayColors_)
+{
+    usdOutputDisplayColors = usdOutputDisplayColors_;
+    Select(ID_usdOutputDisplayColors, (void *)&usdOutputDisplayColors);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Get property methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1724,6 +1969,96 @@ RenderingAttributes::GetUseAnariDenoiser() const
     return useAnariDenoiser;
 }
 
+float
+RenderingAttributes::GetAnariLightFalloff() const
+{
+    return anariLightFalloff;
+}
+
+float
+RenderingAttributes::GetAnariAmbientIntensity() const
+{
+    return anariAmbientIntensity;
+}
+
+int
+RenderingAttributes::GetAnariMaxDepth() const
+{
+    return anariMaxDepth;
+}
+
+float
+RenderingAttributes::GetAnariRValue() const
+{
+    return anariRValue;
+}
+
+const std::string &
+RenderingAttributes::GetAnariDebugMethod() const
+{
+    return anariDebugMethod;
+}
+
+std::string &
+RenderingAttributes::GetAnariDebugMethod()
+{
+    return anariDebugMethod;
+}
+
+const std::string &
+RenderingAttributes::GetUsdDir() const
+{
+    return usdDir;
+}
+
+std::string &
+RenderingAttributes::GetUsdDir()
+{
+    return usdDir;
+}
+
+bool
+RenderingAttributes::GetUsdAtCommit() const
+{
+    return usdAtCommit;
+}
+
+bool
+RenderingAttributes::GetUsdOutputBinary() const
+{
+    return usdOutputBinary;
+}
+
+bool
+RenderingAttributes::GetUsdOutputMaterial() const
+{
+    return usdOutputMaterial;
+}
+
+bool
+RenderingAttributes::GetUsdOutputPreviewSurface() const
+{
+    return usdOutputPreviewSurface;
+}
+
+bool
+RenderingAttributes::GetUsdOutputMDL() const
+{
+    return usdOutputMDL;
+}
+
+bool
+RenderingAttributes::GetUsdOutputMDLColors() const
+{
+    return usdOutputMDLColors;
+}
+
+bool
+RenderingAttributes::GetUsdOutputDisplayColors() const
+{
+    return usdOutputDisplayColors;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Select property methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1762,6 +2097,18 @@ void
 RenderingAttributes::SelectAnariRendererSubtype()
 {
     Select(ID_anariRendererSubtype, (void *)&anariRendererSubtype);
+}
+
+void
+RenderingAttributes::SelectAnariDebugMethod()
+{
+    Select(ID_anariDebugMethod, (void *)&anariDebugMethod);
+}
+
+void
+RenderingAttributes::SelectUsdDir()
+{
+    Select(ID_usdDir, (void *)&usdDir);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1830,6 +2177,19 @@ RenderingAttributes::GetFieldName(int index) const
     case ID_anariLibrarySubtype:          return "anariLibrarySubtype";
     case ID_anariRendererSubtype:         return "anariRendererSubtype";
     case ID_useAnariDenoiser:             return "useAnariDenoiser";
+    case ID_anariLightFalloff:            return "anariLightFalloff";
+    case ID_anariAmbientIntensity:        return "anariAmbientIntensity";
+    case ID_anariMaxDepth:                return "anariMaxDepth";
+    case ID_anariRValue:                  return "anariRValue";
+    case ID_anariDebugMethod:             return "anariDebugMethod";
+    case ID_usdDir:                       return "usdDir";
+    case ID_usdAtCommit:                  return "usdAtCommit";
+    case ID_usdOutputBinary:              return "usdOutputBinary";
+    case ID_usdOutputMaterial:            return "usdOutputMaterial";
+    case ID_usdOutputPreviewSurface:      return "usdOutputPreviewSurface";
+    case ID_usdOutputMDL:                 return "usdOutputMDL";
+    case ID_usdOutputMDLColors:           return "usdOutputMDLColors";
+    case ID_usdOutputDisplayColors:       return "usdOutputDisplayColors";
     default:  return "invalid index";
     }
 }
@@ -1896,6 +2256,19 @@ RenderingAttributes::GetFieldType(int index) const
     case ID_anariLibrarySubtype:          return FieldType_string;
     case ID_anariRendererSubtype:         return FieldType_string;
     case ID_useAnariDenoiser:             return FieldType_bool;
+    case ID_anariLightFalloff:            return FieldType_float;
+    case ID_anariAmbientIntensity:        return FieldType_float;
+    case ID_anariMaxDepth:                return FieldType_int;
+    case ID_anariRValue:                  return FieldType_float;
+    case ID_anariDebugMethod:             return FieldType_string;
+    case ID_usdDir:                       return FieldType_string;
+    case ID_usdAtCommit:                  return FieldType_bool;
+    case ID_usdOutputBinary:              return FieldType_bool;
+    case ID_usdOutputMaterial:            return FieldType_bool;
+    case ID_usdOutputPreviewSurface:      return FieldType_bool;
+    case ID_usdOutputMDL:                 return FieldType_bool;
+    case ID_usdOutputMDLColors:           return FieldType_bool;
+    case ID_usdOutputDisplayColors:       return FieldType_bool;
     default:  return FieldType_unknown;
     }
 }
@@ -1962,6 +2335,19 @@ RenderingAttributes::GetFieldTypeName(int index) const
     case ID_anariLibrarySubtype:          return "string";
     case ID_anariRendererSubtype:         return "string";
     case ID_useAnariDenoiser:             return "bool";
+    case ID_anariLightFalloff:            return "float";
+    case ID_anariAmbientIntensity:        return "float";
+    case ID_anariMaxDepth:                return "int";
+    case ID_anariRValue:                  return "float";
+    case ID_anariDebugMethod:             return "string";
+    case ID_usdDir:                       return "string";
+    case ID_usdAtCommit:                  return "bool";
+    case ID_usdOutputBinary:              return "bool";
+    case ID_usdOutputMaterial:            return "bool";
+    case ID_usdOutputPreviewSurface:      return "bool";
+    case ID_usdOutputMDL:                 return "bool";
+    case ID_usdOutputMDLColors:           return "bool";
+    case ID_usdOutputDisplayColors:       return "bool";
     default:  return "invalid index";
     }
 }
@@ -2206,6 +2592,71 @@ RenderingAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_useAnariDenoiser:
         {  // new scope
         retval = (useAnariDenoiser == obj.useAnariDenoiser);
+        }
+        break;
+    case ID_anariLightFalloff:
+        {  // new scope
+        retval = (anariLightFalloff == obj.anariLightFalloff);
+        }
+        break;
+    case ID_anariAmbientIntensity:
+        {  // new scope
+        retval = (anariAmbientIntensity == obj.anariAmbientIntensity);
+        }
+        break;
+    case ID_anariMaxDepth:
+        {  // new scope
+        retval = (anariMaxDepth == obj.anariMaxDepth);
+        }
+        break;
+    case ID_anariRValue:
+        {  // new scope
+        retval = (anariRValue == obj.anariRValue);
+        }
+        break;
+    case ID_anariDebugMethod:
+        {  // new scope
+        retval = (anariDebugMethod == obj.anariDebugMethod);
+        }
+        break;
+    case ID_usdDir:
+        {  // new scope
+        retval = (usdDir == obj.usdDir);
+        }
+        break;
+    case ID_usdAtCommit:
+        {  // new scope
+        retval = (usdAtCommit == obj.usdAtCommit);
+        }
+        break;
+    case ID_usdOutputBinary:
+        {  // new scope
+        retval = (usdOutputBinary == obj.usdOutputBinary);
+        }
+        break;
+    case ID_usdOutputMaterial:
+        {  // new scope
+        retval = (usdOutputMaterial == obj.usdOutputMaterial);
+        }
+        break;
+    case ID_usdOutputPreviewSurface:
+        {  // new scope
+        retval = (usdOutputPreviewSurface == obj.usdOutputPreviewSurface);
+        }
+        break;
+    case ID_usdOutputMDL:
+        {  // new scope
+        retval = (usdOutputMDL == obj.usdOutputMDL);
+        }
+        break;
+    case ID_usdOutputMDLColors:
+        {  // new scope
+        retval = (usdOutputMDLColors == obj.usdOutputMDLColors);
+        }
+        break;
+    case ID_usdOutputDisplayColors:
+        {  // new scope
+        retval = (usdOutputDisplayColors == obj.usdOutputDisplayColors);
         }
         break;
     default: retval = false;
