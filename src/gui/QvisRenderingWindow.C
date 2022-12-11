@@ -953,6 +953,45 @@ QvisRenderingWindow::UpdateOptions(bool doAll)
         case RenderingAttributes::ID_anariRendererSubtype:
             m_anariRenderingWidget->UpdateRendererSubtypes(renderAtts->GetAnariRendererSubtype());
             break;
+        case RenderingAttributes::ID_anariLightFalloff:
+            m_anariRenderingWidget->UpdateLightFalloff(renderAtts->GetAnariLightFalloff());
+            break;
+        case RenderingAttributes::ID_anariAmbientIntensity:
+            m_anariRenderingWidget->UpdateAmbientIntensity(renderAtts->GetAnariAmbientIntensity());
+            break;
+        case RenderingAttributes::ID_anariMaxDepth:
+            m_anariRenderingWidget->UpdateMaxDepth(renderAtts->GetAnariMaxDepth());
+            break;
+        case RenderingAttributes::ID_anariRValue:
+            m_anariRenderingWidget->UpdateRValue(renderAtts->GetAnariRValue());
+            break;
+        case RenderingAttributes::ID_anariDebugMethod:
+            m_anariRenderingWidget->UpdateDebugMethod(renderAtts->GetAnariDebugMethod());
+            break;
+        case RenderingAttributes::ID_usdDir:
+            m_anariRenderingWidget->UpdateUSDOutputLocation(renderAtts->GetUsdDir());
+            break;
+        case RenderingAttributes::ID_usdAtCommit:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::COMMIT, renderAtts->GetUsdAtCommit());
+            break;
+        case RenderingAttributes::ID_usdOutputBinary:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::BINARY, renderAtts->GetUsdOutputBinary());
+            break;
+        case RenderingAttributes::ID_usdOutputMaterial:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::MATERIAL, renderAtts->GetUsdOutputMaterial());
+            break;
+        case RenderingAttributes::ID_usdOutputPreviewSurface:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::PREVIEW, renderAtts->GetUsdOutputPreviewSurface());
+            break;
+        case RenderingAttributes::ID_usdOutputMDL:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::MDL, renderAtts->GetUsdOutputMDL());
+            break;
+        case RenderingAttributes::ID_usdOutputMDLColors:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::MDLCOLORS, renderAtts->GetUsdOutputMDLColors());
+            break;
+        case RenderingAttributes::ID_usdOutputDisplayColors:
+            m_anariRenderingWidget->UpdateUSDParameter(USDParameter::DISPLAY, renderAtts->GetUsdOutputDisplayColors());
+            break;
 #endif
         case RenderingAttributes::ID_scalableActivationMode:
             { // new scope

@@ -147,7 +147,7 @@
       false
     </Field>
     <Field name="anariLightFalloff" label="ANARI Light Falloff" type="float">
-      0.000000
+      1.000000
     </Field>
     <Field name="anariAmbientIntensity" label="ANARI Ambient Intensity" type="float">
       1.000000
@@ -156,7 +156,7 @@
       0
     </Field>
     <Field name="anariRValue" label="ANARI R Value" type="float">
-      0.000000
+      1.000000
     </Field>
     <Field name="anariDebugMethod" label="ANARI Debug Method" type="string">
     </Field>

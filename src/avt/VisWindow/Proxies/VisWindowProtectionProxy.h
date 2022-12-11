@@ -231,10 +231,26 @@ class VISWINDOW_API VisWindowProtectionProxy
     bool                ProxiedGetOsprayShadows();
 #endif
 #ifdef VISIT_ANARI
-    bool                  ProxiedGetAnariRendering();
-    int                   ProxiedGetAnariSPP();
-    int                   ProxiedGetAnariAO();
-    std::string           ProxiedGetAnariLibraryName();
+    bool        ProxiedGetAnariRendering();
+    int         ProxiedGetAnariSPP();
+    int         ProxiedGetAnariAO();
+    std::string ProxiedGetAnariLibraryName();
+    std::string ProxiedGetAnariLibrarySubtype();
+    std::string ProxiedGetAnariRendererSubtype();
+    bool        ProxiedGetUseAnariDenoiser();
+    float       ProxiedGetAnariLightFalloff();
+    float       ProxiedGetAnariAmbientIntensity();
+    int         ProxiedGetAnariMaxDepth();
+    float       ProxiedGetAnariRValue();
+    std::string ProxiedGetAnariDebugMethod();
+    std::string ProxiedGetUsdDir();
+    bool        ProxiedGetUsdAtCommit();
+    bool        ProxiedGetUsdOutputBinary();
+    bool        ProxiedGetUsdOutputMaterial();
+    bool        ProxiedGetUsdOutputPreviewSurface();
+    bool        ProxiedGetUsdOutputMDL();
+    bool        ProxiedGetUsdOutputMDLColors();
+    bool        ProxiedGetUsdOutputDisplayColors();
 #endif
 };
 

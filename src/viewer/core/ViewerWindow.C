@@ -8903,6 +8903,423 @@ ViewerWindow::GetAnariRendererSubtype() const
 {
     return visWindow->GetAnariRendererSubtype();
 }
+
+// ****************************************************************************
+// Method: ViewerWindow::SetAnariLightFalloff
+//
+// @see VisWindow::SetAnariLightFalloff
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetAnariLightFalloff(const float val) 
+{ 
+    visWindow->SetAnariLightFalloff(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetAnariLightFalloff
+//
+// @see VisWindow::GetAnariLightFalloff
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+float
+ViewerWindow::GetAnariLightFalloff() const 
+{ 
+    return visWindow->GetAnariLightFalloff(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetAnariAmbientIntensity
+//
+// @see VisWindow::SetAnariAmbientIntensity
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void
+ViewerWindow::SetAnariAmbientIntensity(const float val) 
+{ 
+    visWindow->SetAnariAmbientIntensity(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetAnariAmbientIntensity
+//
+// @see VisWindow::GetAnariAmbientIntensity
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+float               
+ViewerWindow::GetAnariAmbientIntensity() const 
+{ 
+    return visWindow->GetAnariAmbientIntensity(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetAnariMaxDepth
+//
+// @see VisWindow::SetAnariMaxDepth
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetAnariMaxDepth(const int val) 
+{ 
+    visWindow->SetAnariMaxDepth(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetAnariMaxDepth
+//
+// @see VisWindow::GetAnariMaxDepth
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+int                 
+ViewerWindow::GetAnariMaxDepth() const 
+{ 
+    return visWindow->GetAnariMaxDepth(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetAnariRValue
+//
+// @see VisWindow::SetAnariRValue
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void               
+ViewerWindow::SetAnariRValue(const float val) 
+{ 
+    visWindow->SetAnariRValue(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetAnariRValue
+//
+// @see VisWindow::GetAnariRValue
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+float               
+ViewerWindow::GetAnariRValue() const 
+{ 
+    return visWindow->GetAnariRValue(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetAnariDebugMethod
+//
+// @see VisWindow::SetAnariDebugMethod
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetAnariDebugMethod(const std::string method) 
+{ 
+    visWindow->SetAnariDebugMethod(method); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetAnariDebugMethod
+//
+// @see VisWindow::GetAnariDebugMethod
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+std::string         
+ViewerWindow::GetAnariDebugMethod() const 
+{ 
+    return visWindow->GetAnariDebugMethod(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdDir
+//
+// @see VisWindow::SetUsdDir
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdDir(const std::string usdDir) 
+{
+     visWindow->SetUsdDir(usdDir); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdDir
+//
+// @see VisWindow::GetUsdDir
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+std::string         
+ViewerWindow::GetUsdDir() const 
+{ 
+    return visWindow->GetUsdDir(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdAtCommit
+//
+// @see VisWindow::SetUsdAtCommit
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdAtCommit(const bool val) 
+{ 
+    visWindow->SetUsdAtCommit(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdAtCommit
+//
+// @see VisWindow::GetUsdAtCommit
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdAtCommit() const 
+{ 
+    return visWindow->GetUsdAtCommit(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputBinary
+//
+// @see VisWindow::SetUsdOutputBinary
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputBinary(const bool val) 
+{ 
+    visWindow->SetUsdOutputBinary(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputBinary
+//
+// @see VisWindow::GetUsdOutputBinary
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputBinary() const 
+{ 
+    return visWindow->GetUsdOutputBinary(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputMaterial
+//
+// @see VisWindow::SetUsdOutputMaterial
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputMaterial(const bool val) 
+{ 
+    visWindow->SetUsdOutputMaterial(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputMaterial
+//
+// @see VisWindow::GetUsdOutputMaterial
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputMaterial() const 
+{ 
+    return visWindow->GetUsdOutputMaterial(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputPreviewSurface
+//
+// @see VisWindow::SetUsdOutputPreviewSurface
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputPreviewSurface(const bool val) 
+{ 
+    visWindow->SetUsdOutputPreviewSurface(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputPreviewSurface
+//
+// @see VisWindow::GetUsdOutputPreviewSurface
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputPreviewSurface() const 
+{ 
+    return visWindow->GetUsdOutputPreviewSurface(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputMDL
+//
+// @see VisWindow::SetUsdOutputMDL
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputMDL(const bool val) 
+{ 
+    visWindow->SetUsdOutputMDL(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputMDL
+//
+// @see VisWindow::GetUsdOutputMDL
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputMDL() const 
+{ 
+    return visWindow->GetUsdOutputMDL(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputMDLColors
+//
+// @see VisWindow::SetUsdOutputMDLColors
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputMDLColors(const bool val) 
+{ 
+    visWindow->SetUsdOutputMDLColors(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputMDLColors
+//
+// @see VisWindow::GetUsdOutputMDLColors
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputMDLColors() const 
+{ 
+    return visWindow->GetUsdOutputMDLColors(); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::SetUsdOutputDisplayColors
+//
+// @see VisWindow::SetUsdOutputDisplayColors
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+void                
+ViewerWindow::SetUsdOutputDisplayColors(const bool val) 
+{ 
+    visWindow->SetUsdOutputDisplayColors(val); 
+}
+
+// ****************************************************************************
+// Method: ViewerWindow::GetUsdOutputDisplayColors
+//
+// @see VisWindow::GetUsdOutputDisplayColors
+//
+// Programmer: Kevin Griffin
+// Creation:   
+//
+// ****************************************************************************
+
+bool                
+ViewerWindow::GetUsdOutputDisplayColors() const 
+{ 
+    return visWindow->GetUsdOutputDisplayColors(); 
+}
+
 #endif
 
 // ****************************************************************************

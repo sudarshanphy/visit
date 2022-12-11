@@ -411,7 +411,32 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     std::string             GetAnariRendererSubtype() const { return m_anariRendererSubtype; }
     void                    SetUseAnariDenoiser(const bool);
     bool                    GetUseAnariDenoiser() const { return m_useAnariDenoiser; }
-
+    void                    SetAnariLightFalloff(const float);
+    float                   GetAnariLightFalloff() const { return m_anariLightFalloff; }
+    void                    SetAnariAmbientIntensity(const float);
+    float                   GetAnariAmbientIntensity() const { return m_anariAmbientIntensity; }
+    void                    SetAnariMaxDepth(const int);
+    int                     GetAnariMaxDepth() const { return m_anariMaxDepth; }
+    void                    SetAnariRValue(const float);
+    float                   GetAnariRValue() const { return m_anariRValue; }
+    void                    SetAnariDebugMethod(const std::string);
+    std::string             GetAnariDebugMethod() const { return m_anariDebugMethod; }
+    void                    SetUsdDir(const std::string);
+    std::string             GetUsdDir() const { return m_usdDir; }
+    void                    SetUsdAtCommit(const bool);
+    bool                    GetUsdAtCommit() const { return m_usdAtCommit; }
+    void                    SetUsdOutputBinary(const bool);
+    bool                    GetUsdOutputBinary() const { return m_usdOutputBinary; }
+    void                    SetUsdOutputMaterial(const bool);
+    bool                    GetUsdOutputMaterial() const { return m_usdOutputMaterial; }
+    void                    SetUsdOutputPreviewSurface(const bool);
+    bool                    GetUsdOutputPreviewSurface() const { return m_usdOutputPreviewSurface; }
+    void                    SetUsdOutputMDL(const bool);
+    bool                    GetUsdOutputMDL() const { return m_usdOutputMDL; }
+    void                    SetUsdOutputMDLColors(const bool);
+    bool                    GetUsdOutputMDLColors() const { return m_usdOutputMDLColors; }
+    void                    SetUsdOutputDisplayColors(const bool);
+    bool                    GetUsdOutputDisplayColors() const { return m_usdOutputDisplayColors; }
     vtkAnariPass            *CreateAnariPass();
 #endif
     virtual void            *CreateToolbar(const char *) { return 0; };
@@ -469,6 +494,19 @@ class VISWINDOW_API VisWinRendering : public VisWinColleague
     std::string                 m_anariLibrarySubtype;
     std::string                 m_anariRendererSubtype;
     bool                        m_useAnariDenoiser;
+    float                       m_anariLightFalloff;
+    float                       m_anariAmbientIntensity;
+    int                         m_anariMaxDepth;
+    float                       m_anariRValue;
+    std::string                 m_anariDebugMethod;
+    std::string                 m_usdDir;
+    bool                        m_usdAtCommit;
+    bool                        m_usdOutputBinary;
+    bool                        m_usdOutputMaterial;
+    bool                        m_usdOutputPreviewSurface;
+    bool                        m_usdOutputMDL;
+    bool                        m_usdOutputMDLColors;
+    bool                        m_usdOutputDisplayColors;
     vtkAnariPass                *m_anariPass;
     bool                        m_anariPassValid;
 #endif

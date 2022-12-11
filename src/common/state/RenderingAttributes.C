@@ -187,10 +187,10 @@ void RenderingAttributes::Init()
     anariSPP = 1;
     anariAO = 0;
     useAnariDenoiser = false;
-    anariLightFalloff = 0;
+    anariLightFalloff = 1;
     anariAmbientIntensity = 1;
     anariMaxDepth = 0;
-    anariRValue = 0;
+    anariRValue = 1;
     usdAtCommit = false;
     usdOutputBinary = true;
     usdOutputMaterial = true;

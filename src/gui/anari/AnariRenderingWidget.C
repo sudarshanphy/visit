@@ -259,7 +259,7 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
 
     // Row 2
     // lightFalloff ANARI_FLOAT32 - scivis    
-    m_lightFalloff = new QLineEdit("0.0", widget);
+    m_lightFalloff = new QLineEdit("1.0", widget);
     QDoubleValidator *dv0 = new QDoubleValidator();
     dv0->setDecimals(4);
     m_lightFalloff->setValidator(dv0);
@@ -305,7 +305,7 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     gridLayout->addWidget(m_maxDepth, rows, 1, 1, 1);
 
     // R  ANARI_FLOAT32 - dpt
-    m_rValue = new QLineEdit("0.0", widget);
+    m_rValue = new QLineEdit("1.0", widget);
     QDoubleValidator *dv2 = new QDoubleValidator(0.0, 1.0, 4);
     m_rValue->setValidator(dv2);
     m_rValue->setText(QString::number(m_renderingAttributes->GetAnariRValue()));
@@ -333,6 +333,8 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     m_debugMethod->addItem("uvw");
     m_debugMethod->addItem("istri");
     m_debugMethod->addItem("isvol");
+
+    debugMethodChanged(m_debugMethod->currentText());
     connect(m_debugMethod, QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this, &AnariRenderingWidget::debugMethodChanged);
 
@@ -393,6 +395,7 @@ AnariRenderingWidget::CreateUSDWidget(int &rows)
 
     m_dirLineEdit = new QLineEdit(*m_outputDir);
     connect(m_dirLineEdit, &QLineEdit::editingFinished, this, &AnariRenderingWidget::outputLocationChanged);    
+    outputLocationChanged();
 
     QPushButton *dirSelectButton = new QPushButton("Select");
     connect(dirSelectButton, &QPushButton::pressed, this, &AnariRenderingWidget::selectButtonPressed);
@@ -917,16 +920,19 @@ AnariRenderingWidget::UpdateRValue(const float val)
 void
 AnariRenderingWidget::UpdateDebugMethod(const std::string method)
 {
-    m_debugMethod->blockSignals(true);
     QString textItem = QString::fromStdString(method);
-    int index = m_debugMethod->findText(textItem);
 
-    if(index == -1)
-    {                
-        m_debugMethod->addItem(textItem);
+    if(!textItem.isEmpty())
+    {
+        m_debugMethod->blockSignals(true);
+        int index = m_debugMethod->findText(textItem);
+
+        if(index == -1)
+        {                
+            m_debugMethod->addItem(textItem);
+        }
+         m_debugMethod->blockSignals(false);
     }
-
-    m_debugMethod->blockSignals(false);
 }
 
 // ****************************************************************************
@@ -976,17 +982,21 @@ void
 AnariRenderingWidget::UpdateUSDOutputLocation(const std::string path)
 {
     QString directoryQStr = QString::fromStdString(path);
-    QDir directory(directoryQStr);
 
-    if(directory.exists())
+    if(!directoryQStr.isEmpty())
     {
-        m_dirLineEdit->blockSignals(true);
-        m_dirLineEdit->setText(directoryQStr);
-        m_dirLineEdit->blockSignals(false);
-    }
-    else
-    {
-        debug5 << "AnariRenderingWidget::UpdateUSDOutputLocation: " << path << " does not exist" << std::endl;
+        QDir directory(directoryQStr);
+
+        if(directory.exists())
+        {
+            m_dirLineEdit->blockSignals(true);
+            m_dirLineEdit->setText(directoryQStr);
+            m_dirLineEdit->blockSignals(false);
+        }
+        else
+        {
+            debug5 << "AnariRenderingWidget::UpdateUSDOutputLocation: " << path << " does not exist" << std::endl;
+        }
     }
 }
 
