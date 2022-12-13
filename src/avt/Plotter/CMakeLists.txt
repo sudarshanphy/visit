@@ -69,7 +69,7 @@
 #   Add vtk/vtkVisItDatasetMapper.
 #
 #   Kevin Griffin, Wed 05 Oct 2022 10:14:14 AM PDT
-#   Added support for vtkRenderingAnari
+#   Added support for ANARI
 # 
 #****************************************************************************/
 

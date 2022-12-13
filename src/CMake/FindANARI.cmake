@@ -57,32 +57,30 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-IF(EXISTS ${VISIT_ANARI_DIR})
-    MESSAGE(STATUS "Checking for ANARI in ${ANARI_DIR}/lib/cmake/anari-${ANARI_VERSION}")
+if(EXISTS ${VISIT_ANARI_DIR})
+    message(STATUS "Checking for ANARI in ${VISIT_ANARI_DIR}/lib/cmake/anari-${ANARI_VERSION}")
 
-    IF(NOT DEFINED anari_DIR)
-        SET(anari_DIR ${VISIT_ANARI_DIR}/lib/cmake/anari-${ANARI_VERSION}
+    if(NOT DEFINED anari_DIR)
+        set(anari_DIR ${VISIT_ANARI_DIR}/lib/cmake/anari-${ANARI_VERSION}
             CACHE PATH 
-            "The directory containing the ANARI config files." FORCE)
-        MARK_AS_ADVANCED(anari_DIR)
-    ENDIF(NOT DEFINED anari_DIR)
+            "The directory containing the ANARI config files." 
+            FORCE)
+    endif(NOT DEFINED anari_DIR)
 
-    #Find ANARI
-    set(CMAKE_LIBRARY_PATH ${VISIT_ANARI_DIR}/lib ${CMAKE_LIBRARY_PATH})
-    FIND_PACKAGE(anari)
-ENDIF()
+    find_package(anari)
+endif()
 
-IF(ANARI_FOUND)
-    ADD_DEFINITIONS(-DVISIT_ANARI)
+if(ANARI_FOUND)
+    add_definitions(-DVISIT_ANARI)
 
     # Include directories
-    GET_TARGET_PROPERTY(_INCLUDE_DIRS anari::anari INTERFACE_INCLUDE_DIRECTORIES)
-    SET(ANARI_INCLUDE_DIRS ${_INCLUDE_DIRS} CACHE PATH "ANARI include directories" FORCE)
-    MARK_AS_ADVANCED(ANARI_INCLUDE_DIRS)    
+    get_target_property(_INCLUDE_DIRS anari::anari INTERFACE_INCLUDE_DIRECTORIES)
+    set(ANARI_INCLUDE_DIRS ${_INCLUDE_DIRS} CACHE PATH "ANARI include directories" FORCE)
+    mark_as_advanced(ANARI_INCLUDE_DIRS)    
     
     # Install Headers
-    IF(VISIT_INSTALL_THIRD_PARTY AND NOT VISIT_HEADERS_SKIP_INSTALL)
-      INSTALL(DIRECTORY ${VISIT_ANARI_DIR}/include/anari
+    if(VISIT_INSTALL_THIRD_PARTY AND NOT VISIT_HEADERS_SKIP_INSTALL)
+      install(DIRECTORY ${VISIT_ANARI_DIR}/include/anari
         DESTINATION
         DESTINATION ${VISIT_INSTALLED_VERSION_INCLUDE}
         FILE_PERMISSIONS OWNER_WRITE OWNER_READ
@@ -92,86 +90,79 @@ IF(ANARI_FOUND)
                               GROUP_WRITE GROUP_READ GROUP_EXECUTE
                                           WORLD_READ WORLD_EXECUTE
         PATTERN ".git" EXCLUDE)
-    ENDIF()
+    endif()
 
     # Just the .so libs. If the .so is a symlink to the full version 
     # the install library logic will correctly install both the full 
     # version and the .so symlink, so only the .so is needed to be 
     # sent to the function.
-    FILE(GLOB ANARI_LIBRARIES ${VISIT_ANARI_DIR}/lib/lib*.so)
+    file(GLOB ANARI_LIBRARIES ${VISIT_ANARI_DIR}/lib/lib*.so)
 
     # Install libs
-    FOREACH(l ${ANARI_LIBRARIES})
-      GET_FILENAME_COMPONENT(_name_ ${l} NAME_WE)
+    foreach(l ${ANARI_LIBRARIES})
+      get_filename_component(_name_ ${l} NAME_WE)
       THIRD_PARTY_INSTALL_LIBRARY(${l})
-    ENDFOREACH()
+    endforeach()
     
-    #================== ANARI Back-end Libraries
-    
-    # SET(DLOPEN_LIBS)
-    # TODO: Debug libs
+    #================== ANARI Back-end Libraries    
+    set(DLOPEN_LIBS)
 
     # Example back-end device
-    FILE(TO_CMAKE_PATH "$ENV{ANARI_Example_DIR}" _Example_DIR)
-    FIND_LIBRARY(ANARI_Example_LIBRARY
+    file(TO_CMAKE_PATH "$ENV{ANARI_Example_DIR}" _Example_DIR)
+    find_library(ANARI_Example_LIBRARY
      	  NAMES anari_library_example
         PATHS 
           ${VISIT_ANARI_DIR}/lib
           ${_Example_DIR}/lib
     	  DOC "ANARI Example back-end library")
 
-    MARK_AS_ADVANCED(ANARI_Example_LIBRARY)
+    mark_as_advanced(ANARI_Example_LIBRARY)
 
-    IF(ANARI_Example_LIBRARY)
-      # LIST(APPEND DLOPEN_LIBS ${ANARI_Example_LIBRARY})
-      ADD_DEFINITIONS(-DHAVE_ANARI_EXAMPLE)
+    if(ANARI_Example_LIBRARY)
+      list(APPEND DLOPEN_LIBS ${ANARI_Example_LIBRARY})
+      add_definitions(-DHAVE_ANARI_EXAMPLE)
       message(STATUS "ANARI Example back-end library found.")
-    ENDIF()
+    endif()
       
     # VISRTX back-end device
-    FILE(TO_CMAKE_PATH "$ENV{ANARI_VISRTX_DIR}" _VISRTX_DIR)
-    FIND_LIBRARY(ANARI_VISRTX_LIBRARY
+    file(TO_CMAKE_PATH "$ENV{ANARI_VISRTX_DIR}" _VISRTX_DIR)
+    find_library(ANARI_VISRTX_LIBRARY
      	  NAMES anari_library_visrtx 
         PATHS 
           ${VISIT_ANARI_DIR}/lib
           ${_VISRTX_DIR}/lib
     	  DOC "ANARI VISRTX back-end library")
 
-    MARK_AS_ADVANCED(ANARI_VISRTX_LIBRARY)
+    mark_as_advanced(ANARI_VISRTX_LIBRARY)
 
-    IF(ANARI_VISRTX_LIBRARY)
-      # LIST(APPEND DLOPEN_LIBS ${ANARI_VISRTX_LIBRARY})
-      ADD_DEFINITIONS(-DHAVE_ANARI_VISRTX)
+    if(ANARI_VISRTX_LIBRARY)
+      list(APPEND DLOPEN_LIBS ${ANARI_VISRTX_LIBRARY})
+      add_definitions(-DHAVE_ANARI_VISRTX)
       message(STATUS "ANARI VISRTX back-end library found.")
-    ENDIF()
+    endif()
 
     # USD back-end device
-    FILE(TO_CMAKE_PATH "$ENV{ANARI_USD_DIR}" _USD_DIR)
-    FIND_LIBRARY(ANARI_USD_LIBRARY
+    file(TO_CMAKE_PATH "$ENV{ANARI_USD_DIR}" _USD_DIR)
+    find_library(ANARI_USD_LIBRARY
      	  NAMES anari_library_usd 
         PATHS 
           ${VISIT_ANARI_DIR}/lib
           ${_USD_DIR}/lib
     	  DOC "ANARI USD back-end library")
 
-    MARK_AS_ADVANCED(ANARI_USD_LIBRARY)
+    mark_as_advanced(ANARI_USD_LIBRARY)
 
-    IF(ANARI_USD_LIBRARY)
-      ADD_DEFINITIONS(-DHAVE_ANARI_USD)
+    if(ANARI_USD_LIBRARY)
+      list(APPEND DLOPEN_LIBS ${ANARI_USD_LIBRARY})
+      add_definitions(-DHAVE_ANARI_USD)
       message(STATUS "ANARI USD back-end library found.")
-    ENDIF()
+    endif()
 
     # ANARI tries to dlopen the back-end libs at runtime
-    # so we need ot make sure those libs exist in
+    # so we need to make sure those libs exist in
     # ${VISIT_BINARY_DIR}/lib/
     # so developer builds can load them
-    # IF( NOT WIN32 )
-    #     FOREACH(anari_lib ${DLOPEN_LIBS})            
-    #       execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-    #                               ${anari_lib}
-    #                               ${VISIT_BINARY_DIR}/lib/)
-    #     ENDFOREACH()
-    # ENDIF()
-
-    # MESSAGE(STATUS "ANARI_LIBRARIES: " ${ANARI_LIBRARIES})
-ENDIF(ANARI_FOUND)
+    file(COPY ${DLOPEN_LIBS} 
+      DESTINATION ${VISIT_BINARY_DIR}/lib/
+      FOLLOW_SYMLINK_CHAIN)
+endif(ANARI_FOUND)

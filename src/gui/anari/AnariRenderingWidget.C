@@ -259,11 +259,11 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
 
     // Row 2
     // lightFalloff ANARI_FLOAT32 - scivis    
-    m_lightFalloff = new QLineEdit("1.0", widget);
+    m_lightFalloff = new QLineEdit(QString::number(m_renderingAttributes->GetAnariLightFalloff()),
+                                   widget);
     QDoubleValidator *dv0 = new QDoubleValidator();
     dv0->setDecimals(4);
     m_lightFalloff->setValidator(dv0);
-    m_lightFalloff->setText(QString::number(m_renderingAttributes->GetAnariLightFalloff()));
 
     connect(m_lightFalloff, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::lightFalloffChanged);
@@ -275,16 +275,16 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     gridLayout->addWidget(m_lightFalloff, rows, 1, 1, 1);
 
     // ambientIntensity ANARI_FLOAT32 - scivis
-    m_ambientIntensity = new QLineEdit("0.0", widget);
+    m_ambientIntensity = new QLineEdit(QString::number(m_renderingAttributes->GetAnariAmbientIntensity()),
+                                       widget);
     QDoubleValidator *dv1 = new QDoubleValidator(0.0, 1.0, 4);
     m_ambientIntensity->setValidator(dv1);
-    m_ambientIntensity->setText(QString::number(m_renderingAttributes->GetAnariAmbientIntensity()));
 
     connect(m_ambientIntensity, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::ambientIntensityChanged);
 
     QLabel *intensityLabel = new QLabel(tr("Ambient Intensity"));
-    intensityLabel->setToolTip(tr("Ambient Light Intensity"));
+    intensityLabel->setToolTip(tr("0.0 <= Ambient Light Intensity <= 1.0"));
 
     gridLayout->addWidget(intensityLabel, rows, 2, 1, 1);
     gridLayout->addWidget(m_ambientIntensity, rows++, 3, 1, 1);
@@ -305,16 +305,16 @@ AnariRenderingWidget::CreateBackendWidget(int &rows)
     gridLayout->addWidget(m_maxDepth, rows, 1, 1, 1);
 
     // R  ANARI_FLOAT32 - dpt
-    m_rValue = new QLineEdit("1.0", widget);
+    m_rValue = new QLineEdit(QString::number(m_renderingAttributes->GetAnariRValue()),
+                             widget);
     QDoubleValidator *dv2 = new QDoubleValidator(0.0, 1.0, 4);
     m_rValue->setValidator(dv2);
-    m_rValue->setText(QString::number(m_renderingAttributes->GetAnariRValue()));
 
     connect(m_rValue, &QLineEdit::editingFinished, 
             this, &AnariRenderingWidget::rValueChanged);
 
     QLabel *rLabel = new QLabel(tr("R"));
-    rLabel->setToolTip(tr("R"));
+    rLabel->setToolTip(tr("0.0 <= R <= 1.0"));
 
     gridLayout->addWidget(rLabel, rows, 2, 1, 1);
     gridLayout->setAlignment(rLabel, Qt::AlignRight);
