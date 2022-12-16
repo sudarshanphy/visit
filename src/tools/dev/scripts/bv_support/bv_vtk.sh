@@ -54,6 +54,10 @@ function bv_vtk_depends_on
         depends_on="${depends_on} ospray"
     fi
 
+    if [[ "$DO_ANARI" == "yes" ]]; then
+        depends_on="${depends_on} anari"
+    fi
+
     # Only depend on Qt if we're not doing server-only builds.
     if [[ "$DO_DBIO_ONLY" != "yes" ]]; then
         if [[ "$DO_ENGINE_ONLY" != "yes" ]]; then
@@ -1564,8 +1568,7 @@ function build_vtk
     fi
 
     vopts=""
-    # vtk_build_mode="${VISIT_BUILD_MODE}"
-    vtk_build_mode="Debug"
+    vtk_build_mode="${VISIT_BUILD_MODE}"
     vtk_inst_path="${VISITDIR}/${VTK_INSTALL_DIR}/${VTK_VERSION}/${VISITARCH}"
     vtk_debug_leaks="false"
 
@@ -1715,9 +1718,12 @@ function build_vtk
         vopts="${vopts} -Dembree_DIR=${EMBREE_INSTALL_DIR}"
     fi
 
-    # Use ANARI
-    vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=ON"
-    vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/0.2.0/linux-x86_64_gcc-9.4/lib/cmake/anari-0.2.0"
+    # Use ANARI?
+    if [[ "$DO_ANARI" == "yes" ]] ; then
+    	vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=ON"
+    	#vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/0.2.0/linux-x86_64_gcc-9.4/lib/cmake/anari-0.2.0"
+    	vopts="${vopts} -Danari_DIR=${VISITDIR}/${ANARI_INSTALL_DIR}/${ANARI_VERSION}/${VISITARCH}/lib/cmake/anari-${ANARI_VERSION}"
+    fi
 
     # zlib support, use the one we build
     vopts="${vopts} -DVTK_USE_SYSTEM_ZLIB:BOOL=ON"
