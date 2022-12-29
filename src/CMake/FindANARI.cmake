@@ -22,6 +22,10 @@ This module provides the following imported targets, if found:
   The ANARI library
 ``anari::anari_utilities``
   The ANARI utilities library
+``anari::anari_library_debug``
+  Library target for the debug device
+``anari::helium``
+  Library target containing base device implementation abstractions
 
 Result Variables
 ^^^^^^^^^^^^^^^^
@@ -32,10 +36,6 @@ This will define the following variables:
   True if the system has the ANARI library.
 ``HAVE_ANARI_EXAMPLE``
   True if the ANARI example back-end library was found.
-``HAVE_ANARI_VISRTX``
-  True if the VisRTX back-end library was found.
-``HAVE_ANARI_USD``
-  True if the USD back-end library was found.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
@@ -50,10 +50,6 @@ The following cache variables may also be set:
   The ANARI Libraries and third-party ANARI back-end libraries if found
 ``ANARI_Example_LIBRARY``
   The path for the ANARI Example back-end library
-``ANARI_VISRTX_LIBRARY``
-  The path for the ANARI VISRTX back-end library
-``ANARI_USD_LIBRARY``
-  The path for the ANARI USD back-end library
 
 #]=======================================================================]
 
@@ -96,7 +92,7 @@ if(ANARI_FOUND)
     # the install library logic will correctly install both the full 
     # version and the .so symlink, so only the .so is needed to be 
     # sent to the function.
-    file(GLOB ANARI_LIBRARIES ${VISIT_ANARI_DIR}/lib/lib*.so)
+    file(GLOB ANARI_LIBRARIES ${VISIT_ANARI_DIR}/lib/lib*)
 
     # Install libs
     foreach(l ${ANARI_LIBRARIES})
@@ -104,13 +100,13 @@ if(ANARI_FOUND)
       THIRD_PARTY_INSTALL_LIBRARY(${l})
     endforeach()
     
-    #================== ANARI Back-end Libraries    
+    #================== ANARI Example Back-end Library    
     set(DLOPEN_LIBS)
-
-    # Example back-end device
+    
     file(TO_CMAKE_PATH "$ENV{ANARI_Example_DIR}" _Example_DIR)
     find_library(ANARI_Example_LIBRARY
-     	  NAMES anari_library_example
+     	  NAMES 
+          anari_library_helide
         PATHS 
           ${VISIT_ANARI_DIR}/lib
           ${_Example_DIR}/lib
@@ -123,40 +119,6 @@ if(ANARI_FOUND)
       add_definitions(-DHAVE_ANARI_EXAMPLE)
       message(STATUS "ANARI Example back-end library found.")
     endif()
-      
-    # VISRTX back-end device
-    file(TO_CMAKE_PATH "$ENV{ANARI_VISRTX_DIR}" _VISRTX_DIR)
-    find_library(ANARI_VISRTX_LIBRARY
-     	  NAMES anari_library_visrtx 
-        PATHS 
-          ${VISIT_ANARI_DIR}/lib
-          ${_VISRTX_DIR}/lib
-    	  DOC "ANARI VISRTX back-end library")
-
-    mark_as_advanced(ANARI_VISRTX_LIBRARY)
-
-    if(ANARI_VISRTX_LIBRARY)
-      list(APPEND DLOPEN_LIBS ${ANARI_VISRTX_LIBRARY})
-      add_definitions(-DHAVE_ANARI_VISRTX)
-      message(STATUS "ANARI VISRTX back-end library found.")
-    endif()
-
-    # USD back-end device
-    file(TO_CMAKE_PATH "$ENV{ANARI_USD_DIR}" _USD_DIR)
-    find_library(ANARI_USD_LIBRARY
-     	  NAMES anari_library_usd 
-        PATHS 
-          ${VISIT_ANARI_DIR}/lib
-          ${_USD_DIR}/lib
-    	  DOC "ANARI USD back-end library")
-
-    mark_as_advanced(ANARI_USD_LIBRARY)
-
-    if(ANARI_USD_LIBRARY)
-      list(APPEND DLOPEN_LIBS ${ANARI_USD_LIBRARY})
-      add_definitions(-DHAVE_ANARI_USD)
-      message(STATUS "ANARI USD back-end library found.")
-    endif()
 
     # ANARI tries to dlopen the back-end libs at runtime
     # so we need to make sure those libs exist in
@@ -164,5 +126,8 @@ if(ANARI_FOUND)
     # so developer builds can load them
     file(COPY ${DLOPEN_LIBS} 
       DESTINATION ${VISIT_BINARY_DIR}/lib/
+      FILE_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
+                       GROUP_WRITE GROUP_READ GROUP_EXECUTE
+                                   WORLD_READ WORLD_EXECUTE
       FOLLOW_SYMLINK_CHAIN)
 endif(ANARI_FOUND)

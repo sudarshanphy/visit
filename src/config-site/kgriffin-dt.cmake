@@ -1,7 +1,7 @@
 #/home/kgriffin/VisIt/third_party/3.3.0/cmake/3.18.2/linux-x86_64_gcc-9.4/bin/cmake
 ##
 ## /home/kgriffin/VisIt/visit/src/tools/dev/scripts/build_visit generated host.cmake
-## created: Thu 15 Dec 2022 05:47:54 PM PST
+## created: Tue 27 Dec 2022 06:05:11 PM PST
 ## system: Linux kgriffin-dt 5.15.0-56-generic #62~20.04.1-Ubuntu SMP Tue Nov 22 21:24:20 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 ## by: kgriffin
 
@@ -70,7 +70,7 @@ VISIT_OPTION_DEFAULT(VISIT_QWT_DIR ${VISITHOME}/qwt/${QWT_VERSION}/${VISITARCH})
 ##
 ## ANARI
 ##
-SETUP_APP_VERSION(ANARI 0.2.0)
+SETUP_APP_VERSION(ANARI 0.3.0)
 VISIT_OPTION_DEFAULT(VISIT_ANARI ON TYPE BOOL)
 VISIT_OPTION_DEFAULT(VISIT_ANARI_DIR ${VISITHOME}/anari/${ANARI_VERSION}/${VISITARCH})
 

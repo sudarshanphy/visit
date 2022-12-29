@@ -38,15 +38,14 @@ function bv_anari_depends_on
 #add information about how to get library..
 function bv_anari_info
 {
-    export ANARI_VERSION=${ANARI_VERSION:-"0.2.0"}
-    export ANARI_SHORT_VERSION=${ANARI_SHORT_VERSION:-"0.2"}
+    export ANARI_VERSION=${ANARI_VERSION:-"0.3.0"}
+    export ANARI_SHORT_VERSION=${ANARI_SHORT_VERSION:-"0.3"}
     export ANARI_FILE=${ANARI_FILE:-"v${ANARI_VERSION}.tar.gz"}
     export ANARI_COMPATIBILITY_VERSION=${ANARI_SHORT_VERSION}
     export ANARI_URL=${ANARI_URL:-"https://github.com/KhronosGroup/ANARI-SDK/archive/refs/tags"}
     export ANARI_SRC_DIR=${ANARI_SRC_DIR:-"ANARI-SDK-${ANARI_VERSION}"}
     export ANARI_INSTALL_DIR=${ANARI_INSTALL_DIR:-"anari"}
     export ANARI_MD5_CHECKSUM="a761bb20192f9027ed74750d1c503d42"
-    # export ANARI_SHA256_CHECKSUM="e81a0f2dd6cf61d55a23815b26f610777cfcba2026836bbad2778a15f8d0e9e7"
 }
 
 #print variables used by this module
@@ -92,9 +91,9 @@ function bv_anari_ensure
         ensure_built_or_ready $ANARI_INSTALL_DIR $ANARI_VERSION $ANARI_SRC_DIR $ANARI_FILE $ANARI_URL
 
         if [[ $? != 0 ]] ; then
-	    ANY_ERRORS="yes"
-	    bv_anari_disable
-	    error "Unable to build ANARI. ${ANARI_FILE} not found."	
+            ANY_ERRORS="yes"
+            bv_anari_disable
+            error "Unable to build ANARI. ${ANARI_FILE} not found."	
         fi
     fi
 }
@@ -102,15 +101,15 @@ function bv_anari_ensure
 function build_anari
 {
     if [[ -d $ANARI_SRC_DIR ]] ; then
-	if [[ ! -f $ANARI_FILE ]] ; then
-	    warn "The directory ${ANARI_SRC_DIR} exists, deleting before downloading and uncompressing"
-	    rm -Rf $ANARI_SRC_DIR
-	    bv_anari_ensure
-    
-	    if [[ "$DO_ANARI" == "no" ]] ; then
-	        return 1
-	    fi
-  	fi
+        if [[ ! -f $ANARI_FILE ]] ; then
+            warn "The directory ${ANARI_SRC_DIR} exists, deleting before downloading and uncompressing"
+            rm -Rf $ANARI_SRC_DIR
+            bv_anari_ensure
+        
+            if [[ "$DO_ANARI" == "no" ]] ; then
+                return 1
+            fi
+        fi
     fi
 
     # Extract sources
@@ -120,16 +119,16 @@ function build_anari
     #  1 for success with untar, 2 for failure with checksum
 
     if [[ $untarred_anari == -1 ]] ; then
-	warn "Unable to prepare ANARI source directory. Giving Up!"
-	return 1
+        warn "Unable to prepare ANARI source directory. Giving Up!"
+        return 1
     fi
 
     # Make build directory for an out-of-source build.
     ANARI_BUILD_DIR="${ANARI_SRC_DIR}-build"
 
     if [[ ! -d $ANARI_BUILD_DIR ]] ; then
-	echo "Making build directory $ANARI_BUILD_DIR"
-	mkdir $ANARI_BUILD_DIR
+        echo "Making build directory $ANARI_BUILD_DIR"
+        mkdir $ANARI_BUILD_DIR
     fi
 
     # CMake config options
@@ -147,23 +146,28 @@ function build_anari
     vopts="${vopts} -DCMAKE_SHARED_LINKER_FLAGS:STRING=${lf}"
 
     if test "${OPSYS}" = "Darwin" ; then
-	vopts="${vopts} -DCMAKE_INSTALL_NAME_DIR:PATH=${anari_inst_path}/lib"
+	    vopts="${vopts} -DCMAKE_INSTALL_NAME_DIR:PATH=${anari_inst_path}/lib"
     fi
 
     # ANARI config options 
     if test "x${DO_STATIC_BUILD}" = "xyes" ; then
-	vopts="${vopts} -DBUILD_SHARED_LIBS:BOOL=OFF"
+	    vopts="${vopts} -DBUILD_SHARED_LIBS:BOOL=OFF"
     else
-	vopts="${vopts} -DBUILD_SHARED_LIBS:BOOL=ON"
+	    vopts="${vopts} -DBUILD_SHARED_LIBS:BOOL=ON"
     fi
 
-    vopts="${vopts} -DBUILD_EXAMPLES:BOOL=ON"
+    vopts="${vopts} -DBUILD_HELIDE_DEVICE:BOOL=ON"
     vopts="${vopts} -DINSTALL_CODE_GEN_SCRIPTS:BOOL=ON"
-
+    vopts="${vopts} -DBUILD_CTS:BOOL=OFF"
+    vopts="${vopts} -DBUILD_EXAMPLES:BOOL=OFF"
+    
+    #
     # Configure and Build the ANARI SDK
-    CMAKE_BIN="${CMAKE_INSTALL}/cmake"
+    #
     cd ${ANARI_BUILD_DIR}
     rm -rf *
+
+    CMAKE_BIN="${CMAKE_INSTALL}/cmake"
 
     #
     # Several platforms have had problems with the VTK cmake configure command
@@ -173,10 +177,6 @@ function build_anari
     # script that we invoke with bash which calls cmake with all of the properly
     # arguments. We are now using this strategy for all platforms.
     #
-    if test -e bv_run_cmake.sh ; then
-        rm -f bv_run_cmake.sh
-    fi
-
     echo "\"${CMAKE_BIN}\"" ${vopts} ../${ANARI_SRC_DIR} > bv_run_cmake.sh
     cat bv_run_cmake.sh
     issue_command bash bv_run_cmake.sh || error "ANARI configuration failed."
@@ -212,7 +212,7 @@ function bv_anari_is_enabled
 function bv_anari_is_installed
 {
     if [[ "USE_ALT_ANARI" == "yes" ]]; then
-	return 1
+	    return 1
     fi
 
     check_if_installed "anari" $ANARI_VERSION

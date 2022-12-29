@@ -87,23 +87,19 @@ AnariRenderingWidget::AnariRenderingWidget(QvisRenderingWindow *renderingWindow,
     int rows = m_totalRows;
 
     renderingGroupVBoxLayout->addWidget(CreateGeneralWidget(rows));
-    m_totalRows += rows;   
-
-    // Create and add the back-end specific widgets
+    m_totalRows += rows;
+    
     m_backendStackedLayout = new QStackedLayout();
 
-// TODO: Create HAVE_ANARI_BACKEND
-#if defined(HAVE_ANARI_EXAMPLE) || defined(HAVE_ANARI_VISRTX)
+    // Create and add the back-end specific widgets
     rows = 0;
     m_backendStackedLayout->addWidget(CreateBackendWidget(rows));
     m_totalRows += rows;
-#endif
 
-#if defined(HAVE_ANARI_USD)
+    // Create USD back-end widgets
     rows = 0;
     m_backendStackedLayout->addWidget(CreateUSDWidget(rows));
     m_totalRows += rows;
-#endif
 
     renderingGroupVBoxLayout->addLayout(m_backendStackedLayout);
     mainLayout->addWidget(m_renderingGroup);
@@ -145,15 +141,30 @@ AnariRenderingWidget::CreateGeneralWidget(int &rows)
     m_libraryNames = new QComboBox();
     m_libraryNames->setInsertPolicy(QComboBox::InsertPolicy::InsertAlphabetically);
 
-    #ifdef HAVE_ANARI_EXAMPLE
-    m_libraryNames->addItem("example");
-    #endif
-    #ifdef HAVE_ANARI_VISRTX
-    m_libraryNames->addItem("visrtx");
-    #endif
-    #ifdef HAVE_ANARI_USD
-    m_libraryNames->addItem("usd");
-    #endif
+    // Determine what back-end libraries are available
+    anari::Library anariLibrary = anari::loadLibrary("helide");
+
+    if(anariLibrary)
+    {
+        m_libraryNames->addItem("helide");
+        anari::unloadLibrary(anariLibrary);
+    }
+    
+    anariLibrary = anari::loadLibrary("visrtx");
+
+    if(anariLibrary)
+    {
+        m_libraryNames->addItem("visrtx");
+        anari::unloadLibrary(anariLibrary);
+    }
+    
+    anariLibrary = anari::loadLibrary("usd");
+
+    if(anariLibrary)
+    {
+        m_libraryNames->addItem("usd");
+        anari::unloadLibrary(anariLibrary);
+    }
 
     connect(m_libraryNames, QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this, &AnariRenderingWidget::libraryChanged);
@@ -492,7 +503,7 @@ AnariRenderingWidget::CreateUSDWidget(int &rows)
 BackendType 
 AnariRenderingWidget::GetBackendType(const std::string &libname) const
 {
-    if(libname.compare("example") == 0)
+    if(libname.compare("helide") == 0)
     {
         return BackendType::EXAMPLE;
     }

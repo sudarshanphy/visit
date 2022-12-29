@@ -1721,8 +1721,7 @@ function build_vtk
     # Use ANARI?
     if [[ "$DO_ANARI" == "yes" ]] ; then
     	vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=ON"
-    	#vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/0.2.0/linux-x86_64_gcc-9.4/lib/cmake/anari-0.2.0"
-    	vopts="${vopts} -Danari_DIR=${VISITDIR}/${ANARI_INSTALL_DIR}/${ANARI_VERSION}/${VISITARCH}/lib/cmake/anari-${ANARI_VERSION}"
+    	vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/${ANARI_VERSION}/${VISITARCH}/lib/cmake/anari-${ANARI_VERSION}"
     fi
 
     # zlib support, use the one we build
