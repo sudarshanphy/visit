@@ -52,7 +52,7 @@
 #include <vtkVisItViewNodeFactory.h>
 #endif
 
-#ifdef VISIT_ANARI    
+#ifdef VISIT_ANARI
     #include <vtkAnariRendererNode.h>
     #include <vtkAnariPass.h>
     #include <vtkAnariVisItViewNodeFactory.h>
@@ -79,12 +79,12 @@ bool VisWinRendering::stereoEnabled = false;
 //  Modification:
 //
 //    Hank Childs, Thu Jul  6 14:06:15 PDT 2000
-//    Initialized needsUpdate, realized and set size and location.  Cached 
+//    Initialized needsUpdate, realized and set size and location.  Cached
 //    context.  Removed call to SetUpViewport.  Pushed code to create rendering
 //    pipeline up to this function.
 //
 //    Hank Childs, Tue Aug  1 16:24:09 PDT 2000
-//    Added initialization of foreground renderer.  Added code to have 
+//    Added initialization of foreground renderer.  Added code to have
 //    transparent renderers instead of "sensitive" setup I had before.
 //
 //    Hank Childs, Fri Aug  4 15:00:17 PDT 2000
@@ -98,8 +98,8 @@ bool VisWinRendering::stereoEnabled = false;
 //    Brad Whitlock, Thu Sep 19 14:26:49 PST 2002
 //    Initialized some new data members.
 //
-//    Kathleen Bonnell, Wed Dec  4 17:05:24 PST 2002  
-//    Removed numAntialiasingFrames, no longer required. 
+//    Kathleen Bonnell, Wed Dec  4 17:05:24 PST 2002
+//    Removed numAntialiasingFrames, no longer required.
 //
 //    Eric Brugger, Thu Dec 12 13:27:42 PST 2002
 //    Initialized some new data members added to for scalable rendering.
@@ -370,7 +370,7 @@ VisWinRendering::GetCanvas(void)
 {
     return canvas;
 }
-       
+
 
 // ****************************************************************************
 //  Method: VisWinRendering::GetBackground
@@ -396,7 +396,7 @@ VisWinRendering::GetBackground(void)
 {
     return background;
 }
-       
+
 
 // ****************************************************************************
 //  Method: VisWinRendering::GetForeground
@@ -435,14 +435,14 @@ VisWinRendering::GetForeground(void)
 //
 //  Modifications:
 //    Hank Childs, Fri Aug  4 14:51:20 PDT 2000
-//    Only change the canvas viewport if we are in 2D mode since the canvas is 
+//    Only change the canvas viewport if we are in 2D mode since the canvas is
 //    also used for 3D mode.
 //
 //    Eric Brugger, Fri Aug 24 09:15:28 PDT 2001
 //    I added a call to compute the aspect ratio after setting the view.
 //
-//    Kathleen Bonnell, Wed May  8 14:06:50 PDT 2002 
-//    Added support for curve mode. 
+//    Kathleen Bonnell, Wed May  8 14:06:50 PDT 2002
+//    Added support for curve mode.
 //
 //    Jeremy Meredith, Thu Jan 31 14:41:50 EST 2008
 //    Added new AxisArray window mode.
@@ -609,7 +609,7 @@ VisWinRendering::DisableAlphaChannel()
 //  Method: VisWinRendering::Start2DMode
 //
 //  Purpose:
-//      Puts the rendering module in 2D mode.  This means that the camera 
+//      Puts the rendering module in 2D mode.  This means that the camera
 //      should have orthographic projection.
 //
 //  Programmer: Hank Childs
@@ -638,7 +638,7 @@ VisWinRendering::Start2DMode(void)
     canvas->SetViewport(vport);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(false);
 #endif
 }
@@ -677,7 +677,7 @@ VisWinRendering::Stop2DMode(void)
     canvas->SetViewport(0., 0., 1., 1.);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(true);
 #endif
 }
@@ -686,11 +686,11 @@ VisWinRendering::Stop2DMode(void)
 //  Method: VisWinRendering::StartCurveMode
 //
 //  Purpose:
-//      Puts the rendering module in Curve mode.  This means that the camera 
+//      Puts the rendering module in Curve mode.  This means that the camera
 //      should have orthographic projection.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   May 7, 2002 
+//  Programmer: Kathleen Bonnell
+//  Creation:   May 7, 2002
 //
 //  Modifications:
 //    Garrett Morrison, Fri May 11 17:57:47 PDT 2018
@@ -709,7 +709,7 @@ VisWinRendering::StartCurveMode(void)
     canvas->SetViewport(vport);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(false);
 #endif
 }
@@ -723,8 +723,8 @@ VisWinRendering::StartCurveMode(void)
 //      should be put in perspective projection mode if it was in that mode
 //      previously.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   May 7, 2002 
+//  Programmer: Kathleen Bonnell
+//  Creation:   May 7, 2002
 //
 //  Modifications:
 //    Garrett Morrison, Fri May 11 17:57:47 PDT 2018
@@ -746,12 +746,12 @@ VisWinRendering::StopCurveMode(void)
     SetModePerspective(true);
 #endif
 }
-     
+
 // ****************************************************************************
 //  Method: VisWinRendering::StartAxisArrayMode
 //
 //  Purpose:
-//      Puts the rendering module in AxisArray mode.  This means that the 
+//      Puts the rendering module in AxisArray mode.  This means that the
 //      camera should have orthographic projection.
 //
 //  Programmer: Jeremy Meredith
@@ -774,7 +774,7 @@ VisWinRendering::StartAxisArrayMode(void)
     canvas->SetViewport(vport);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(false);
 #endif
 }
@@ -807,7 +807,7 @@ VisWinRendering::StopAxisArrayMode(void)
     canvas->SetViewport(0., 0., 1., 1.);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(true);
 #endif
 }
@@ -816,7 +816,7 @@ VisWinRendering::StopAxisArrayMode(void)
 //  Method: VisWinRendering::StartParallelAxesMode
 //
 //  Purpose:
-//      Puts the rendering module in ParallelAxes mode.  This means that the 
+//      Puts the rendering module in ParallelAxes mode.  This means that the
 //      camera should have orthographic projection.
 //
 //  Programmer: Eric Brugger
@@ -839,7 +839,7 @@ VisWinRendering::StartParallelAxesMode(void)
     canvas->SetViewport(vport);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(false);
 #endif
 }
@@ -872,7 +872,7 @@ VisWinRendering::StopParallelAxesMode(void)
     canvas->SetViewport(0., 0., 1., 1.);
     canvas->ComputeAspect();
 
-#ifdef VISIT_OSPRAY 
+#ifdef VISIT_OSPRAY
     SetModePerspective(true);
 #endif
 }
@@ -920,7 +920,7 @@ VisWinRendering::EnableUpdates(void)
 //  Modifications:
 //
 //    Hank Childs, Thu Jul  6 13:52:19 PDT 2000
-//    Added a check to see if updates are enabled and if the window is 
+//    Added a check to see if updates are enabled and if the window is
 //    realized.
 //
 //    Eric Brugger, Mon Nov  5 13:48:48 PST 2001
@@ -956,7 +956,7 @@ VisWinRendering::Render()
                                            avtCallback::GetNowinInteractionMode()))
         {
             const bool forceTiming = true;
-            const bool timingEnabled = visitTimer->Enabled(); 
+            const bool timingEnabled = visitTimer->Enabled();
             const int timingsIndex = visitTimer->StartTimer(forceTiming);
             double rt = 0.;
 
@@ -1018,14 +1018,14 @@ VisWinRendering::Render()
 // ****************************************************************************
 // Method: VisWinRendering::ResetCounters
 //
-// Purpose: 
+// Purpose:
 //   Resets counters used by the renderer to keep track of the fps.
 //
 // Programmer: Brad Whitlock
 // Creation:   Mon Sep 23 11:43:14 PDT 2002
 //
 // Modifications:
-//   
+//
 //    Mark C. Miller, Thu Nov  3 16:59:41 PST 2005
 //    Added reseting of 3 most recent rendering times
 // ****************************************************************************
@@ -1045,14 +1045,14 @@ VisWinRendering::ResetCounters()
 // ****************************************************************************
 // Method: VisWinRendering::MotionBegin
 //
-// Purpose: 
+// Purpose:
 //   Resets the rendering time variables.
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Sep 19 17:07:13 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1065,14 +1065,14 @@ VisWinRendering::MotionBegin(void)
 // ****************************************************************************
 // Method: VisWinRendering::MotionEnd
 //
-// Purpose: 
+// Purpose:
 //   Calls the rendering information callback.
 //
 // Programmer: Brad Whitlock
 // Creation:   Mon Sep 23 11:46:23 PDT 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1128,12 +1128,12 @@ VisWinRendering::Realize(void)
 // ****************************************************************************
 // Method: VisWinRendering::RenderRenderWindow
 //
-// Purpose: 
+// Purpose:
 //   Render the render window.
 //
 // Arguments:
 //
-// Returns:    
+// Returns:
 //
 // Note:       We put this into a method call so we can prevent it from getting
 //             called in subclasses where sometimes we can't render reliably.
@@ -1145,7 +1145,7 @@ VisWinRendering::Realize(void)
 //    Garrett Morrison, Fri May 11 17:57:47 PDT 2018
 //    Force-disable shadows when not using OSPRay to prevent a crash caused
 //    by VTK getting into a strange state when switching back to GL rendering.
-//   
+//
 // ****************************************************************************
 
 void
@@ -1167,7 +1167,7 @@ VisWinRendering::RenderRenderWindow(void)
     if(GetAnariRendering())
     {
         if(!m_anariPassValid)
-        {     
+        {
             if(m_anariPass != nullptr)
             {
                 m_anariPass->Delete();
@@ -1191,7 +1191,7 @@ VisWinRendering::RenderRenderWindow(void)
 //      request to do the viewport only or not
 //
 //  Programmer: Mark C. Miller
-//  Creation:   July 26, 2004 
+//  Creation:   July 26, 2004
 //
 //  Modifications:
 //     Jeremy Meredith, Thu Jan 31 14:41:50 EST 2008
@@ -1284,7 +1284,7 @@ VisWinRendering::GetCaptureRegion(int& r0, int& c0, int& w, int& h,
 //    Added doViewportOnly arg and code to support getting only the viewport
 //
 //    Mark C. Miller, Fri Apr  2 09:54:10 PST 2004
-//    Fixed problem where used 2D view to control region selection for 
+//    Fixed problem where used 2D view to control region selection for
 //    window in CURVE mode
 //
 //    Mark C. Miller, Mon Jul 26 15:08:39 PDT 2004
@@ -1580,7 +1580,7 @@ VisWinRendering::ScreenRender(avtImageType imgT,
 //    Added doViewportOnly arg and code to support getting only the viewport
 //
 //    Mark C. Miller, Fri Apr  2 09:54:10 PST 2004
-//    Fixed problem where used 2D view to control region selection for 
+//    Fixed problem where used 2D view to control region selection for
 //    window in CURVE mode
 //
 //    Mark C. Miller, Mon Jul 26 15:08:39 PDT 2004
@@ -1607,12 +1607,12 @@ VisWinRendering::ScreenRender(avtImageType imgT,
 //    Fix problem with zbuffer read. It wasn't setting the number of tuples.
 //
 //    Alister Maguire, Tue Jun 18 09:43:21 PDT 2019
-//    Handling opengl error within vtk that occurs while retrieving the 
-//    zbuffer.  
+//    Handling opengl error within vtk that occurs while retrieving the
+//    zbuffer.
 //
 //    Alister Maguire, Thu Jun 20 09:12:24 PDT 2019
 //    Disabling zbuffer error catch until we figure out how to better handle
-//    it. 
+//    it.
 //
 // ****************************************************************************
 
@@ -1641,12 +1641,12 @@ VisWinRendering::ScreenReadback(
 
         int zStatus = renWin->GetZbufferData(c0,r0,c0+w-1,r0+h-1, zbuffer);
 
-        // FIXME: 
-        // For some reason, an opengl error frequently occurs when 
-        // retrieving the zbuffer. If this happens, it's unclear what 
-        // to do. We need to retain the true zbuffer values, but 
-        // copying them over create memory errors every time they 
-        // are touched. 
+        // FIXME:
+        // For some reason, an opengl error frequently occurs when
+        // retrieving the zbuffer. If this happens, it's unclear what
+        // to do. We need to retain the true zbuffer values, but
+        // copying them over create memory errors every time they
+        // are touched.
         //
         //if (zStatus == VTK_ERROR)
         //{
@@ -1710,7 +1710,7 @@ VisWinRendering::ScreenReadback(
 //
 // Returns:    An avtImage containing the background.
 //
-// Note:       
+// Note:
 //
 // Programmer: Brad Whitlock
 // Creation:   Tue Mar 14 19:46:53 PDT 2017
@@ -1748,10 +1748,10 @@ VisWinRendering::BackgroundReadback(bool doViewportOnly)
 //      non-"Screen Capture" (GUI terminology) save window that includes any
 //      annotations that are rendered in the foreground layer. Ordinarily,
 //      the engine never renders the foreground layer and it can only do so
-//      correctly after it has done a parallel image composite. 
+//      correctly after it has done a parallel image composite.
 //
 //  Programmer: Mark C. Miller
-//  Creation:   July 26, 2004 
+//  Creation:   July 26, 2004
 //
 //  Modifications:
 //
@@ -1852,7 +1852,7 @@ VisWinRendering::PostProcessScreenCapture(avtImage_p input,
 //
 // Returns:    A value image.
 //
-// Note:       
+// Note:
 //
 // Programmer: Brad Whitlock
 // Creation:   Mon Sep 25 15:35:27 PDT 2017
@@ -1877,7 +1877,7 @@ VisWinRendering::ScreenCaptureValues(bool readZ)
     bool disableBackground = true;
     avtImage_p input = NULL;
 
-    // Render as a value image. We just install a linear gray lookup 
+    // Render as a value image. We just install a linear gray lookup
     // table and render. (For now).
     ScreenRender(ValueImage,
         doViewportOnly, doCanvasZBufferToo,
@@ -1908,14 +1908,14 @@ VisWinRendering::ScreenCaptureValues(bool readZ)
     writer->SetFileName("screencapturevalues_gray.png");
     writer->SetInputData(grayImage);
     writer->Write();
-    writer->Delete(); 
+    writer->Delete();
 #endif
 
     // read z back. We use it to mask.
     vtkFloatArray *zbuffer = vtkFloatArray::New();
     renWin->GetZbufferData(c0,r0,c0+w-1,r0+h-1, zbuffer);
 
-    // Get the minval and scale for the values. 
+    // Get the minval and scale for the values.
     double ext[2] = {0., 1.};
     mediator.GetExtents(ext);
     float minval = ext[0];
@@ -1999,10 +1999,10 @@ VisWinRendering::ScreenCaptureValues(bool readZ)
 //    Hank Childs, Tue Aug  1 16:24:09 PDT 2000
 //    Added a render to pick up the size change.
 //
-//    Kathleen Bonnell, Tue Aug 26 09:01:33 PDT 2003 
+//    Kathleen Bonnell, Tue Aug 26 09:01:33 PDT 2003
 //    Only set the size if different than what was previously set.  Calling
 //    SetSize all the time in ScalableRendering mode causes the rendering
-//    Context to be destroyed, invalidating any display lists created. 
+//    Context to be destroyed, invalidating any display lists created.
 //
 // ****************************************************************************
 
@@ -2020,7 +2020,7 @@ VisWinRendering::SetSize(int w, int h)
 // ****************************************************************************
 // Method: VisWinRendering::SetWindowSize
 //
-// Purpose: 
+// Purpose:
 //      Sets the size of the renderable portion of the window.
 //
 //  Arguments:
@@ -2042,7 +2042,7 @@ VisWinRendering::SetWindowSize(int w, int h)
 // ****************************************************************************
 // Method: VisWinRendering::IsDirect
 //
-// Purpose: 
+// Purpose:
 //   Determines if the vis window is direct connection to the GPU or if it
 //   goes through the X-server.
 //
@@ -2060,7 +2060,7 @@ VisWinRendering::IsDirect(void)
 // ****************************************************************************
 // Method: VisWinRendering::GetSize
 //
-// Purpose: 
+// Purpose:
 //   Returns the size of the renderable portion of the window.
 //
 // Arguments:
@@ -2083,7 +2083,7 @@ VisWinRendering::GetSize(int &w, int &h)
 // ****************************************************************************
 // Method: VisWinRendering::GetWindowSize
 //
-// Purpose: 
+// Purpose:
 //   Returns the size of the window.
 //
 // Arguments:
@@ -2091,8 +2091,8 @@ VisWinRendering::GetSize(int &w, int &h)
 //   h : A reference to an int that is used to return the window height.
 //
 // Programmer: Mark C. Miller
-// Creation:   07Jul03 
-//   
+// Creation:   07Jul03
+//
 // ****************************************************************************
 
 void
@@ -2125,7 +2125,7 @@ VisWinRendering::SetLocation(int x, int y)
 // ****************************************************************************
 // Method: VisWinRendering::GetLocation
 //
-// Purpose: 
+// Purpose:
 //   Returns the location of the window.
 //
 // Arguments:
@@ -2134,7 +2134,7 @@ VisWinRendering::SetLocation(int x, int y)
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Nov 2 11:02:51 PDT 2001
-//   
+//
 // ****************************************************************************
 
 void
@@ -2161,9 +2161,9 @@ VisWinRendering::GetLocation(int &x, int &y)
 //  Modifications:
 //    Kathleen Bonnell, Tue Aug 13 15:15:37 PDT 2002
 //    Now that there is lighting colleage, light positions will be
-//    managed by vtkRenderer.  Turn off duplicate interactor functionality. 
+//    managed by vtkRenderer.  Turn off duplicate interactor functionality.
 //
-//    Kathleen Bonnell, Tue Feb 11 11:28:03 PST 2003  
+//    Kathleen Bonnell, Tue Feb 11 11:28:03 PST 2003
 //    Test for existence of Interactor before using it. (No interactor
 //    in noWin mode.)
 //
@@ -2240,7 +2240,7 @@ VisWinRendering::SetTitle(const char *title)
 //
 // ****************************************************************************
 
-static void 
+static void
 RemoveCullers(vtkRenderer *ren)
 {
     vtkCullerCollection *cullers = ren->GetCullers();
@@ -2264,11 +2264,11 @@ RemoveCullers(vtkRenderer *ren)
 //      factor is viewport dependednt.
 //
 //  Arguments:
-//      pos     A world-coordinate position to use in the calculation 
+//      pos     A world-coordinate position to use in the calculation
 //      vp      An alternate viewport (optional).  Components should
 //              be in the vtk viewport order: min-x, min_y, max_x, max_y.
 //
-//  Programmer: Kathleen Bonnell 
+//  Programmer: Kathleen Bonnell
 //  Creation:   May 8, 2002  (Moved and slightly modified from avtPickActor).
 //
 // ****************************************************************************
@@ -2281,8 +2281,8 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
     {
         canvas->GetViewport(currVP);
         //
-        // temporarily set vp to that which user specified 
-        // 
+        // temporarily set vp to that which user specified
+        //
         canvas->SetViewport(const_cast<double *>(vp));
     }
 
@@ -2298,12 +2298,12 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
     //
     //  Assuming NormalizedDisplay coordinates run from 0 .. 1 in both
     //  x and y directions, then the normalized dispaly creates a square, whose
-    //  diagonal length is sqrt(2) or 1.4142134624.  
-    // 
-    const double displayDiag = 1.4142135624; 
+    //  diagonal length is sqrt(2) or 1.4142134624.
+    //
+    const double displayDiag = 1.4142135624;
 
-    // 
-    //  We want to find a position P2, that creates a diagonal with the 
+    //
+    //  We want to find a position P2, that creates a diagonal with the
     //  original point that is 1/20th of the display diagonal.
     //
 
@@ -2311,9 +2311,9 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
 
     //
     //  Since we are dealing with a right-isosceles-triangle the new position
-    //  will be offset in both x and y directions by target * cos(45); 
+    //  will be offset in both x and y directions by target * cos(45);
     //
-  
+
     const double cos45 = 0.7604059656;
 
     double offset = target * cos45;
@@ -2324,20 +2324,20 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
     //
     // Now convert our new position from NormalizedDisplay to World Coordinates.
     //
- 
+
     canvas->NormalizedDisplayToViewport(newX, newY);
     canvas->ViewportToNormalizedViewport(newX, newY);
     canvas->NormalizedViewportToView(newX, newY, newZ);
     canvas->ViewToWorld(newX, newY, newZ);
 
     //
-    // Experimental results, using vtkVectorText and vtkPolyDataMapper, 
+    // Experimental results, using vtkVectorText and vtkPolyDataMapper,
     // smallest 'diagonal size' is from the letter 'r' at 0.917883
     // largest  'diagonal size' is from the letter 'W' at 1.78107
     // thus, the average diagonal size of vtkVectorText is:  1.3494765
-    // (for alpha text only, in world coordinats, with scale factor of 1.0).  
-    // THIS MAY BE A DISPLAY-DEPENDENT RESULT! 
-    // 
+    // (for alpha text only, in world coordinats, with scale factor of 1.0).
+    // THIS MAY BE A DISPLAY-DEPENDENT RESULT!
+    //
 
     const double avgTextDiag = 1.3494765;
 
@@ -2349,12 +2349,12 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
     double dxsqr = (newX - pos[0]) * (newX - pos[0]);
     double dysqr = (newY - pos[1]) * (newY - pos[1]);
     double dzsqr = (newZ - pos[2]) * (newZ - pos[2]);
-    double worldTarget = sqrt(dxsqr + dysqr + dzsqr); 
+    double worldTarget = sqrt(dxsqr + dysqr + dzsqr);
 
     if (vp != NULL)
     {
         //
-        // Reset the vp to what it should be. 
+        // Reset the vp to what it should be.
         //
         canvas->SetViewport(currVP);
     }
@@ -2364,10 +2364,10 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
 // ****************************************************************************
 // Method: VisWinRendering::SetRenderInfoCallback
 //
-// Purpose: 
+// Purpose:
 //   Sets the callback function used to report information back to the client.
 //
-// Arguments: 
+// Arguments:
 //   callback : The information callback function.
 //   data     : Data that is passed to the information callback function.
 //
@@ -2375,7 +2375,7 @@ VisWinRendering::ComputeVectorTextScaleFactor(const double *pos, const double *v
 // Creation:   Mon Sep 23 14:20:49 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2394,7 +2394,7 @@ VisWinRendering::SetRenderEventCallback(void(*callback)(void *,bool), void *data
 // ****************************************************************************
 // Method: VisWinRendering::SetAntialiasing
 //
-// Purpose: 
+// Purpose:
 //   Sets the antialiasing mode.
 //
 // Arguments:
@@ -2405,9 +2405,9 @@ VisWinRendering::SetRenderEventCallback(void(*callback)(void *,bool), void *data
 // Creation:   Mon Sep 23 14:21:39 PST 2002
 //
 // Modifications:
-//   Kathleen Bonnell, Wed Dec  4 17:05:24 PST 2002 
+//   Kathleen Bonnell, Wed Dec  4 17:05:24 PST 2002
 //   Remove frames, perform antialiasing via line-smoothing.
-//   
+//
 // ****************************************************************************
 
 void
@@ -2423,7 +2423,7 @@ VisWinRendering::SetAntialiasing(bool enabled)
 // ****************************************************************************
 // Method: VisWinRendering::GetRenderTimes
 //
-// Purpose: 
+// Purpose:
 //   Returns the rendering times.
 //
 // Arguments:
@@ -2433,7 +2433,7 @@ VisWinRendering::SetAntialiasing(bool enabled)
 // Creation:   Mon Sep 23 14:22:34 PST 2002
 //
 // Modifications:
-//   
+//
 //    Mark C. Miller, Thu Nov  3 16:59:41 PST 2005
 //    Added 3 most recent rendering times to set of times returned
 // ****************************************************************************
@@ -2452,7 +2452,7 @@ VisWinRendering::GetRenderTimes(double times[6]) const
 // ****************************************************************************
 // Method: VisWinRendering::SetStereoRendering
 //
-// Purpose: 
+// Purpose:
 //   Sets the stereo mode.
 //
 // Arguments:
@@ -2465,7 +2465,7 @@ VisWinRendering::GetRenderTimes(double times[6]) const
 // Modifications:
 //   Kathleen Bonnell, Thu Jun 30 15:29:55 PDT 2005
 //   Support red-green stereo type.
-//   
+//
 //   Hank Childs, Sun Dec  4 18:50:46 PST 2005
 //   Issue a warning if the user tried to start stereo without putting
 //   "-stereo" on the command line ['4432].
@@ -2503,7 +2503,7 @@ VisWinRendering::SetStereoRendering(bool enabled, int type)
                 GetRenderWindow()->SetStereoType(VTK_STEREO_LEFT);
             else if(stereoType == 5)
                 GetRenderWindow()->SetStereoType(VTK_STEREO_RIGHT);
-            else 
+            else
             {
                 //GetRenderWindow()->SetStereoType(VTK_STEREO_RED_GREEN);
                 GetRenderWindow()->SetStereoType(7);
@@ -2521,7 +2521,7 @@ VisWinRendering::SetStereoRendering(bool enabled, int type)
 // ****************************************************************************
 // Method: VisWinRendering::SetSurfaceRepresentation
 //
-// Purpose: 
+// Purpose:
 //   Sets the surface representation.
 //
 // Arguments:
@@ -2531,7 +2531,7 @@ VisWinRendering::SetStereoRendering(bool enabled, int type)
 // Creation:   Mon Sep 23 14:26:55 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2543,7 +2543,7 @@ VisWinRendering::SetSurfaceRepresentation(int rep)
 // ****************************************************************************
 // Method: VisWinRendering::SetSpecularProperties
 //
-// Purpose: 
+// Purpose:
 //   Sets the specular properties for all of the actors in the canvas
 //   renderer.
 //
@@ -2556,7 +2556,7 @@ VisWinRendering::SetSurfaceRepresentation(int rep)
 // Creation:   November 14, 2003
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2572,14 +2572,14 @@ VisWinRendering::SetSpecularProperties(bool flag, double coeff, double power,
 // ****************************************************************************
 // Method: VisWinRendering::SetColorTexturingFlag
 //
-// Purpose: 
+// Purpose:
 //   Sets the color texturing flag.
 //
 // Programmer: Brad Whitlock
 // Creation:   Mon Sep 18 11:09:39 PDT 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2591,14 +2591,14 @@ VisWinRendering::SetColorTexturingFlag(bool val)
 // ****************************************************************************
 // Method: VisWinRendering::GetColorTexturingFlag
 //
-// Purpose: 
+// Purpose:
 //   Returns the color texturing flag.
 //
 // Programmer: Brad Whitlock
 // Creation:   Mon Sep 18 11:09:23 PDT 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 bool
@@ -2610,7 +2610,7 @@ VisWinRendering::GetColorTexturingFlag() const
 // ****************************************************************************
 // Method: VisWinRendering::GetNumPrimitives
 //
-// Purpose: 
+// Purpose:
 //   Counts the number of graphics primitives drawn by the actors in the canvas
 //   renderer.
 //
@@ -2620,7 +2620,7 @@ VisWinRendering::GetColorTexturingFlag() const
 //             different ways that affect the actual number of primitives
 //             sent to the GPU. We are not using vtkPolyDataMapper because
 //             it does not provide such information. We instead have to count
-//             cells. I could do a better job at determining a count of the 
+//             cells. I could do a better job at determining a count of the
 //             number of primitives by checking for number of sides on each cell
 //             but that would probably be too slow so I'm just using the cell
 //             count.
@@ -2632,7 +2632,7 @@ VisWinRendering::GetColorTexturingFlag() const
 //
 //   Mark C. Miller, Thu Mar  3 17:38:36 PST 2005
 //   Modified to count all types of primitives, not just polygons
-//   
+//
 // ****************************************************************************
 
 int
@@ -2668,7 +2668,7 @@ VisWinRendering::GetNumPrimitives() const
 // ****************************************************************************
 // Method: VisWinRendering::GetScalableThreshold
 //
-// Programmer: Mark C. Miller 
+// Programmer: Mark C. Miller
 // Creation:   May 11, 2004
 //
 // ****************************************************************************
@@ -2684,8 +2684,8 @@ VisWinRendering::GetScalableThreshold() const
 // ****************************************************************************
 // Method: VisWinRendering::SetScalableRendering
 //
-// Programmer: Mark C. Miller 
-// Creation:   February 5, 2003 
+// Programmer: Mark C. Miller
+// Creation:   February 5, 2003
 //
 // ****************************************************************************
 
@@ -2704,8 +2704,8 @@ VisWinRendering::SetScalableRendering(bool mode)
 // ****************************************************************************
 // Method: VisWinRendering::SetScalableAutoThreshold
 //
-// Programmer: Mark C. Miller 
-// Creation:   May 11, 2004 
+// Programmer: Mark C. Miller
+// Creation:   May 11, 2004
 //
 // ****************************************************************************
 
@@ -2720,7 +2720,7 @@ VisWinRendering::SetScalableAutoThreshold(int autoThreshold)
 // ****************************************************************************
 // Method: VisWinRendering::SetScalableActivationMode
 //
-// Programmer: Mark C. Miller 
+// Programmer: Mark C. Miller
 // Creation:   May 11, 2004
 //
 // ****************************************************************************
@@ -2737,7 +2737,7 @@ VisWinRendering::SetScalableActivationMode(int mode)
 // Method:  VisWinRendering::SetCompactDomainsActivationMode
 //
 // Purpose: Set compact domains activation.
-//   
+//
 //
 // Programmer:  Dave Pugmire
 // Creation:    August 24, 2010
@@ -2756,7 +2756,7 @@ VisWinRendering::SetCompactDomainsActivationMode(int mode)
 // Method:  VisWinRendering::SetCompactDomainsAutoThreshold
 //
 // Purpose: Set compact domains threshold.
-//   
+//
 //
 // Programmer:  Dave Pugmire
 // Creation:    August 24, 2010
@@ -2850,7 +2850,7 @@ VisWinRendering::UpdateMouseActions(std::string action, double start_dx, double 
 // ****************************************************************************
 // Method: VisWinRendering::SetModePerspective
 //
-// Purpose: 
+// Purpose:
 //   Stores rendering mode state information needed by OSPRay
 //
 // Arguments:
@@ -2860,7 +2860,7 @@ VisWinRendering::UpdateMouseActions(std::string action, double start_dx, double 
 // Creation:   Wed 2 May 2018 08:39:06 PM PDT
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2873,7 +2873,7 @@ VisWinRendering::SetModePerspective(bool modePerspective)
 // ****************************************************************************
 // Method: VisWinRendering::SetOsprayRendering
 //
-// Purpose: 
+// Purpose:
 //   Sets the OSPRay rendering flag
 //
 // Arguments:
@@ -2886,7 +2886,7 @@ VisWinRendering::SetModePerspective(bool modePerspective)
 //    Garrett Morrison, Fri May 11 17:57:47 PDT 2018
 //    Force-disable shadows when not using OSPRay to prevent a crash caused
 //    by VTK getting into a strange state when switching back to GL rendering.
-//   
+//
 // ****************************************************************************
 
 void
@@ -2908,7 +2908,7 @@ VisWinRendering::SetOsprayRendering(bool enabled)
 // ****************************************************************************
 // Method: VisWinRendering::SetOspraySPP
 //
-// Purpose: 
+// Purpose:
 //   Sets the OSPRay samples per pixel
 //
 // Arguments:
@@ -2918,7 +2918,7 @@ VisWinRendering::SetOsprayRendering(bool enabled)
 // Creation:   Tue 24 Apr 2018 11:22:05 AM EDT
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2934,7 +2934,7 @@ VisWinRendering::SetOspraySPP(int val)
 // ****************************************************************************
 // Method: VisWinRendering::SetOsprayAO
 //
-// Purpose: 
+// Purpose:
 //   Sets the OSPRay ambient occlusion samples
 //
 // Arguments:
@@ -2944,7 +2944,7 @@ VisWinRendering::SetOspraySPP(int val)
 // Creation:   Tue 24 Apr 2018 11:22:05 AM EDT
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -2960,7 +2960,7 @@ VisWinRendering::SetOsprayAO(int val)
 // ****************************************************************************
 // Method: VisWinRendering::SetOsprayShadows
 //
-// Purpose: 
+// Purpose:
 //   Sets the OSPRay shadows flag
 //
 // Arguments:
@@ -2973,14 +2973,14 @@ VisWinRendering::SetOsprayAO(int val)
 //    Garrett Morrison, Fri May 11 17:57:47 PDT 2018
 //    Force-disable shadows when not using OSPRay to prevent a crash caused
 //    by VTK getting into a strange state when switching back to GL rendering.
-//   
+//
 // ****************************************************************************
 
 void
 VisWinRendering::SetOsprayShadows(bool enabled)
 {
     osprayShadows = enabled;
-    
+
     if(osprayShadows && modeIsPerspective)
     {
         canvas->SetUseShadows(true);
@@ -2997,14 +2997,14 @@ VisWinRendering::SetOsprayShadows(bool enabled)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariRendering
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI rendering flag
 //
 // Arguments:
 //   enabled : true if ANARI rendering is enabled, otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:  
+// Creation:
 //
 // ****************************************************************************
 
@@ -3026,14 +3026,14 @@ VisWinRendering::SetAnariRendering(const bool enabled)
 // ****************************************************************************
 // Method: VisWinRendering::SetUseAnariDenoiser
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI denoiser flag
 //
 // Arguments:
 //   enabled : true if the denoiser is enabled for rendering
 //
 // Programmer: Kevin Griffin
-// Creation:  
+// Creation:
 //
 // ****************************************************************************
 
@@ -3051,7 +3051,7 @@ VisWinRendering::SetUseAnariDenoiser(const bool enabled)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariSPP
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI samples per pixel
 //
 // Arguments:
@@ -3059,7 +3059,7 @@ VisWinRendering::SetUseAnariDenoiser(const bool enabled)
 //
 // Programmer: Kevin Griffin
 // Creation:
-//   
+//
 // ****************************************************************************
 
 void
@@ -3075,15 +3075,15 @@ VisWinRendering::SetAnariSPP(const int val)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariAO
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI ambient occlusion samples
 //
 // Arguments:
 //   val : the new number of ambient occlusion samples
 //
 // Programmer: Kevin Griffin
-// Creation:   
-//   
+// Creation:
+//
 // ****************************************************************************
 
 void
@@ -3099,7 +3099,7 @@ VisWinRendering::SetAnariAO(const int val)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariLibraryName
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI library name
 //
 // Arguments:
@@ -3107,9 +3107,9 @@ VisWinRendering::SetAnariAO(const int val)
 //
 // Programmer: Kevin Griffin
 // Creation:
-//   
+//
 // ****************************************************************************
- 
+
 void
 VisWinRendering::SetAnariLibraryName(const std::string name)
 {
@@ -3124,15 +3124,15 @@ VisWinRendering::SetAnariLibraryName(const std::string name)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariLibrarySubtype
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI Library subtype
 //
 // Arguments:
-//   subtype : 
+//   subtype :
 //
 // Programmer: Kevin Griffin
 // Creation:
-//   
+//
 // ****************************************************************************
 
 void
@@ -3149,7 +3149,7 @@ VisWinRendering::SetAnariLibrarySubtype(const std::string subtype)
 // ****************************************************************************
 // Method: VisWinRendering::SetAnariRendererSubtype
 //
-// Purpose: 
+// Purpose:
 //   Sets the ANARI renderer subtype name
 //
 // Arguments:
@@ -3157,7 +3157,7 @@ VisWinRendering::SetAnariLibrarySubtype(const std::string subtype)
 //
 // Programmer: Kevin Griffin
 // Creation:
-//   
+//
 // ****************************************************************************
 
 void
@@ -3176,11 +3176,11 @@ VisWinRendering::SetAnariRendererSubtype(const std::string subtype)
 // Purpose:
 //   Sets the light falloff value used by the back-end renderer
 //
-// Arguments:    
+// Arguments:
 //   val    the light falloff value
 //
 // Programmer: Kevin Griffin
-// Creation:   
+// Creation:
 //
 // ****************************************************************************
 
@@ -3200,11 +3200,11 @@ VisWinRendering::SetAnariLightFalloff(const float val)
 // Purpose:
 //   Sets the ambient intensity value used by the back-end renderer.
 //
-// Arguments:    
+// Arguments:
 //   val    the ambient intensity value
 //
 // Programmer: Kevin Griffin
-// Creation:   
+// Creation:
 //
 // ****************************************************************************
 
@@ -3224,16 +3224,16 @@ VisWinRendering::SetAnariAmbientIntensity(const float val)
 // Purpose:
 //   Sets the max depth value used by the back-end renderer.
 //
-// Arguments:    
+// Arguments:
 //   val    the max depth value
 //
 // Programmer: Kevin Griffin
-// Creation:   
+// Creation:
 //
 // ****************************************************************************
 
-void                    
-VisWinRendering::SetAnariMaxDepth(const int val) 
+void
+VisWinRendering::SetAnariMaxDepth(const int val)
 {
     if(val != m_anariMaxDepth)
     {
@@ -3248,11 +3248,11 @@ VisWinRendering::SetAnariMaxDepth(const int val)
 // Purpose:
 //   Sets the R value used by the back-end renderer.
 //
-// Arguments:    
+// Arguments:
 //   val    the R value
 //
 // Programmer: Kevin Griffin
-// Creation:   
+// Creation:
 //
 // ****************************************************************************
 
@@ -3262,7 +3262,7 @@ VisWinRendering::SetAnariMaxDepth(const int val)
     if(val != m_anariRValue)
     {
         m_anariRValue = val;
-        vtkAnariRendererNode::SetRValue(val, canvas);
+        vtkAnariRendererNode::SetROptionValue(val, canvas);
     }
  }
 
@@ -3272,12 +3272,12 @@ VisWinRendering::SetAnariMaxDepth(const int val)
 // Purpose:
 //   Sets the debug method to use by the back-end debug renderer.
 //
-// Arguments:    
+// Arguments:
 //   method     the debug method
 //
 // Programmer: Kevin Griffin
-// Creation:   
-//   
+// Creation:
+//
 // ****************************************************************************
 
 void
@@ -3296,12 +3296,12 @@ VisWinRendering::SetAnariDebugMethod(const std::string method)
 // Purpose:
 //   Sets the directory for saving USD output from the USD back-end.
 //
-// Arguments:    
+// Arguments:
 //   outDir     the output directory
 //
 // Programmer: Kevin Griffin
-// Creation:     
-//   
+// Creation:
+//
 // ****************************************************************************
 
 void
@@ -3318,14 +3318,14 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdAtCommit
 //
 // Purpose:
-//   Sets the output USD at anariCommit flag for the USD back-end. 
+//   Sets the output USD at anariCommit flag for the USD back-end.
 //
-// Arguments:    
-//   val    true if USD output is created when anariCommit is called, 
+// Arguments:
+//   val    true if USD output is created when anariCommit is called,
 //          otherwise USD output is created when anariRenderFrame is called
 //
 // Programmer: Kevin Griffin
-// Creation:    
+// Creation:
 //
 // ****************************************************************************
 
@@ -3343,13 +3343,13 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputBinary
 //
 // Purpose:
-//   Sets the output USD in binary format flag for the USD back-end. 
+//   Sets the output USD in binary format flag for the USD back-end.
 //
-// Arguments:    
+// Arguments:
 //   val    true if USD output will be binary, otherwise USD output is text.
 //
 // Programmer: Kevin Griffin
-// Creation:  
+// Creation:
 //
 // ****************************************************************************
 
@@ -3367,13 +3367,13 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputMaterial
 //
 // Purpose:
-//   Sets the output USD material objects flag for the USD back-end. 
+//   Sets the output USD material objects flag for the USD back-end.
 //
-// Arguments:    
+// Arguments:
 //   val    true if USD material objects should be output, otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:     
+// Creation:
 //
 // ****************************************************************************
 
@@ -3391,15 +3391,15 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputPreviewSurface
 //
 // Purpose:
-//   Sets the output USD preview surface prims for material objects flag for 
-//   the USD back-end. 
+//   Sets the output USD preview surface prims for material objects flag for
+//   the USD back-end.
 //
-// Arguments:    
-//   val    true if USD previewsurface shader prims should be output for material 
+// Arguments:
+//   val    true if USD previewsurface shader prims should be output for material
 //          objects, otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:     
+// Creation:
 //
 // ****************************************************************************
 
@@ -3417,15 +3417,15 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputMDL
 //
 // Purpose:
-//   Sets the output USD mdl shader prims for material objects flag for the USD 
-//   back-end. 
+//   Sets the output USD mdl shader prims for material objects flag for the USD
+//   back-end.
 //
-// Arguments:    
-//   val    true if USD mdl shader prims should be output for material objects, 
+// Arguments:
+//   val    true if USD mdl shader prims should be output for material objects,
 //          otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:       
+// Creation:
 //
 // ****************************************************************************
 
@@ -3443,15 +3443,15 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputMDLColors
 //
 // Purpose:
-//   Sets the output USD mdl colors for material objects flag for the USD 
-//   back-end. 
+//   Sets the output USD mdl colors for material objects flag for the USD
+//   back-end.
 //
-// Arguments:    
-//   val    true if USD mdl colors should be included in the output for 
+// Arguments:
+//   val    true if USD mdl colors should be included in the output for
 //          material objects, otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:         
+// Creation:
 //
 // ****************************************************************************
 
@@ -3469,14 +3469,14 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // Method: VisWinRendering::SetUsdOutputDisplayColors
 //
 // Purpose:
-//   Sets the output USD display colors flag for the USD back-end. 
+//   Sets the output USD display colors flag for the USD back-end.
 //
-// Arguments:    
-//   val    true if USD display colors should be included in the output, 
+// Arguments:
+//   val    true if USD display colors should be included in the output,
 //          otherwise false
 //
 // Programmer: Kevin Griffin
-// Creation:        
+// Creation:
 //
 // ****************************************************************************
 
@@ -3493,15 +3493,15 @@ VisWinRendering::SetUsdDir(const std::string usdDir)
 // ****************************************************************************
 // Method: VisWinRendering::CreateAnariPass
 //
-// Purpose: 
-//   Creates the ANARI rendering pass that can be put into a vtkRenderWindow 
-//   which makes it use the back-end loaded with ANARI instead of OpenGL to 
-//   render. Adding or removing the pass will swap back and forth between the 
+// Purpose:
+//   Creates the ANARI rendering pass that can be put into a vtkRenderWindow
+//   which makes it use the back-end loaded with ANARI instead of OpenGL to
+//   render. Adding or removing the pass will swap back and forth between the
 //   two.
 //
 // Programmer: Kevin Griffin
 // Creation:
-//   
+//
 // ****************************************************************************
 
 vtkAnariPass *
@@ -3510,7 +3510,7 @@ VisWinRendering::CreateAnariPass()
     vtkAnariPass *anariPass = vtkAnariPass::New();
 
     vtkViewNodeFactory *factory = anariPass->GetViewNodeFactory();
-    factory->RegisterOverride("vtkVisItDataSetMapper", 
+    factory->RegisterOverride("vtkVisItDataSetMapper",
                             vtkAnariVisItViewNodeFactory::pd_maker);
     factory->RegisterOverride("vtkPointGlyphMapper",
                             vtkAnariVisItViewNodeFactory::pd_maker);

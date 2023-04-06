@@ -4,13 +4,15 @@
 function bv_anari_initialize
 {
     export DO_ANARI="no"
+    export DO_ANARI_NVTX="no"
     export USE_ALT_ANARI="no"
+    add_extra_commandline_args "anari" "enable-vtk-nvtx" 0 "Enable NVTX instrumentation for VTK"
     add_extra_commandline_args "anari" "alt-anari-dir" 1 "Use alternate directory for ANARI"
 }
 
 #enable the module for install
 function bv_anari_enable
-{ 
+{
     DO_ANARI="yes"
 }
 
@@ -20,6 +22,15 @@ function bv_anari_disable
     DO_ANARI="no"
 }
 
+#enable NVTX instrumentation for VTK
+function bv_anari_enable_vtk_nvtx
+{
+    bv_anari_enable
+    DO_ANARI_NVTX="yes"
+    info "Enabling NVTX instrumentation for VTK"
+}
+
+#use alternate ANARI dir
 function bv_anari_alt_anari_dir
 {
     bv_anari_enable
@@ -40,12 +51,12 @@ function bv_anari_info
 {
     export ANARI_VERSION=${ANARI_VERSION:-"0.3.0"}
     export ANARI_SHORT_VERSION=${ANARI_SHORT_VERSION:-"0.3"}
-    export ANARI_FILE=${ANARI_FILE:-"v${ANARI_VERSION}.tar.gz"}
+    export ANARI_FILE=${ANARI_FILE:-"ANARI-SDK-${ANARI_VERSION}.tar.gz"}
     export ANARI_COMPATIBILITY_VERSION=${ANARI_SHORT_VERSION}
-    export ANARI_URL=${ANARI_URL:-"https://github.com/KhronosGroup/ANARI-SDK/archive/refs/tags"}
+    export ANARI_URL=${ANARI_URL:-"https://github.com/KhronosGroup/ANARI-SDK/archive/refs/tags/v0.3.0.tar.gz"}
     export ANARI_SRC_DIR=${ANARI_SRC_DIR:-"ANARI-SDK-${ANARI_VERSION}"}
     export ANARI_INSTALL_DIR=${ANARI_INSTALL_DIR:-"anari"}
-    export ANARI_MD5_CHECKSUM="a761bb20192f9027ed74750d1c503d42"
+    export ANARI_MD5_CHECKSUM="c442b75bee650a651e1066a1fa28463c"
 }
 
 #print variables used by this module
@@ -93,7 +104,7 @@ function bv_anari_ensure
         if [[ $? != 0 ]] ; then
             ANY_ERRORS="yes"
             bv_anari_disable
-            error "Unable to build ANARI. ${ANARI_FILE} not found."	
+            error "Unable to build ANARI. ${ANARI_FILE} not found."
         fi
     fi
 }
@@ -105,7 +116,7 @@ function build_anari
             warn "The directory ${ANARI_SRC_DIR} exists, deleting before downloading and uncompressing"
             rm -Rf $ANARI_SRC_DIR
             bv_anari_ensure
-        
+
             if [[ "$DO_ANARI" == "no" ]] ; then
                 return 1
             fi
@@ -149,7 +160,7 @@ function build_anari
 	    vopts="${vopts} -DCMAKE_INSTALL_NAME_DIR:PATH=${anari_inst_path}/lib"
     fi
 
-    # ANARI config options 
+    # ANARI config options
     if test "x${DO_STATIC_BUILD}" = "xyes" ; then
 	    vopts="${vopts} -DBUILD_SHARED_LIBS:BOOL=OFF"
     else
@@ -159,15 +170,17 @@ function build_anari
     vopts="${vopts} -DBUILD_HELIDE_DEVICE:BOOL=ON"
     vopts="${vopts} -DINSTALL_CODE_GEN_SCRIPTS:BOOL=ON"
     vopts="${vopts} -DBUILD_CTS:BOOL=OFF"
-    vopts="${vopts} -DBUILD_EXAMPLES:BOOL=OFF"
-    
+    vopts="${vopts} -DBUILD_EXAMPLES:BOOL=ON"
+    vopts="${vopts} -DBUILD_TESTING:BOOL=OFF"
+
     #
     # Configure and Build the ANARI SDK
     #
     cd ${ANARI_BUILD_DIR}
     rm -rf *
 
-    CMAKE_BIN="${CMAKE_INSTALL}/cmake"
+    #CMAKE_BIN="${CMAKE_INSTALL}/cmake"
+    CMAKE_BIN=cmake
 
     #
     # Several platforms have had problems with the VTK cmake configure command
@@ -198,7 +211,7 @@ function build_anari
     fi
 
     cd "$START_DIR"
-    return 0    
+    return 0
 }
 
 function bv_anari_is_enabled
@@ -233,7 +246,7 @@ function bv_anari_build
         if [[ $? == 0 ]] ; then
             info "Skipping ANARI build.  ANARI is already installed."
         else
-            #Build the Module 
+            #Build the Module
             build_anari
 
             if [[ $? != 0 ]] ; then

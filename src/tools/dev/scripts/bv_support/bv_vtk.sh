@@ -199,15 +199,15 @@ function apply_vtkopenglspheremapper_h_patch
 --- Rendering/OpenGL2/vtkOpenGLSphereMapper.h  2019-06-05 10:25:08.000000000 -0700
 ***************
 *** 94,105 ****
-  
+
     void RenderPieceDraw(vtkRenderer *ren, vtkActor *act) override;
-  
+
 -   virtual void CreateVBO(
 -     float * points, vtkIdType numPts,
 -     unsigned char *colors, int colorComponents,
 -     vtkIdType nc,
 -     float *sizes, vtkIdType ns, vtkRenderer *ren);
-- 
+-
     // used for transparency
     bool Invert;
     float Radius;
@@ -233,9 +233,9 @@ function apply_vtkopenglspheremapper_patch
 ***************
 *** 15,20 ****
 --- 15,21 ----
-  
+
   #include "vtkOpenGLHelper.h"
-  
+
 + #include "vtkDataArrayAccessor.h"
   #include "vtkFloatArray.h"
   #include "vtkMath.h"
@@ -244,7 +244,7 @@ function apply_vtkopenglspheremapper_patch
 *** 211,253 ****
     os << indent << "Radius: " << this->Radius << "\n";
   }
-  
+
 ! // internal function called by CreateVBO
 ! void vtkOpenGLSphereMapper::CreateVBO(
 !   float * points, vtkIdType numPts,
@@ -256,28 +256,28 @@ function apply_vtkopenglspheremapper_patch
 !   verts->SetNumberOfComponents(3);
 !   verts->SetNumberOfTuples(numPts*3);
 !   float *vPtr = static_cast<float *>(verts->GetVoidPointer(0));
-  
+
 !   vtkFloatArray *offsets = vtkFloatArray::New();
 !   offsets->SetNumberOfComponents(2);
 !   offsets->SetNumberOfTuples(numPts*3);
     float *oPtr = static_cast<float *>(offsets->GetVoidPointer(0));
-- 
+-
 -   vtkUnsignedCharArray *ucolors = vtkUnsignedCharArray::New();
 -   ucolors->SetNumberOfComponents(4);
 -   ucolors->SetNumberOfTuples(numPts*3);
     unsigned char *cPtr = static_cast<unsigned char *>(ucolors->GetVoidPointer(0));
-  
+
 !   float *pointPtr;
 !   unsigned char *colorPtr;
-  
+
     float cos30 = cos(vtkMath::RadiansFromDegrees(30.0));
-  
+
     for (vtkIdType i = 0; i < numPts; ++i)
     {
 !     pointPtr = points + i*3;
 !     colorPtr = (nc == numPts ? colors + i*colorComponents : colors);
 !     float radius = (ns == numPts ? sizes[i] : sizes[0]);
-  
+
       // Vertices
 !     *(vPtr++) = pointPtr[0];
 !     *(vPtr++) = pointPtr[1];
@@ -288,7 +288,7 @@ function apply_vtkopenglspheremapper_patch
 --- 212,250 ----
     os << indent << "Radius: " << this->Radius << "\n";
   }
-  
+
 ! // internal function called by BuildBufferObjects
 ! template <typename PtsArray, typename SizesArray>
 ! void vtkOpenGLSphereMapper_PrepareVBO(
@@ -297,27 +297,27 @@ function apply_vtkopenglspheremapper_patch
 !   vtkFloatArray *verts, vtkFloatArray *offsets, vtkUnsignedCharArray *ucolors)
   {
 !   vtkIdType numPts = points->GetNumberOfTuples();
-  
+
 !   float *vPtr = static_cast<float *>(verts->GetVoidPointer(0));
     float *oPtr = static_cast<float *>(offsets->GetVoidPointer(0));
     unsigned char *cPtr = static_cast<unsigned char *>(ucolors->GetVoidPointer(0));
-  
+
 !   vtkDataArrayAccessor<PtsArray> pointPtr(points);
 !   vtkDataArrayAccessor<SizesArray> sizes(sizesA);
-! 
+!
 !   float radius = sizes.Get(0, 0);
-!   
+!
 !   unsigned char *colorPtr = colors;
-  
+
     float cos30 = cos(vtkMath::RadiansFromDegrees(30.0));
-  
+
     for (vtkIdType i = 0; i < numPts; ++i)
     {
 !     if (nc == numPts)
 !         colorPtr = colors + i*colorComponents;
 !     if (ns == numPts)
 !         radius = sizes.Get(i, 0);
-  
+
       // Vertices
 !     *(vPtr++) = pointPtr.Get(i, 0);
 !     *(vPtr++) = pointPtr.Get(i, 1);
@@ -329,7 +329,7 @@ function apply_vtkopenglspheremapper_patch
 *** 255,263 ****
       *(oPtr++) = -2.0f*radius*cos30;
       *(oPtr++) = -radius;
-  
+
 !     *(vPtr++) = pointPtr[0];
 !     *(vPtr++) = pointPtr[1];
 !     *(vPtr++) = pointPtr[2];
@@ -339,7 +339,7 @@ function apply_vtkopenglspheremapper_patch
 --- 252,260 ----
       *(oPtr++) = -2.0f*radius*cos30;
       *(oPtr++) = -radius;
-  
+
 !     *(vPtr++) = pointPtr.Get(i, 0);
 !     *(vPtr++) = pointPtr.Get(i, 1);
 !     *(vPtr++) = pointPtr.Get(i, 2);
@@ -350,7 +350,7 @@ function apply_vtkopenglspheremapper_patch
 *** 265,273 ****
       *(oPtr++) = 2.0f*radius*cos30;
       *(oPtr++) = -radius;
-  
+
 !     *(vPtr++) = pointPtr[0];
 !     *(vPtr++) = pointPtr[1];
 !     *(vPtr++) = pointPtr[2];
@@ -360,7 +360,7 @@ function apply_vtkopenglspheremapper_patch
 --- 262,270 ----
       *(oPtr++) = 2.0f*radius*cos30;
       *(oPtr++) = -radius;
-  
+
 !     *(vPtr++) = pointPtr.Get(i, 0);
 !     *(vPtr++) = pointPtr.Get(i, 1);
 !     *(vPtr++) = pointPtr.Get(i, 2);
@@ -372,7 +372,7 @@ function apply_vtkopenglspheremapper_patch
       *(oPtr++) = 0.0f;
       *(oPtr++) = 2.0f*radius;
     }
-- 
+-
 -   this->VBOs->CacheDataArray("vertexMC", verts, ren, VTK_FLOAT);
 -   verts->Delete();
 -   this->VBOs->CacheDataArray("offsetMC", offsets, ren, VTK_FLOAT);
@@ -381,14 +381,14 @@ function apply_vtkopenglspheremapper_patch
 -   ucolors->Delete();
 -   VBOs->BuildAllVBOs(ren);
   }
-  
+
   //-------------------------------------------------------------------------
 --- 272,277 ----
 ***************
 *** 320,326 ****
     // then the scalars do not have to be regenerted.
     this->MapScalars(1.0);
-  
+
 !   vtkIdType numPts = poly->GetPoints()->GetNumberOfPoints();
     unsigned char *c;
     int cc;
@@ -396,9 +396,9 @@ function apply_vtkopenglspheremapper_patch
 --- 309,317 ----
     // then the scalars do not have to be regenerted.
     this->MapScalars(1.0);
-  
+
 !   vtkPoints *pts = poly->GetPoints();
-! 
+!
 !   vtkIdType numPts = pts->GetNumberOfPoints();
     unsigned char *c;
     int cc;
@@ -415,7 +415,7 @@ function apply_vtkopenglspheremapper_patch
       nc = 1;
 !     cc = 3;
     }
-  
+
 !   float *scales;
     vtkIdType ns = poly->GetPoints()->GetNumberOfPoints();
     if (this->ScaleArray != nullptr &&
@@ -429,7 +429,7 @@ function apply_vtkopenglspheremapper_patch
 !     scales = &this->Radius;
       ns = 1;
     }
-  
+
 !   // Iterate through all of the different types in the polydata, building OpenGLs
 !   // and IBOs as appropriate for each type.
 !   this->CreateVBO(
@@ -438,12 +438,12 @@ function apply_vtkopenglspheremapper_patch
 !     c, cc, nc,
 !     scales, ns,
 !     ren);
-  
+
     if (!this->Colors)
     {
       delete [] c;
     }
-  
+
     // create the IBO
     this->Primitives[PrimitivePoints].IBO->IndexCount = 0;
 --- 324,386 ----
@@ -459,7 +459,7 @@ function apply_vtkopenglspheremapper_patch
       nc = 1;
 !     cc = 4;
     }
-  
+
 !   vtkDataArray *scales = NULL;
     vtkIdType ns = poly->GetPoints()->GetNumberOfPoints();
     if (this->ScaleArray != nullptr &&
@@ -475,22 +475,22 @@ function apply_vtkopenglspheremapper_patch
 !     scales->SetTuple1(0, this->Radius);
       ns = 1;
     }
-  
+
 !   vtkFloatArray *verts = vtkFloatArray::New();
 !   verts->SetNumberOfComponents(3);
 !   verts->SetNumberOfTuples(numPts*3);
-! 
+!
 !   vtkFloatArray *offsets = vtkFloatArray::New();
 !   offsets->SetNumberOfComponents(2);
 !   offsets->SetNumberOfTuples(numPts*3);
-! 
+!
 !   vtkUnsignedCharArray *ucolors = vtkUnsignedCharArray::New();
 !   ucolors->SetNumberOfComponents(4);
 !   ucolors->SetNumberOfTuples(numPts*3);
-! 
+!
 !   vtkOpenGLSphereMapper_PrepareVBO(pts->GetData(), c, cc, nc, scales, ns,
 !                                    verts, offsets, ucolors);
-! 
+!
 !   this->VBOs->CacheDataArray("vertexMC", verts, ren, VTK_FLOAT);
 !   verts->Delete();
 !   this->VBOs->CacheDataArray("offsetMC", offsets, ren, VTK_FLOAT);
@@ -498,7 +498,7 @@ function apply_vtkopenglspheremapper_patch
 !   this->VBOs->CacheDataArray("scalarColor", ucolors, ren, VTK_UNSIGNED_CHAR);
 !   ucolors->Delete();
 !   this->VBOs->BuildAllVBOs(ren);
-  
+
     if (!this->Colors)
     {
       delete [] c;
@@ -507,7 +507,7 @@ function apply_vtkopenglspheremapper_patch
 +   {
 +     scales->Delete();
 +   }
-  
+
     // create the IBO
     this->Primitives[PrimitivePoints].IBO->IndexCount = 0;
 EOF
@@ -531,7 +531,7 @@ function apply_vtkdatawriter_patch
 *** 1015,1034 ****
     *fp << "\n";
   }
-  
+
   // Returns a pointer to the data ordered in original VTK style ordering
   // of the data. If this is an SOA array it has to allocate the memory
   // for that in which case the calling function must delete it.
@@ -548,11 +548,11 @@ function apply_vtkdatawriter_patch
 !   typedArray->ExportToVoidPointer(data);
     return data;
   }
-  
+
 --- 1015,1043 ----
     *fp << "\n";
   }
-  
+
 + //------------------------------------------------------------------------------
 + template <class Value, class Array>
 + Value* GetPointer(vtkAbstractArray* array)
@@ -570,15 +570,15 @@ function apply_vtkdatawriter_patch
     {
 !     return GetPointer<T, Array>(array);
 ! }
-! 
+!
 !   auto nc = array->GetNumberOfComponents();
 !   auto nt = array->GetNumberOfTuples();
-! 
+!
 !   T* data = new T[nc * nt];
 !   array->ExportToVoidPointer(data);
     return data;
   }
-  
+
 ***************
 *** 1072,1082 ****
         }
@@ -588,7 +588,7 @@ function apply_vtkdatawriter_patch
 !           static_cast<vtkUnsignedCharArray *>(data)->GetPointer(0);
 !         fp->write(reinterpret_cast<char *>(cptr),
 !                   (sizeof(unsigned char))*((num-1)/8+1));
-! 
+!
         }
         *fp << "\n";
       }
@@ -603,7 +603,7 @@ function apply_vtkdatawriter_patch
       }
 ***************
 *** 1084,1092 ****
-  
+
       case VTK_CHAR:
       {
 !       snprintf (str, sizeof(str), format, "char"); *fp << str;
@@ -613,7 +613,7 @@ function apply_vtkdatawriter_patch
         vtkWriteDataArray(fp, s, this->FileType, "%hhd ", num, numComp);
   #else
 --- 1090,1098 ----
-  
+
       case VTK_CHAR:
       {
 !       snprintf(str, sizeof(str), format, "char");
@@ -624,7 +624,7 @@ function apply_vtkdatawriter_patch
   #else
 ***************
 *** 1101,1109 ****
-  
+
       case VTK_SIGNED_CHAR:
       {
 !       snprintf (str, sizeof(str), format, "signed_char"); *fp << str;
@@ -634,7 +634,7 @@ function apply_vtkdatawriter_patch
         if (!isAOSArray)
         {
 --- 1107,1115 ----
-  
+
       case VTK_SIGNED_CHAR:
       {
 !       snprintf(str, sizeof(str), format, "signed_char");
@@ -645,7 +645,7 @@ function apply_vtkdatawriter_patch
         {
 ***************
 *** 1114,1122 ****
-  
+
       case VTK_UNSIGNED_CHAR:
       {
 !       snprintf (str, sizeof(str), format, "unsigned_char"); *fp << str;
@@ -655,7 +655,7 @@ function apply_vtkdatawriter_patch
         if (!isAOSArray)
         {
 --- 1120,1128 ----
-  
+
       case VTK_UNSIGNED_CHAR:
       {
 !       snprintf(str, sizeof(str), format, "unsigned_char");
@@ -666,7 +666,7 @@ function apply_vtkdatawriter_patch
         {
 ***************
 *** 1127,1135 ****
-  
+
       case VTK_SHORT:
       {
 !       snprintf (str, sizeof(str), format, "short"); *fp << str;
@@ -676,7 +676,7 @@ function apply_vtkdatawriter_patch
         if (!isAOSArray)
         {
 --- 1133,1141 ----
-  
+
       case VTK_SHORT:
       {
 !       snprintf(str, sizeof(str), format, "short");
@@ -687,7 +687,7 @@ function apply_vtkdatawriter_patch
         {
 ***************
 *** 1140,1260 ****
-  
+
       case VTK_UNSIGNED_SHORT:
       {
 !       snprintf (str, sizeof(str), format, "unsigned_short"); *fp << str;
@@ -700,7 +700,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_INT:
       {
 !       snprintf (str, sizeof(str), format, "int"); *fp << str;
@@ -713,7 +713,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_INT:
       {
 !       snprintf (str, sizeof(str), format, "unsigned_int"); *fp << str;
@@ -726,7 +726,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_LONG:
       {
 !       snprintf (str, sizeof(str), format, "long"); *fp << str;
@@ -739,7 +739,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_LONG:
       {
 !       snprintf (str, sizeof(str), format, "unsigned_long"); *fp << str;
@@ -752,7 +752,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_LONG_LONG:
       {
 !       snprintf (str, sizeof(str), format, "vtktypeint64"); *fp << str;
@@ -767,7 +767,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_LONG_LONG:
       {
 !       snprintf (str, sizeof(str), format, "vtktypeuint64"); *fp << str;
@@ -782,7 +782,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_FLOAT:
       {
 !       snprintf (str, sizeof(str), format, "float"); *fp << str;
@@ -795,7 +795,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_DOUBLE:
       {
 !       snprintf (str, sizeof(str), format, "double"); *fp << str;
@@ -809,7 +809,7 @@ function apply_vtkdatawriter_patch
       }
       break;
 --- 1146,1268 ----
-  
+
       case VTK_UNSIGNED_SHORT:
       {
 !       snprintf(str, sizeof(str), format, "unsigned_short");
@@ -823,7 +823,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_INT:
       {
 !       snprintf(str, sizeof(str), format, "int");
@@ -836,7 +836,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_INT:
       {
 !       snprintf(str, sizeof(str), format, "unsigned_int");
@@ -849,7 +849,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_LONG:
       {
 !       snprintf(str, sizeof(str), format, "long");
@@ -862,7 +862,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_LONG:
       {
 !       snprintf(str, sizeof(str), format, "unsigned_long");
@@ -875,7 +875,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_LONG_LONG:
       {
 !       snprintf(str, sizeof(str), format, "vtktypeint64");
@@ -890,7 +890,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_UNSIGNED_LONG_LONG:
       {
 !       snprintf(str, sizeof(str), format, "vtktypeuint64");
@@ -906,7 +906,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_FLOAT:
       {
 !       snprintf(str, sizeof(str), format, "float");
@@ -919,7 +919,7 @@ function apply_vtkdatawriter_patch
         }
       }
       break;
-  
+
       case VTK_DOUBLE:
       {
 !       snprintf(str, sizeof(str), format, "double");
@@ -1205,11 +1205,11 @@ diff -c Rendering/OSPRay/vtkOSPRayMaterialHelpers.h.original Rendering/OSPRay/vt
 ***************
 *** 33,38 ****
 --- 33,39 ----
-  
+
   #include "ospray/ospray.h"
   #include <map>
 + #include <string>
-  
+
   class vtkImageData;
   class vtkOSPRayRendererNode;
 EOF
@@ -1233,19 +1233,19 @@ diff -c Rendering/OSPRay/vtkOSPRayPolyDataMapperNode.h.original Rendering/OSPRay
 --- 25,31 ----
   #include "vtkRenderingOSPRayModule.h" // For export macro
   #include "vtkPolyDataMapperNode.h"
-  
+
 + class vtkDataSetSurfaceFilter;
   class vtkOSPRayActorNode;
   class vtkPolyData;
-  
+
 ***************
 *** 61,66 ****
 --- 62,69 ----
     void CreateNewMeshes();
     void AddMeshesToModel(void *arg);
-  
+
 +   vtkDataSetSurfaceFilter *GeometryExtractor;
-+ 
++
   private:
     vtkOSPRayPolyDataMapperNode(const vtkOSPRayPolyDataMapperNode&) = delete;
     void operator=(const vtkOSPRayPolyDataMapperNode&) = delete;
@@ -1278,7 +1278,7 @@ diff -c Rendering/OSPRay/vtkOSPRayPolyDataMapperNode.cxx.original Rendering/OSPR
     this->OSPMeshes = nullptr;
 +   this->GeometryExtractor = nullptr;
   }
-  
+
   //----------------------------------------------------------------------------
   vtkOSPRayPolyDataMapperNode::~vtkOSPRayPolyDataMapperNode()
   {
@@ -1288,7 +1288,7 @@ diff -c Rendering/OSPRay/vtkOSPRayPolyDataMapperNode.cxx.original Rendering/OSPR
 +     this->GeometryExtractor->Delete();
 +   }
   }
-  
+
   //----------------------------------------------------------------------------
 ***************
 *** 1318,1324 ****
@@ -1343,12 +1343,12 @@ function apply_vtkospray_linking_patch
     *** 37,42 ****
     --- 37,45 ----
       vtk_module_library(vtkRenderingOSPRay ${Module_SRCS})
-  
+
       target_link_libraries(${vtk-module} LINK_PUBLIC ${OSPRAY_LIBRARIES})
     + # patch to solve linking issue noticed on macOS
     + target_link_libraries(${vtk-module} LINK_PUBLIC vtkFiltersGeometry)
-    + 
-  
+    +
+
       # OSPRay_Core uses MMTime which is in it's own special library.
       if(WIN32)
 EOF
@@ -1365,7 +1365,7 @@ function apply_vtk_python3_python_args_patch
 {
     # in python 3.7.5:
     #  PyUnicode_AsUTF8 returns a const char *, which you cannot assign
-    #  to a char *. 
+    #  to a char *.
     # Add cast to allow us to compile.
     patch -p0 << \EOF
     diff -c Wrapping/PythonCore/vtkPythonArgs.orig.cxx Wrapping/PythonCore/vtkPythonArgs.cxx
@@ -1456,7 +1456,7 @@ function apply_vtk_patch
         return 1
     fi
 
-    # Note: don't guard ospray patches by if ospray is selected 
+    # Note: don't guard ospray patches by if ospray is selected
     # b/c subsequent calls to build_visit won't get a chance to patch
     # given the if test logic used above
     apply_vtkospraypolydatamappernode_patch
@@ -1596,7 +1596,7 @@ function build_vtk
     fi
     vopts="${vopts} -DVTK_DEBUG_LEAKS:BOOL=${vtk_debug_leaks}"
     vopts="${vopts} -DVTK_LEGACY_REMOVE:BOOL=true"
-    vopts="${vopts} -DBUILD_TESTING:BOOL=false"
+    vopts="${vopts} -DBUILD_TESTING:BOOL=true"
     vopts="${vopts} -DBUILD_DOCUMENTATION:BOOL=false"
     vopts="${vopts} -DCMAKE_C_COMPILER:STRING=${C_COMPILER}"
     vopts="${vopts} -DCMAKE_CXX_COMPILER:STRING=${CXX_COMPILER}"
@@ -1720,8 +1720,13 @@ function build_vtk
 
     # Use ANARI?
     if [[ "$DO_ANARI" == "yes" ]] ; then
-    	vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=ON"
+        vopts="${vopts} -DModule_vtkFiltersTexture:BOOL=true"
+    	vopts="${vopts} -DModule_vtkRenderingAnari:BOOL=true"
     	vopts="${vopts} -Danari_DIR=${VISITDIR}/anari/${ANARI_VERSION}/${VISITARCH}/lib/cmake/anari-${ANARI_VERSION}"
+
+        if [[ "$DO_ANARI_NVTX" == "yes" ]] ; then
+            vopts="${vopts} -DVTK_ANARI_ENABLE_NVTX:BOOL=ON"
+        fi
     fi
 
     # zlib support, use the one we build
@@ -1733,7 +1738,8 @@ function build_vtk
         vopts="${vopts} -DZLIB_LIBRARY_DEBUG:FILEPATH=${ZLIB_LIBRARY}"
     fi
 
-    CMAKE_BIN="${CMAKE_INSTALL}/cmake"
+    # CMAKE_BIN="${CMAKE_INSTALL}/cmake"
+    CMAKE_BIN=cmake
     cd ${VTK_BUILD_DIR}
 
     #
