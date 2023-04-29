@@ -122,5 +122,3 @@ InitVTK::Initialize(void)
     vtkObjectFactory::RegisterFactory(factory);
     factory->Delete();
 }
-
-

@@ -1,14 +1,14 @@
-#/home/kgriffin/VisIt/third_party/3.3.0/cmake/3.18.2/linux-x86_64_gcc-9.4/bin/cmake
+#/home/kgriffin/VisIt/third_party/3.3.1/cmake/3.18.2/linux-x86_64_gcc-9.4/bin/cmake
 ##
 ## /home/kgriffin/VisIt/visit/src/tools/dev/scripts/build_visit generated host.cmake
-## created: Mon 30 Jan 2023 02:40:01 PM PST
-## system: Linux kgriffin-dt 5.15.0-58-generic #64~20.04.1-Ubuntu SMP Fri Jan 6 16:42:31 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+## created: Mon 17 Apr 2023 03:10:44 PM PDT
+## system: Linux kgriffin-dt 5.15.0-69-generic #76~20.04.1-Ubuntu SMP Mon Mar 20 15:54:19 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
 ## by: kgriffin
 
 ##
 ## Setup VISITHOME & VISITARCH variables.
 ##
-SET(VISITHOME /home/kgriffin/VisIt/third_party/3.3.0)
+SET(VISITHOME /home/kgriffin/VisIt/third_party/3.3.1)
 SET(VISITARCH linux-x86_64_gcc-9.4)
 
 ## Compiler flags.
@@ -24,7 +24,7 @@ VISIT_OPTION_DEFAULT(VISIT_CXX_FLAGS " -m64 -fPIC -fvisibility=hidden" TYPE STRI
 ##
 VISIT_OPTION_DEFAULT(VISIT_PARALLEL ON TYPE BOOL)
 ## (configured w/ mpi compiler wrapper)
-VISIT_OPTION_DEFAULT(VISIT_MPI_COMPILER /home/kgriffin/VisIt/third_party/3.3.0/mpich/3.3.1/linux-x86_64_gcc-9.4/bin/mpicc TYPE FILEPATH)
+VISIT_OPTION_DEFAULT(VISIT_MPI_COMPILER /home/kgriffin/VisIt/third_party/3.3.1/mpich/3.3.1/linux-x86_64_gcc-9.4/bin/mpicc TYPE FILEPATH)
 
 ##
 ## VisIt Thread Option

@@ -4,6 +4,16 @@
       ${VISIT_INCLUDE_DIR}/avt/Expressions/Abstract
       ${VISIT_INCLUDE_DIR}/avt/Expressions/General
     </CXXFLAGS>
+    <LIBS components="ESer">
+      avtexpressions_ser
+      vtkRenderingVolume
+      vtkRenderingVolumeOpenGL2
+    </LIBS>
+    <LIBS components="EPar">
+      avtexpressions_par
+      vtkRenderingVolume
+      vtkRenderingVolumeOpenGL2
+    </LIBS>
     <Files components="V">
       VolumeFunctions.C
       VolumeRLEFunctions.C
@@ -75,7 +85,13 @@
         Higher
         Highest
       </Enum>
-      
+      <Enum name="RenderMode">
+        DefaultRenderMode
+        RayCastRenderMode
+        GPURenderMode
+        OSPRayRenderMode
+        AnariRenderMode
+      </Enum>
       <Field name="osprayShadowsEnabledFlag" label="osprayShadowsEnabledFlag" type="bool">
         false
       </Field>
@@ -101,12 +117,11 @@
         0
       </Field>
       <Field name="osprayAoDistance" label="osprayAoDistance" type="double">
-        100000.0
+        100000.000000
       </Field>
       <Field name="osprayMinContribution" label="osprayMinContribution" type="double">
-        0.001
+        0.001000
       </Field>
-      
       <Field name="legendFlag" label="legendFlag" type="bool">
         true
       </Field>
@@ -202,6 +217,9 @@
         0.750000
         0.000000
         15.000000
+      </Field>
+      <Field name="renderMode" label="Render Mode" type="enum" subtype="RenderMode">
+        DefaultRenderMode
       </Field>
       <Function name="ChangesRequireRecalculation" user="true" member="true">
       </Function>

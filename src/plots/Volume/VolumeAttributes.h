@@ -75,6 +75,14 @@ public:
         Higher,
         Highest
     };
+    enum RenderMode
+    {
+        DefaultRenderMode,
+        RayCastRenderMode,
+        GPURenderMode,
+        OSPRayRenderMode,
+        AnariRenderMode
+    };
 
     // These constructors are for objects of this class
     VolumeAttributes();
@@ -151,6 +159,7 @@ public:
     void SetLowGradientLightingClampFlag(bool lowGradientLightingClampFlag_);
     void SetLowGradientLightingClampValue(double lowGradientLightingClampValue_);
     void SetMaterialProperties(const double *materialProperties_);
+    void SetRenderMode(RenderMode renderMode_);
 
     // Property getting methods
     bool                           GetOsprayShadowsEnabledFlag() const;
@@ -201,6 +210,7 @@ public:
     double                         GetLowGradientLightingClampValue() const;
     const double                   *GetMaterialProperties() const;
           double                   *GetMaterialProperties();
+    RenderMode                     GetRenderMode() const;
 
     // Persistence methods
     virtual bool CreateNode(DataNode *node, bool completeSave, bool forceAdd);
@@ -241,6 +251,11 @@ public:
     static bool LowGradientLightingReduction_FromString(const std::string &, LowGradientLightingReduction &);
 protected:
     static std::string LowGradientLightingReduction_ToString(int);
+public:
+    static std::string RenderMode_ToString(RenderMode);
+    static bool RenderMode_FromString(const std::string &, RenderMode &);
+protected:
+    static std::string RenderMode_ToString(int);
 public:
 
     // Keyframing methods
@@ -305,6 +320,7 @@ public:
         ID_lowGradientLightingClampFlag,
         ID_lowGradientLightingClampValue,
         ID_materialProperties,
+        ID_renderMode,
         ID__LAST
     };
 
@@ -351,11 +367,12 @@ private:
     bool                     lowGradientLightingClampFlag;
     double                   lowGradientLightingClampValue;
     double                   materialProperties[4];
+    int                      renderMode;
 
     // Static class format string for type map.
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define VOLUMEATTRIBUTES_TMFS "bbbbbbiiddbbafiabissUbfbfbfbfbiiiidiifibdD"
+#define VOLUMEATTRIBUTES_TMFS "bbbbbbiiddbbafiabissUbfbfbfbfbiiiidiifibdDi"
 
 #endif
