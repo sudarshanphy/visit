@@ -95,9 +95,10 @@ IF(VISIT_STATIC AND VISIT_ENABLE_XDB)
     SET(EXTRA_SIM_LIBS ${EXTRA_SIM_LIBS} ${VISIT_LIBRARY_DIR}/libXDBLib.so) # Just Linux for now.
 ENDIF(VISIT_STATIC AND VISIT_ENABLE_XDB)
 
-SET(VTK_LIBS vtkCommonCore vtkImagingCore vtkRenderingCore vtkIOLegacy vtkIOPLY
-             vtkInteractionStyle vtkRenderingOpenGL2 
-             vtkFiltersHybrid vtkFiltersModeling vtkGeovisCore)
+SET(VTK_LIBS visit_vtkCommonCore visit_vtkImagingCore visit_vtkRenderingCore
+             visit_vtkIOLegacy visit_vtkIOPLY visit_vtkInteractionStyle
+             visit_vtkRenderingOpenGL2 visit_vtkFiltersHybrid
+             visit_vtkFiltersModeling visit_vtkGeovisCore)
 IF(ICET_FOUND)
     LINK_DIRECTORIES(${ICET_LIBRARY_DIR})
 ENDIF(ICET_FOUND)

@@ -6,7 +6,7 @@
     </CXXFLAGS>
     <LIBS>
       ${PIDX_LIBRARIES}
-       vtkIOXML
+       visit_vtkIOXML
     </LIBS>
     <FilePatterns>
       *.idx *.midx *.gidx

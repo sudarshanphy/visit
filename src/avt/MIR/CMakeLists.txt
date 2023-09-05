@@ -34,8 +34,7 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/Pipeline/Sinks
     ${VISIT_SOURCE_DIR}/avt/Pipeline/Sources
     ${VISIT_SOURCE_DIR}/avt/VisWindow/VisWindow
-    ${VISIT_SOURCE_DIR}/third_party_builtin/verdict
-    ${VTK_INCLUDE_DIRS})
+    ${VISIT_SOURCE_DIR}/third_party_builtin/verdict)
 
 #********************************* SERIAL ************************************
 target_link_libraries(avtmir_ser visitcommon lightweight_visit_vtk

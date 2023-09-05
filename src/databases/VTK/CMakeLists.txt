@@ -42,12 +42,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}
 ${VISIT_DATABASE_INCLUDES}
 )
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtk_libs vtkFiltersGeneral vtkIOXML vtkIOXMLParser )
-else()
-    set(vtk_libs VTK::FiltersGeneral VTK::IOXML VTK::IOXMLParser )
-endif()
-
 LINK_DIRECTORIES(${VISIT_LIBRARY_DIR} )
 
 ADD_LIBRARY(IVTKDatabase ${LIBI_SOURCES})
@@ -56,19 +50,19 @@ SET(INSTALLTARGETS IVTKDatabase)
 
 IF(NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
     ADD_LIBRARY(MVTKDatabase ${LIBM_SOURCES})
-    TARGET_LINK_LIBRARIES(MVTKDatabase visitcommon avtdbatts avtdatabase_ser ${vtk_libs} )
+    TARGET_LINK_LIBRARIES(MVTKDatabase visitcommon avtdbatts avtdatabase_ser visit_vtkFiltersGeneral visit_vtkIOXML visit_vtkIOXMLParser )
     ADD_TARGET_DEFINITIONS(MVTKDatabase MDSERVER)
     SET(INSTALLTARGETS ${INSTALLTARGETS} MVTKDatabase)
 ENDIF(NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
 
 ADD_LIBRARY(EVTKDatabase_ser ${LIBE_SOURCES})
-TARGET_LINK_LIBRARIES(EVTKDatabase_ser visitcommon avtpipeline_ser avtdatabase_ser ${vtk_libs} )
+TARGET_LINK_LIBRARIES(EVTKDatabase_ser visitcommon avtpipeline_ser avtdatabase_ser visit_vtkFiltersGeneral visit_vtkIOXML visit_vtkIOXMLParser )
 ADD_TARGET_DEFINITIONS(EVTKDatabase_ser ENGINE)
 SET(INSTALLTARGETS ${INSTALLTARGETS} EVTKDatabase_ser)
 
 IF(VISIT_PARALLEL)
     ADD_PARALLEL_LIBRARY(EVTKDatabase_par ${LIBE_SOURCES})
-    TARGET_LINK_LIBRARIES(EVTKDatabase_par visitcommon avtpipeline_par avtdatabase_par ${vtk_libs} )
+    TARGET_LINK_LIBRARIES(EVTKDatabase_par visitcommon avtpipeline_par avtdatabase_par visit_vtkFiltersGeneral visit_vtkIOXML visit_vtkIOXMLParser )
     ADD_TARGET_DEFINITIONS(EVTKDatabase_par ENGINE)
     SET(INSTALLTARGETS ${INSTALLTARGETS} EVTKDatabase_par)
 ENDIF(VISIT_PARALLEL)

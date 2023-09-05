@@ -21,19 +21,14 @@ avtViewAxisArray.C
 INCLUDE_DIRECTORIES(
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${VISIT_COMMON_INCLUDES}
-${VTK_INCLUDE_DIRS}
 )
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkRenderingOpenGL2 vtkRenderingFreeType vtkInteractionStyle)
-else()
-    set(vtklibs VTK::RenderingOpenGL2 VTK::RenderingFreeType VTK::InteractionStyle)
-endif()
 
 # Add link directories
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_DIRECTORY} )
 
 ADD_LIBRARY(avtview ${AVTVIEW_SOURCES})
-TARGET_LINK_LIBRARIES(avtview visitcommon ${vtklibs})
+TARGET_LINK_LIBRARIES(avtview visitcommon visit_vtkRenderingOpenGL2
+    visit_vtkRenderingFreeType visit_vtkInteractionStyle)
 
 VISIT_INSTALL_TARGETS(avtview)

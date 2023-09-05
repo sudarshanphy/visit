@@ -10,7 +10,7 @@
       *.bp
     </FilePatterns>
     <LIBS>
-      vtkFiltersHybrid
+      visit_vtkFiltersHybrid
     </LIBS>
     <Files components="M">
       avtADIOSFileFormat.C
@@ -23,7 +23,7 @@
       ADIOSFileObject.C
     </Files>
     <LIBS components="M">
-      -ladiosread_nompi
+      adiosread_nompi
     </LIBS>
     <Files components="E">
       avtADIOSFileFormat.C
@@ -36,10 +36,10 @@
       ADIOSFileObject.C
     </Files>
     <LIBS components="ESer">
-      -ladiosread_nompi
+      adiosread_nompi
     </LIBS>
     <LIBS components="EPar">
-      -ladiosread
+      adiosread
     </LIBS>
     <Attribute name="" purpose="" persistent="false" keyframe="true" exportAPI="" exportInclude="" codefile="ADIOS.code">
       <Function name="ADIOSCommonPluginInfo::SetupDatabase" user="false" member="true">

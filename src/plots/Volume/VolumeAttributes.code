@@ -696,3 +696,4 @@ Condition:       VISIT_OSPRAY
 Includes:        ${OSPRAY_INCLUDE_DIR}
 VLinkLibraries:  ${OSPRAY_LIBRARIES}
 ELinkLibraries:  ${OSPRAY_LIBRARIES}
+

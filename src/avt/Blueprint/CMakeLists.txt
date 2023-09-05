@@ -18,7 +18,6 @@ set(AVTBLUEPRINT_SOURCES
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${VISIT_COMMON_INCLUDES}
                     ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-                    ${VTK_INCLUDE_DIRS}
                     ${CONDUIT_INCLUDE_DIR}
                     ${MFEM_INCLUDE_DIR}
                     )
@@ -28,12 +27,8 @@ link_directories(${LIBRARY_OUTPUT_DIRECTORY} ${CONDUIT_LIBRARY_DIR} ${MFEM_LIBRA
 
 add_library(avtblueprint ${AVTBLUEPRINT_SOURCES})
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs lightweight_visit_vtk vtkCommonCore vtkFiltersCore)
-else()
-    set(vtklibs lightweight_visit_vtk VTK::CommonCore VTK::FiltersCore)
-endif()
 
-target_link_libraries(avtblueprint visitcommon ${CONDUIT_LIB} ${MFEM_LIB} ${vtklibs}) 
+target_link_libraries(avtblueprint visitcommon ${CONDUIT_LIB} ${MFEM_LIB} 
+    lightweight_visit_vtk visit_vtkCommonCore visit_vtkFiltersCore)
 
 VISIT_INSTALL_TARGETS(avtblueprint)

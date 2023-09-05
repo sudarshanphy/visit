@@ -78,8 +78,7 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/Pipeline/Sources
     ${VISIT_SOURCE_DIR}/avt/Shapelets
     ${VISIT_SOURCE_DIR}/visit_vtk/full
-    ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-    ${VTK_INCLUDE_DIRS})
+    ${VISIT_SOURCE_DIR}/visit_vtk/lightweight)
 
 if(VISIT_PYTHON_FILTERS)
     include_directories(

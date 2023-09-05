@@ -33,7 +33,6 @@ ${VISIT_SOURCE_DIR}/avt/Pipeline/Sinks
 ${VISIT_SOURCE_DIR}/avt/Pipeline/Sources
 ${VISIT_SOURCE_DIR}/avt/VisWindow/VisWindow
 ${PYTHON_INCLUDE_PATH}
-${VTK_INCLUDE_DIRS}
 )
 
 # If static then we need some static symbol lookup functions

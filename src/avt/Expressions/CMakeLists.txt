@@ -108,8 +108,7 @@ include_directories(
     ${VISIT_SOURCE_DIR}/visit_vtk/full
     ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
     ${VISIT_SOURCE_DIR}/vtkm
-    ${VISIT_SOURCE_DIR}/third_party_builtin/verdict
-    ${VTK_INCLUDE_DIRS})
+    ${VISIT_SOURCE_DIR}/third_party_builtin/verdict)
 
 if(VISIT_PYTHON_FILTERS)
     include_directories(

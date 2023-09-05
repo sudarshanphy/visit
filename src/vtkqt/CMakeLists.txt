@@ -33,26 +33,19 @@ include_directories(
     ${VISIT_SOURCE_DIR}/include
     ${VISIT_SOURCE_DIR}/vtkqt
     ${VISIT_SOURCE_DIR}/common/utility
-    ${VTK_INCLUDE_DIRS}
 )
 
 add_library(vtkqt ${VTKQT_SOURCES})
-
-# Specify the libraries to link against on Windows & Mac
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonCore vtkGUISupportQt vtkGUISupportQtOpenGL vtkIOImage
-        vtkRenderingOpenGL2 vtkRenderingFreeType)
-else()
-    set(vtklibs VTK::CommonCore VTK::GUISupportQt VTK::IOImage
-        VTK::RenderingOpenGL2 VTK::RenderingFreeType)
-endif()
 
 if(QT_VERSION VERSION_GREATER_EQUAL "6.2.0")
     qt6_disable_unicode_defines(vtkqt)
 endif()
 
-target_link_libraries(vtkqt ${vtklibs} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY}
-    ${QT_QTOPENGL_LIBRARY} ${QT_QTPRINTSUPPORT_LIBRARY} ${OPENGL_LIBRARIES})
+target_link_libraries(vtkqt 
+    visit_vtkCommonCore visit_vtkQtSupport
+    visit_vtkIOImage visit_vtkRenderingOpenGL2 visit_vtkRenderingFreeType
+    ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY}
+    ${QT_QTPRINTSUPPORT_LIBRARY} ${OPENGL_LIBRARIES})
 
 if(HAVE_OSMESA)
     target_link_libraries(vtkqt ${OSMESA_LIBRARIES})

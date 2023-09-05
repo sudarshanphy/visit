@@ -66,39 +66,43 @@
 
 # Use the VTK_DIR hint from the config-site .cmake file
 
-IF(EXISTS ${VISIT_VTK_DIR}/lib/cmake/vtk-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}/VTKConfig.cmake)
-    SET(VTK_DIR ${VISIT_VTK_DIR}/lib/cmake/vtk-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION})
-ENDIF()
+if(EXISTS ${VISIT_VTK_DIR}/lib/cmake/vtk-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}/VTKConfig.cmake)
+    set(VTK_DIR ${VISIT_VTK_DIR}/lib/cmake/vtk-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION})
+endif()
 
-MESSAGE(STATUS "Checking for VTK in ${VTK_DIR}")
+message(STATUS "Checking for VTK in ${VTK_DIR}")
 
 # Set up our list of required and optional vtk modules
-SET(REQ_VTK_MODS
+set(REQ_VTK_MODS
         vtkCommonCore
         vtkCommonDataModel
         vtkFiltersCore
         vtkFiltersFlowPaths
         vtkFiltersHybrid
         vtkFiltersModeling
+        vtkIOGeometry
         vtkIOLegacy
         vtkIOPLY
-        vtkIOXML
+        vtkIOXMLParser
         vtkInteractionStyle
         vtkRenderingAnnotation
         vtkRenderingOpenGL2
+        vtkRenderingVolume
         vtkRenderingVolumeOpenGL2
         vtkglew)
 
-IF(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
-    LIST(APPEND REQ_VTK_MODS vtkGUISupportQtOpenGL)
-ENDIF()
+if(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
+   set(VTK_QT_MODS vtkGUISupportQtOpenGL)
+endif()
 
-# Optional
-#SET(OPT_VTK_MODS
-#       vtkGeovisCore # Cartographic Projection
-#       vtkIOEnSight  # EnSight
-#       vtklibxml2    # Xdmf
-#   )
+set(OPT_VTK_MODS
+    # Cartographic Projection Operator
+    vtkGeovisCore
+    # EnSight Reader
+    vtkIOEnSight
+    vtkRenderingOSPRay
+    # Xdmf Reader
+    vtklibxml2)
 
 # We don't list our required modules in the find_package call because it
 # does funny things with VTK_INCLUDES, and the OPTIONAL_COMPONENTS arg
@@ -109,12 +113,17 @@ ENDIF()
 set(Qt5_DIR ${VISIT_QT_DIR}/lib/cmake/Qt5)
 find_package(VTK ${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION} REQUIRED NO_MODULE PATHS ${VTK_DIR})
 
+if(NOT ${VTK_FOUND})
+    message(FATAL_ERROR "VTK is required to build VisIt.")
+    return()
+endif()
+
 # Ensure we have all the required modules:
-FOREACH(module ${REQ_VTK_MODS})
-    IF(NOT TARGET ${module})
-        MESSAGE(ERROR "VisIt requires ${module}")
-    ENDIF()
-ENDFOREACH()
+foreach(module ${REQ_VTK_MODS})
+    if(NOT TARGET ${module})
+        message(ERROR "VisIt requires ${module}")
+    endif()
+endforeach()
 
 
 # due to cmake policy 0126, created in cmake 3.21
@@ -123,91 +132,79 @@ ENDFOREACH()
 # value with something new
 unset(VTK_LIBRARY_DIRS)
 
-SET(VTK_LIBRARY_DIRS ${VTK_INSTALL_PREFIX}/lib CACHE PATH "Path to vtk libraries" FORCE)
-MESSAGE(STATUS "  VTK_FOUND=${VTK_FOUND}")
-MESSAGE(STATUS "  VTK_MAJOR_VERSION=${VTK_MAJOR_VERSION}")
-MESSAGE(STATUS "  VTK_MINOR_VERSION=${VTK_MINOR_VERSION}")
-MESSAGE(STATUS "  VTK_BUILD_VERSION=${VTK_BUILD_VERSION}")
-MESSAGE(STATUS "  VTK_INCLUDE_DIRS=${VTK_INCLUDE_DIRS}")
-MESSAGE(STATUS "  VTK_DEFINITIONS=${VTK_DEFINITIONS}")
-MESSAGE(STATUS "  VTK_LIBRARIES=${VTK_LIBRARIES}")
-MESSAGE(STATUS "  VTK_INSTALL_PREFIX=${VTK_INSTALL_PREFIX}")
-MESSAGE(STATUS "  VTK_LIBRARY_DIRS=${VTK_LIBRARY_DIRS}")
+set(VTK_LIBRARY_DIRS ${VTK_INSTALL_PREFIX}/lib CACHE PATH "Path to vtk libraries" FORCE)
+message(STATUS "  VTK_FOUND=${VTK_FOUND}")
+message(STATUS "  VTK_MAJOR_VERSION=${VTK_MAJOR_VERSION}")
+message(STATUS "  VTK_MINOR_VERSION=${VTK_MINOR_VERSION}")
+message(STATUS "  VTK_BUILD_VERSION=${VTK_BUILD_VERSION}")
+message(STATUS "  VTK_INCLUDE_DIRS=${VTK_INCLUDE_DIRS}")
+message(STATUS "  VTK_DEFINITIONS=${VTK_DEFINITIONS}")
+message(STATUS "  VTK_LIBRARIES=${VTK_LIBRARIES}")
+message(STATUS "  VTK_INSTALL_PREFIX=${VTK_INSTALL_PREFIX}")
+message(STATUS "  VTK_LIBRARY_DIRS=${VTK_LIBRARY_DIRS}")
 
 # Add install commands for all of the VTK libraries. Is there a better way?
-IF(APPLE)
-    SET(SO_EXT "dylib")
-ELSE(APPLE)
-    IF(WIN32)
-        SET(SO_EXT "dll")
-    ELSE(WIN32)
-        SET(SO_EXT "so")
-    ENDIF(WIN32)
-ENDIF(APPLE)
+if(APPLE)
+    set(SO_EXT "dylib")
+elseif(WIN32)
+    set(SO_EXT "dll")
+else()
+    set(SO_EXT "so")
+endif()
 
-IF(VISIT_VTK_SKIP_INSTALL)
-    MESSAGE(STATUS "Skipping installation of VTK libraries")
-ELSE(VISIT_VTK_SKIP_INSTALL)
-    IF(NOT WIN32)
-        SET(pathnameandprefix "${VTK_INSTALL_PREFIX}/lib/lib")
-    ELSE()
-        SET(pathnameandprefix "${VTK_INSTALL_PREFIX}/bin/")
-        SET(pathnameandprefixlib "${VTK_INSTALL_PREFIX}/lib/")
-    ENDIF(NOT WIN32)
-    MACRO(SETUP_INSTALL vtklib)
-        SET(LIBNAME   ${pathnameandprefix}${vtklib}-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.${SO_EXT})
-        IF(EXISTS ${LIBNAME})
+if(VISIT_VTK_SKIP_INSTALL)
+    message(STATUS "Skipping installation of VTK libraries")
+else(VISIT_VTK_SKIP_INSTALL)
+    if(NOT WIN32)
+        set(pathnameandprefix "${VTK_INSTALL_PREFIX}/lib/lib")
+    else()
+        set(pathnameandprefix "${VTK_INSTALL_PREFIX}/bin/")
+        set(pathnameandprefixlib "${VTK_INSTALL_PREFIX}/lib/")
+    endif(NOT WIN32)
+    macro(SETUP_INSTALL vtklib)
+        set(LIBNAME   ${pathnameandprefix}${vtklib}-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.${SO_EXT})
+        if(EXISTS ${LIBNAME})
             THIRD_PARTY_INSTALL_LIBRARY(${LIBNAME})
-        ENDIF(EXISTS ${LIBNAME})
+        endif()
 
-        IF(WIN32)
+        if(WIN32)
             # install .lib versions, too
-            SET(LIBNAME   ${pathnameandprefixlib}${vtklib}-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.lib)
-            IF(EXISTS ${LIBNAME})
+            set(LIBNAME   ${pathnameandprefixlib}${vtklib}-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.lib)
+            if(EXISTS ${LIBNAME})
                 THIRD_PARTY_INSTALL_LIBRARY(${LIBNAME})
-            ENDIF(EXISTS ${LIBNAME})
-        ENDIF(WIN32)
-    ENDMACRO(SETUP_INSTALL vtklib)
+            endif()
+        endif()
+    endmacro()
 
     # Base libs and their python wrappings
-    FOREACH(VTKLIB ${VTK_LIBRARIES})
+    foreach(VTKLIB ${VTK_LIBRARIES})
         SETUP_INSTALL("${VTKLIB}")
-    ENDFOREACH(VTKLIB)
+    endforeach()
 
     # Python
-    IF(PYTHON_VERSION)
+    if(PYTHON_VERSION)
         # different naming convention.
         # Remove '.' from python version for use in vtk python library naming.
-        STRING(REPLACE "." "" PYVER ${PYTHON_VERSION})
-        FOREACH(VTKLIB ${VTK_LIBRARIES})
+        string(REPLACE "." "" PYVER ${PYTHON_VERSION})
+        foreach(VTKLIB ${VTK_LIBRARIES})
             SETUP_INSTALL("${VTKLIB}Python${PYVER}D")
-        ENDFOREACH(VTKLIB)
+        endforeach()
         SETUP_INSTALL(vtkWrappingPython${PYVER}Core)
-    ENDIF(PYTHON_VERSION)
+    endif()
 
     # Add install targets for VTK headers too -- but just the vtk-5.0 dir.
     # The VTK_INCLUDE_DIRS may contain stuff like /usr/include or the
     # Python directory and we just want VTK here.
-    IF(VISIT_HEADERS_SKIP_INSTALL)
-        MESSAGE(STATUS "Skipping vtk headers installation")
-    ELSE(VISIT_HEADERS_SKIP_INSTALL)
-        FOREACH(X ${VTK_INCLUDE_DIRS})
-            IF(EXISTS ${X}/vtkActor.h)
-                #MESSAGE("Install ${X} to ${VISIT_INSTALLED_VERSION_INCLUDE}/vtk")
-                INSTALL(DIRECTORY ${X}
-                    DESTINATION ${VISIT_INSTALLED_VERSION_INCLUDE}/vtk
-                    FILE_PERMISSIONS OWNER_WRITE OWNER_READ
-                                     GROUP_WRITE GROUP_READ
-                                     WORLD_READ
-                    DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
-                                          GROUP_WRITE GROUP_READ GROUP_EXECUTE
-                                          WORLD_READ WORLD_EXECUTE
-                    PATTERN ".svn" EXCLUDE
-                )
-            ENDIF(EXISTS ${X}/vtkActor.h)
-        ENDFOREACH(X)
-    ENDIF(VISIT_HEADERS_SKIP_INSTALL)
-ENDIF(VISIT_VTK_SKIP_INSTALL)
+    if(VISIT_HEADERS_SKIP_INSTALL)
+        message(STATUS "Skipping vtk headers installation")
+    else()
+        foreach(X ${VTK_INCLUDE_DIRS})
+            if(EXISTS ${X}/vtkActor.h)
+               THIRD_PARTY_INSTALL_INCLUDE(vtk ${X})
+            endif()
+        endforeach()
+    endif()
+endif()
 
 # check for python wrappers
 if(NOT WIN32)
@@ -215,35 +212,38 @@ if(NOT WIN32)
 else ()
     file(GLOB VTK_PY_WRAPPERS_DIR ${VISIT_VTK_DIR}/lib/python*)
 endif()
-MESSAGE(STATUS "  VTK_PY_WRAPPERS_DIR=${VTK_PY_WRAPPERS_DIR}")
+message(STATUS "  VTK_PY_WRAPPERS_DIR=${VTK_PY_WRAPPERS_DIR}")
 
-IF(EXISTS ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
-    MESSAGE(STATUS "Found VTK Python Wrappers - ${VTK_PY_WRAPPERS_DIR}")
-    FILE(GLOB VTK_PY_EGG ${VTK_PY_WRAPPERS_DIR}/site-packages/*.egg*)
-    FILE(GLOB VTK_PY_MODULE ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
+if(EXISTS ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
+    message(STATUS "Found VTK Python Wrappers - ${VTK_PY_WRAPPERS_DIR}")
+    file(GLOB VTK_PY_EGG ${VTK_PY_WRAPPERS_DIR}/site-packages/*.egg*)
+    file(GLOB VTK_PY_MODULE ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
 
-    IF(VISIT_VTK_SKIP_INSTALL)
-        MESSAGE(STATUS "Skipping installation of VTK Python bindings")
-    ELSE(VISIT_VTK_SKIP_INSTALL)
-        INSTALL(FILES ${VTK_PY_EGG}
+    if(VISIT_VTK_SKIP_INSTALL)
+        message(STATUS "Skipping installation of VTK Python bindings")
+    else()
+        install(FILES ${VTK_PY_EGG}
                 DESTINATION ${VISIT_INSTALLED_VERSION_LIB}/site-packages/
-                PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ
-            )
+                PERMISSIONS OWNER_READ OWNER_WRITE
+                            GROUP_READ GROUP_WRITE
+                            WORLD_READ)
 
-        INSTALL(DIRECTORY ${VTK_PY_MODULE}
+        install(DIRECTORY ${VTK_PY_MODULE}
                 DESTINATION ${VISIT_INSTALLED_VERSION_LIB}/site-packages/
-                FILE_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ WORLD_READ
-                DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-                PATTERN ".svn" EXCLUDE
-            )
-    ENDIF(VISIT_VTK_SKIP_INSTALL)
+                FILE_PERMISSIONS OWNER_WRITE OWNER_READ
+                                 GROUP_WRITE GROUP_READ
+                                             WORLD_READ
+                DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
+                                      GROUP_WRITE GROUP_READ GROUP_EXECUTE
+                                      WORLD_READ             WORLD_EXECUTE)
+    endif()
 
-    SET(VTK_PYTHON_WRAPPERS_FOUND TRUE)
-ELSE(EXISTS ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
-    SET(VTK_PYTHON_WRAPPERS_FOUND FALSE)
-ENDIF(EXISTS ${VTK_PY_WRAPPERS_DIR}/site-packages/vtk)
+    set(VTK_PYTHON_WRAPPERS_FOUND TRUE)
+else()
+    set(VTK_PYTHON_WRAPPERS_FOUND FALSE)
+endif()
 
-MARK_AS_ADVANCED(VTK_PYTHON_WRAPPERS_FOUND)
+mark_as_advanced(VTK_PYTHON_WRAPPERS_FOUND)
 
 # prepare for drop-in replacement of mesa with opengl, if all pieces are in place
 if(WIN32 AND VISIT_MESA_REPLACE_OPENGL AND VISIT_MESAGL_DIR)
@@ -252,13 +252,65 @@ if(WIN32 AND VISIT_MESA_REPLACE_OPENGL AND VISIT_MESAGL_DIR)
                 DESTINATION ${VISIT_INSTALLED_VERSION_BIN}
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                             GROUP_READ GROUP_WRITE GROUP_EXECUTE
-                            WORLD_READ WORLD_EXECUTE
-                CONFIGURATIONS "" None Debug Release RelWithDebInfo MinSizeRel
-                )
+                            WORLD_READ WORLD_EXECUTE)
     endif()
 endif()
 
-IF(NOT ${VTK_FOUND})
-    MESSAGE(FATAL_ERROR "VTK is required to build VisIt.")
-ENDIF(NOT ${VTK_FOUND})
 
+# Adds ALIAS named visit_${targ} for every vtk target that is used by visit
+# (the REQUIRED and OPTIONAL lists). Also adds the VTK_INCLUDE_DIRS to the
+# alias target since the includes aren't added to vtk targets in version 8.
+
+function(add_vtk_alias targ)
+    set(targetName visit_${targ})
+    if(TARGET ${targetName})
+        return()
+    endif()
+message("adding alias for ${targ}")
+    add_library(${targetName} ALIAS ${targ})
+    target_include_directories(${targ} INTERFACE
+            "$<BUILD_INTERFACE:${VTK_INCLUDE_DIRS}>"
+            $<INSTALL_INTERFACE:${VISIT_INSTALLED_VERSION_INCLUDE}/vtk/vtk-${VTK_VERSION_MAJOR}.${VTK_VERSION_MINOR}>)
+    if(Win32)
+        get_target_property(deps ${targ} INTERFACE_LINK_LIBRARIES)
+    else()
+        get_target_property(deps ${targ} IMPORTED_LINK_DEPENDENT_LIBRARIES_RELEASE)
+    endif()
+    if(deps)
+        foreach(dep ${deps})
+            string(SUBSTRING ${dep} 0 3 starts_with_vtk)
+            if(starts_with_vtk STREQUAL "vtk")
+                add_vtk_alias(${dep})
+            endif()
+        endforeach()
+    endif()
+endfunction()
+
+# maybe should use VTK_LIBRARIES instead of our lists which may need
+# periodic updating when someone introduces a new vtk lib dependency in
+# visit  ?
+foreach(targ ${REQ_VTK_MODS} ${OPT_VTK_MODS})
+    string(SUBSTRING ${targ} 0 3 starts_with_vtk)
+    if(starts_with_vtk STREQUAL "vtk")
+                add_vtk_alias(${targ})
+    endif()
+endforeach()
+
+# right now we only list one library as necessary for Qt support,
+# knowing VTK/CMake will pull in the rest
+# the names are different between VTK8 and VTK9 so create a
+# unique alias here to use when vtk qt support is needed
+if(VTK_QT_MODS)
+    add_library(visit_vtkQtSupport ALIAS vtkGUISupportQtOpenGL)
+endif()
+
+
+if(NOT vtkjpeg_LIBRARIES AND TARGET vtkjpeg)
+    set(vtkjpeg_LIBRARIES vtkjpeg)
+endif()
+if(NOT vtkpng_LIBRARIES AND TARGET vtkpng)
+    set(vtkpng_LIBRARIES vtkpng)
+endif()
+if(NOT vtktiff_LIBRARIES AND TARGET vtktiff)
+    set(vtktiff_LIBRARIES vtktiff)
+endif()

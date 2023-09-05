@@ -20,7 +20,7 @@
     </Attribute>
     <LIBS>
       ${ZLIB_LIBRARY}
-      vtkCommonSystem
-      vtksys
+      visit_vtkCommonSystem
+      visit_vtksys
     </LIBS>
   </Plugin>

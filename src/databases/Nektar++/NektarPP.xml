@@ -19,7 +19,7 @@
       ${NEKTAR++_LIB}
       ${NEKTAR++_LIBRARIES}
       ${NEKTAR++_TP_LIBRARIES}
-      vtkIOXML
+      visit_vtkIOXML
     </LIBS>
     <FilePatterns>
       *.chk *.fld *.xml *.rst *.bse

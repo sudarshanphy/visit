@@ -72,7 +72,6 @@ ${VISIT_SOURCE_DIR}/engine/main
 ${VISIT_SOURCE_DIR}/visit_vtk/full
 ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
 ${VISIT_SOURCE_DIR}/vtkqt
-${VTK_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_DIRECTORY}
@@ -221,11 +220,6 @@ set_target_properties(qvtkopenglExample PROPERTIES AUTOMOC ON)
 VISIT_INSTALL_TARGETS(qvtkopenglExample)
 VISIT_EXAMPLES_ADD_FOLDER(qvtkopenglExample qvtkopenglExample)
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-  set(vtklibs vtkCommonColor vtkFiltersSources vtkInteractionStyle vtkRenderingOpenGL2)
-else()
-  set(vtklibs VTK::CommonColor VTK::FiltersSources VTK::InteractionStyle VTK::RenderingOpenGL2)
-endif()
 
 TARGET_LINK_LIBRARIES(qvtkopenglExample
 vtkqt
@@ -233,7 +227,10 @@ ${QT_QTGUI_LIBRARY}
 ${QT_QTOPENGL_LIBRARY}
 ${QT_QTNETWORK_LIBRARY}
 ${QT_QTCORE_LIBRARY}
-${vtklibs}
+visit_vtkCommonColor
+visit_vtkFiltersSources
+visit_vtkInteractionStyle
+visit_vtkRenderingOpenGL2
 ${OPENGL_LIBRARIES}
 ${ZLIB_LIBRARY}
 )
@@ -249,11 +246,6 @@ set_target_properties(qtvtkExample PROPERTIES AUTOMOC ON)
 VISIT_INSTALL_TARGETS(qtvtkExample)
 VISIT_EXAMPLES_ADD_FOLDER(qtvtkExample qtvtkExample)
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-  set(vtklibs vtkCommonColor vtkFiltersSources vtkInteractionStyle)
-else()
-  set(vtklibs VTK::CommonColor VTK::FiltersSources VTK::InteractionStyle VTK::RenderingVolumeOpenGL2)
-endif()
 
 TARGET_LINK_LIBRARIES(qtvtkExample
 vtkqt
@@ -261,7 +253,9 @@ ${QT_QTGUI_LIBRARY}
 ${QT_QTOPENGL_LIBRARY}
 ${QT_QTNETWORK_LIBRARY}
 ${QT_QTCORE_LIBRARY}
-${vtklibs}
+visit_vtkCommonColor
+visit_vtkFiltersSources
+visit_vtkInteractionStyle
 ${OPENGL_LIBRARIES}
 ${ZLIB_LIBRARY}
 )

@@ -182,16 +182,12 @@ ${VISIT_SOURCE_DIR}/avt/VisWindow/Tools
 ${VISIT_SOURCE_DIR}/avt/VisWindow/VisWindow
 ${VISIT_SOURCE_DIR}/engine/main
 ${VTKm_INCLUDE_DIRS}
-${VTK_INCLUDE_DIRS}
 )
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonMath vtkCommonTransforms vtkFiltersGeneral vtkFiltersModeling)
-  if(VISIT_OSPRAY)
+set(vtklibs visit_vtkCommonMath visit_vtkCommonTransforms visit_vtkFiltersGeneral visit_vtkFiltersModeling)
+
+if(VTK_VERSION VERSION_EQUAL "8.1.0" AND VISIT_OSPRAY)
     include_directories(${OSPRAY_INCLUDE_DIR})
-  endif()
-else()
-    set(vtklibs VTK::CommonMath VTK::CommonTransforms VTK::FiltersGeneral VTK::FiltersModeling)
 endif()
 
 # Add link directories

@@ -52,16 +52,11 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/View
     ${VISIT_SOURCE_DIR}/visit_vtk/full
     ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-    ${VTK_INCLUDE_DIRS}
     ${OPENGL_INCLUDE_DIR})
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkFiltersModeling vtkImagingCore vtkInteractionStyle)
-    if(VISIT_OSPRAY)
-        list(APPEND vtklibs vtkRenderingOSPRay)
-    endif()
-else()
-    set(vtklibs VTK::FiltersModeling VTK::ImagingCore VTK::InteractionStyle)
+set(vtklibs visit_vtkFiltersModeling visit_vtkImagingCore visit_vtkInteractionStyle)
+if(VTK_VERSION VERSION_EQUAL "8.1.0" AND VISIT_OSPRAY)
+    list(APPEND vtklibs visit_vtkRenderingOSPRay)
 endif()
 
 #********************************* SERIAL ************************************

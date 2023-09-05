@@ -39,8 +39,7 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/VisWindow/VisWindow
     ${VISIT_SOURCE_DIR}/visit_vtk/full
     ${VISIT_SOURCE_DIR}/vtkqt
-    ${VISIT_SOURCE_DIR}/winutil
-    ${VTK_INCLUDE_DIRS})
+    ${VISIT_SOURCE_DIR}/winutil)
 
 target_link_libraries(avtqtviswindow visitcommon avtviswindow_ser vtkqt ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 

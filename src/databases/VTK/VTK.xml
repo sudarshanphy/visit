@@ -36,9 +36,9 @@
       VTMParser.C
     </Files>
     <LIBS>
-      vtkFiltersGeneral
-      vtkIOXML
-      vtkIOXMLParser
+      visit_vtkFiltersGeneral
+      visit_vtkIOXML
+      visit_vtkIOXMLParser
     </LIBS>
     <Attribute name="" purpose="" persistent="true" codefile="VTK.code">
       <Function name="VTKCommonPluginInfo::SetupDatabase" user="false" member="true">

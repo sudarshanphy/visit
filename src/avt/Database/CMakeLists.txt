@@ -40,8 +40,7 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/Pipeline/Sources
     ${VISIT_SOURCE_DIR}/third_party_builtin/tess2
     ${VISIT_SOURCE_DIR}/visit_vtk/full
-    ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-    ${VTK_INCLUDE_DIRS})
+    ${VISIT_SOURCE_DIR}/visit_vtk/lightweight)
 
 # Unless we're doing a VISIT_DBIO_ONLY build then we need avtmir
 if(NOT VISIT_DBIO_ONLY)

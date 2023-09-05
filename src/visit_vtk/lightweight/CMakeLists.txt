@@ -52,7 +52,6 @@ ${VISIT_SOURCE_DIR}/visit_vtk/full
 ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
 ${VISIT_SOURCE_DIR}/common/misc
 ${VISIT_SOURCE_DIR}/common/utility
-${VTK_INCLUDE_DIRS}
 )
 
 # Add link directories needed to use our libraries and VTK.
@@ -62,12 +61,7 @@ ADD_LIBRARY(lightweight_visit_vtk
     ${LIGHTWEIGHT_VISIT_VTK_SOURCES}
 )
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonCore vtkFiltersCore vtkIOCore vtkIOLegacy)
-else()
-    set(vtklibs VTK::CommonCore VTK::FiltersCore VTK::IOCore VTK::IOLegacy)
-endif()
-
-target_link_libraries(lightweight_visit_vtk visitcommon ${vtklibs})
+target_link_libraries(lightweight_visit_vtk visitcommon visit_vtkCommonCore
+    visit_vtkFiltersCore visit_vtkIOCore visit_vtkIOLegacy)
 
 VISIT_INSTALL_TARGETS(lightweight_visit_vtk)

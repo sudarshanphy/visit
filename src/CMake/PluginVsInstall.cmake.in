@@ -189,7 +189,6 @@ set(VISIT_OSPRAY                 @VISIT_OSPRAY@)
 
 # Set up VTK
 set(VTK_VERSION @VTK_VERSION@)
-set(VTK_INCLUDE_DIRS ${VISIT_ROOT_INCLUDE_DIR}@vtk_include_relative_path@)
 set(VTK_LIBRARY_DIRS ${VISIT_LIBRARY_DIR})
 
 # Set up OpenGL

@@ -23,8 +23,8 @@
       $(ADIOS2_PAR_LIBRARY_DIR)
     </LDFLAGS>
     <LIBS> 
-      vtkFiltersHybrid
-      vtksys
+      visit_vtkFiltersHybrid
+      visit_vtksys
     </LIBS>
     <LIBS components="M,ESer">
       ${ADIOS2_LIB}

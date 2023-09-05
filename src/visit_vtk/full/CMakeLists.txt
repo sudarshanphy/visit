@@ -105,7 +105,6 @@ ${VISIT_SOURCE_DIR}/common/Exceptions/Pipeline
 ${VISIT_SOURCE_DIR}/common/misc
 ${VISIT_SOURCE_DIR}/common/utility
 ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-${VTK_INCLUDE_DIRS}
 ${BOOST_INCLUDE_DIR}
 ${OPENEXR_INCLUDE_DIR}
 )
@@ -119,16 +118,10 @@ LINK_DIRECTORIES(${LIBRARY_OUTPUT_DIRECTORY} ${OPENEXR_LIBRARY_DIR})
 
 ADD_LIBRARY(visit_vtk ${VISIT_VTK_SOURCES})
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonExecutionModel vtkCommonMisc
-        vtkFiltersExtraction vtkFiltersFlowPaths vtkFiltersSources
-        vtkImagingHybrid vtkIOImage vtktiff)
-else()
-    set(vtklibs VTK::CommonExecutionModel VTK::CommonMisc
-        VTK::FiltersExtraction VTK::FiltersFlowPaths VTK::FiltersSources
-        VTK::ImagingHybrid VTK::IOImage VTK::tiff)
-endif()
-
-target_link_libraries(visit_vtk lightweight_visit_vtk ${vtklibs} ${OPENEXR_LIB})
+target_link_libraries(visit_vtk lightweight_visit_vtk 
+    visit_vtkCommonExecutionModel visit_vtkCommonMisc
+    visit_vtkFiltersExtraction visit_vtkFiltersFlowPaths
+    visit_vtkFiltersSources visit_vtkImagingHybrid visit_vtkIOImage
+    ${vtktiff_LIBRARIES} ${OPENEXR_LIB})
 
 VISIT_INSTALL_TARGETS(visit_vtk)

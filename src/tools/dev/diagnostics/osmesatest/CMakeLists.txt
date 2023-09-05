@@ -20,7 +20,6 @@ ${VISIT_COMMON_INCLUDES}
 ${VISIT_BINARY_DIR}/include
 ${VISIT_SOURCE_DIR}/include
 ${OSMESA_INCLUDE_DIR}
-${VTK_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
@@ -28,17 +27,17 @@ ${LIBRARY_OUTPUT_DIRECTORY}
 )
 
 SET(REQUIRED_VTK_LIBS
-vtkCommonCore 
-vtkCommonDataModel
-vtkCommonExecutionModel
-vtkFiltersGeometry 
-vtkFiltersHybrid
-vtkFiltersSources
-vtkIOImage
-vtkRenderingCore
-vtkRenderingOpenGL2
-vtkRenderingFreeType 
-vtkInteractionStyle 
+visit_vtkCommonCore 
+visit_vtkCommonDataModel
+visit_vtkCommonExecutionModel
+visit_vtkFiltersGeometry 
+visit_vtkFiltersHybrid
+visit_vtkFiltersSources
+visit_vtkIOImage
+visit_vtkRenderingCore
+visit_vtkRenderingOpenGL2
+visit_vtkRenderingFreeType 
+visit_vtkInteractionStyle 
 )
 
 IF(NOT WIN32)

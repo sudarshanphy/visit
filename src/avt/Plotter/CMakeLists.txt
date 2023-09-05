@@ -132,21 +132,20 @@ include_directories(
     ${VISIT_SOURCE_DIR}/avt/View
     ${VISIT_SOURCE_DIR}/visit_vtk/full
     ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
-    ${PROJECT_BINARY_DIR}/avt/Plotter/vtk/
-    ${VTK_INCLUDE_DIRS})
+    ${PROJECT_BINARY_DIR}/avt/Plotter/vtk)
+
+set(vtklibs visit_vtkCommonExecutionModel visit_vtkFiltersHybrid
+            visit_vtkRenderingCore visit_vtkRenderingFreeType
+            visit_vtkRenderingOpenGL2)
 
 if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonExecutionModel vtkFiltersHybrid
-            vtkRenderingCore vtkRenderingFreeType vtkRenderingOpenGL2)
     if(VISIT_OSPRAY)
-        list(APPEND vtklibs vtkRenderingOSPRay)
+        list(APPEND vtklibs visit_vtkRenderingOSPRay)
     endif()
 else()
-    set(vtklibs VTK::CommonExecutionModel VTK::FiltersHybrid
-            VTK::RenderingCore VTK::RenderingFreeType VTK::RenderingOpenGL2)
-    if(TARGET VTK::RenderingRayTracing)
+    if(TARGET visit_vtkRenderingRayTracing)
          # RenderingRayTracing available if VTK 9 was built with OSPRAY support
-        list(APPEND vtklibs VTK::RenderingRayTracing)
+        list(APPEND vtklibs visit_vtkRenderingRayTracing)
     endif()
 endif()
 #********************************* SERIAL ************************************

@@ -83,7 +83,6 @@ ENDIF (NOT WIN32)
 INCLUDE_DIRECTORIES(
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${VISIT_COMMON_INCLUDES}
-${VTK_INCLUDE_DIRS}
 ${VISIT_SOURCE_DIR}/mdserver/rpc
 ${VISIT_SOURCE_DIR}/mdserver/proxy
 ${VISIT_SOURCE_DIR}/avt/DBAtts/MetaData
@@ -98,12 +97,6 @@ ${VISIT_SOURCE_DIR}/avt/VisWindow/VisWindow
 ${VISIT_SOURCE_DIR}/visit_vtk/lightweight
 ${SIMV2_PLUGIN_DIR}
 )
-
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonCore vtkIOCore vtktiff vtkpng vtkjpeg)
-else()
-    set(vtklibs VTK::CommonCore VTK::IOCore VTK::tiff VTK::png VTK::jpeg)
-endif()
 
 LINK_DIRECTORIES(
 ${LIBRARY_OUTPUT_DIRECTORY}
@@ -122,7 +115,8 @@ TARGET_LINK_LIBRARIES(mdserver
     avtdatabase_ser
     lightweight_visit_vtk
     visit_verdict
-    ${vtklibs}
+    visit_vtkCommonCore
+    visit_vtkIOCore
     ${vtktiff_LIBRARIES}
     ${vtkpng_LIBRARIES}
     ${vtkjpeg_LIBRARIES}

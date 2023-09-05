@@ -154,7 +154,6 @@ ${VISIT_SOURCE_DIR}/mdserver/rpc
 ${VISIT_SOURCE_DIR}/visit_vtk/full
 ${VISIT_SOURCE_DIR}/vtkqt
 ${VISIT_SOURCE_DIR}/winutil
-${VTK_INCLUDE_DIRS}
 )
 
 
@@ -190,11 +189,6 @@ IF(VISIT_STATIC)
     )
 ENDIF(VISIT_STATIC)
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0)")
-    set(vtkqtlib vtkGUISupportQt)
-else()
-    set(vtkqtlib VTK::GUISupportQt)
-endif()
 
 
 if(QT_VERSION VERSION_GREATER_EQUAL "6.2.0")
@@ -223,7 +217,7 @@ avtqtviswindow
 winutil
 ${VIEWER_QT_LIBS}
 Threads::Threads
-${vtkqtlib}
+visit_vtkQtSupport
 )
 
 if(HAVE_OSMESA)

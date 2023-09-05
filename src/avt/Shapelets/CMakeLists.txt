@@ -20,19 +20,14 @@ INCLUDE_DIRECTORIES(
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${VISIT_COMMON_INCLUDES}
 ${VISIT_SOURCE_DIR}/avt/Math
-${VTK_INCLUDE_DIRS}
 )
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-    set(vtklibs vtkCommonCore vtkFiltersCore)
-else()
-    set(vtklibs VTK::CommonCore VTK::FiltersCore)
-endif()
 
 # Add link directories
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_DIRECTORY} )
 
 ADD_LIBRARY(avtshapelets ${AVTSHAPELETS_SOURCES})
-TARGET_LINK_LIBRARIES(avtshapelets visitcommon avtmath ${vtklibs})
+TARGET_LINK_LIBRARIES(avtshapelets visitcommon avtmath
+    visit_vtkCommonCore visit_vtkFiltersCore)
 
 VISIT_INSTALL_TARGETS(avtshapelets)
