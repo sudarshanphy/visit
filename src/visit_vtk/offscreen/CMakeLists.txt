@@ -18,8 +18,10 @@ ${VISIT_SOURCE_DIR}/include
 
 add_library(visit_vtk_offscreen vtkOffScreenRenderingFactory.C)
 
+target_link_libraries(visit_vtk_offscreen visit_vtkCommonCore)
+
 if(VTK_VERSION VERSION_GREATER_EQUAL "9.1.0")
-    target_link_libraries(visit_vtk_offscreen visit_vtkCommonCore visit_vtkRenderingOpenGL2)
+    target_link_libraries(visit_vtk_offscreen visit_vtkRenderingOpenGL2)
 endif()
 
 if(HAVE_OSMESA)

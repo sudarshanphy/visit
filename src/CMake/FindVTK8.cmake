@@ -92,7 +92,7 @@ set(REQ_VTK_MODS
         vtkglew)
 
 if(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
-   set(VTK_QT_MODS vtkGUISupportQtOpenGL)
+   list(APPEND REQ_VTK_MODS vtkGUISupportQt vtkGUISupportQtOpenGL)
 endif()
 
 set(OPT_VTK_MODS
@@ -295,14 +295,6 @@ foreach(targ ${REQ_VTK_MODS} ${OPT_VTK_MODS})
                 add_vtk_alias(${targ})
     endif()
 endforeach()
-
-# right now we only list one library as necessary for Qt support,
-# knowing VTK/CMake will pull in the rest
-# the names are different between VTK8 and VTK9 so create a
-# unique alias here to use when vtk qt support is needed
-if(VTK_QT_MODS)
-    add_library(visit_vtkQtSupport ALIAS vtkGUISupportQtOpenGL)
-endif()
 
 
 if(NOT vtkjpeg_LIBRARIES AND TARGET vtkjpeg)

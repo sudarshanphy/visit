@@ -231,6 +231,7 @@ visit_vtkCommonColor
 visit_vtkFiltersSources
 visit_vtkInteractionStyle
 visit_vtkRenderingOpenGL2
+visit_vtkGUISupportQt
 ${OPENGL_LIBRARIES}
 ${ZLIB_LIBRARY}
 )
@@ -268,11 +269,6 @@ ADD_EXECUTABLE(qtviswinExample ${QTVISWINEXAMPLE_SOURCES})
 VISIT_INSTALL_TARGETS(qtviswinExample)
 VISIT_EXAMPLES_ADD_FOLDER(qtviswinExample qtviswinExample)
 
-if(VTK_VERSION VERSION_EQUAL "8.1.0")
-  set(vtkqtlib vtkGUISupportQt)
-else()
-  set(vtkqtlib VTK::GUISupportQt)
-endif()
 TARGET_LINK_LIBRARIES(qtviswinExample
 visitcommon
 avtdbatts
@@ -288,7 +284,7 @@ ${QT_QTGUI_LIBRARY}
 ${QT_QTOPENGL_LIBRARY}
 ${QT_QTNETWORK_LIBRARY}
 ${QT_QTCORE_LIBRARY}
-${vtkqtlib}
+visit_vtkGUISupportQt
 )
 
 if(QT_VERSION VERSION_GREATER_EQUAL "6.2.0")

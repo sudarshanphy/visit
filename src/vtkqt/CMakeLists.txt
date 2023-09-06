@@ -42,7 +42,7 @@ if(QT_VERSION VERSION_GREATER_EQUAL "6.2.0")
 endif()
 
 target_link_libraries(vtkqt 
-    visit_vtkCommonCore visit_vtkQtSupport
+    visit_vtkCommonCore visit_vtkGUISupportQt
     visit_vtkIOImage visit_vtkRenderingOpenGL2 visit_vtkRenderingFreeType
     ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY}
     ${QT_QTPRINTSUPPORT_LIBRARY} ${OPENGL_LIBRARIES})

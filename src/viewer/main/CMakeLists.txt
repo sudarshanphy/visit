@@ -217,7 +217,7 @@ avtqtviswindow
 winutil
 ${VIEWER_QT_LIBS}
 Threads::Threads
-visit_vtkQtSupport
+visit_vtkGUISupportQt
 )
 
 if(HAVE_OSMESA)

@@ -40,7 +40,7 @@ set(REQ_VTK_MODS
         glew)
 
 if(NOT VISIT_SERVER_COMPONENTS_ONLY AND NOT VISIT_ENGINE_ONLY AND NOT VISIT_DBIO_ONLY)
-    set(VTK_QT_MODS GUISupportQt)
+    list(APPEND REQ_VTK_MODS GUISupportQt)
     set(Qt5_DIR ${VISIT_QT_DIR}/lib/cmake/Qt5)
 endif()
 
@@ -235,14 +235,6 @@ endfunction()
 foreach(targ ${REQ_VTK_MODS} ${OPT_VTK_MODS})
     add_vtk_alias(${targ})
 endforeach()
-
-# right now we only list one library as necessary for Qt support,
-# knowing VTK/CMake will pull in the rest
-# the names are different between VTK8 and VTK9 so create a
-# unique alias to use here
-if(VTK_QT_MODS)
-    add_library(visit_vtkQtSupport ALIAS VTK::GUISupportQt)
-endif()
 
 # add variables that capture these targets that may not be built  
 if(NOT vtkjpeg_LIBRARIES AND TARGET VTK::jpeg)
