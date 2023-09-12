@@ -2080,8 +2080,10 @@ void avtFLASHFileFormat::ReadBlockStructure()
     {
         EXCEPTION1(InvalidFilesException, filename.c_str());
     }
+    
     //sneo: get correct number of blocks
     gid_dims[0] = 1728;
+
     numBlocks = gid_dims[0];
     switch (gid_dims[1])
     {
@@ -2190,6 +2192,7 @@ void avtFLASHFileFormat::ReadBlockExtents()
             EXCEPTION1(InvalidFilesException, filename.c_str());
         }
 
+	//sneo: not tested if below expression causes error or not
         double *bbox_array = new double[numBlocks * dimension * 2];
         H5Dread(bboxId, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, bbox_array);
     
@@ -2425,6 +2428,8 @@ void avtFLASHFileFormat::ReadSimulationParameters(hid_t file_id,
     {
         EXCEPTION1(InvalidFilesException, filename.c_str());
     }
+    
+    //sneo: change stuff below
 
     if (simParams.nxb == 1)
     {
