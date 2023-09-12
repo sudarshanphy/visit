@@ -2080,7 +2080,8 @@ void avtFLASHFileFormat::ReadBlockStructure()
     {
         EXCEPTION1(InvalidFilesException, filename.c_str());
     }
-
+    //sneo: get correct number of blocks
+    gid_dims[0] = 1728;
     numBlocks = gid_dims[0];
     switch (gid_dims[1])
     {
@@ -2253,7 +2254,6 @@ void avtFLASHFileFormat::ReadBlockExtents()
 		//sneo
 		if (d < 1) {
 	        double xi = pow((1.5e13/5.0e7), 1/144); //sneo
-
 		blocks[b].minSpatialExtents[d] = ((5.0e7*pow(xi,(b%144)));
 	        blocks[b].maxSpatialExtents[d] = ((5.0e7*pow(xi,((b+1)%144)));
 	        }	
@@ -2261,7 +2261,6 @@ void avtFLASHFileFormat::ReadBlockExtents()
 		else {
                 blocks[b].minSpatialExtents[d] = bbox_line[d*2 + 0];
                 blocks[b].maxSpatialExtents[d] = bbox_line[d*2 + 1];
-    
 		} //sneo: if else 
                 
 		if (blocks[b].minSpatialExtents[d] < minSpatialExtents[d])
