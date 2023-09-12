@@ -2249,11 +2249,22 @@ void avtFLASHFileFormat::ReadBlockExtents()
         {
             double *bbox_line = &bbox_array[MDIM*2*b];
             for (int d=0; d<3; d++)
-            {
+            {   
+		//sneo
+		if (d < 1) {
+	        double xi = pow((1.5e13/5.0e7), 1/144); //sneo
+
+		blocks[b].minSpatialExtents[d] = ((5.0e7*pow(xi,(b%144)));
+	        blocks[b].maxSpatialExtents[d] = ((5.0e7*pow(xi,((b+1)%144)));
+	        }	
+		
+		else {
                 blocks[b].minSpatialExtents[d] = bbox_line[d*2 + 0];
                 blocks[b].maxSpatialExtents[d] = bbox_line[d*2 + 1];
     
-                if (blocks[b].minSpatialExtents[d] < minSpatialExtents[d])
+		} //sneo: if else 
+                
+		if (blocks[b].minSpatialExtents[d] < minSpatialExtents[d])
                     minSpatialExtents[d] = blocks[b].minSpatialExtents[d];
     
                 if (blocks[b].maxSpatialExtents[d] > maxSpatialExtents[d])
