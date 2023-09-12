@@ -66,7 +66,7 @@
 using std::find;
 using std::string;
 using std::vector;
-
+using std::pow;  //sneo
 int avtFLASHFileFormat::objcnt = 0;
 
 // ****************************************************************************
@@ -1942,7 +1942,8 @@ void avtFLASHFileFormat::ReadCoordinates()
         for (int b=0; b<numBlocks; b++)
         {
              double *coords = &coordinates_array[MDIM*b];
-             blocks[b].coords[0] = coords[0];
+	     double xi = pow((1.5e13/5.0e7), 1/144); //sneo
+             blocks[b].coords[0] = ((5.0e7*pow(xi,(b%144)))+(5.0e7*pow(xi,((b+1)%144))))/2; //sneo
              blocks[b].coords[1] = coords[1];
              blocks[b].coords[2] = coords[2];
         }
