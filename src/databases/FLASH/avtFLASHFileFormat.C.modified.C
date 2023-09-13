@@ -66,7 +66,7 @@
 using std::find;
 using std::string;
 using std::vector;
-
+using std::pow;  //sneo
 int avtFLASHFileFormat::objcnt = 0;
 
 // ****************************************************************************
@@ -1942,7 +1942,8 @@ void avtFLASHFileFormat::ReadCoordinates()
         for (int b=0; b<numBlocks; b++)
         {
              double *coords = &coordinates_array[MDIM*b];
-             blocks[b].coords[0] = coords[0];
+	     double xi = pow((1.5e13/5.0e7), 1/144); //sneo
+             blocks[b].coords[0] = ((5.0e7*pow(xi,(b%144)))+(5.0e7*pow(xi,((b+1)%144))))/2; //sneo
              blocks[b].coords[1] = coords[1];
              blocks[b].coords[2] = coords[2];
         }
@@ -2079,6 +2080,9 @@ void avtFLASHFileFormat::ReadBlockStructure()
     {
         EXCEPTION1(InvalidFilesException, filename.c_str());
     }
+    
+    //sneo: get correct number of blocks
+    gid_dims[0] = 1728;
 
     numBlocks = gid_dims[0];
     switch (gid_dims[1])
@@ -2188,6 +2192,7 @@ void avtFLASHFileFormat::ReadBlockExtents()
             EXCEPTION1(InvalidFilesException, filename.c_str());
         }
 
+	//sneo: not tested if below expression causes error or not
         double *bbox_array = new double[numBlocks * dimension * 2];
         H5Dread(bboxId, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, bbox_array);
     
@@ -2248,11 +2253,20 @@ void avtFLASHFileFormat::ReadBlockExtents()
         {
             double *bbox_line = &bbox_array[MDIM*2*b];
             for (int d=0; d<3; d++)
-            {
+            {   
+		//sneo
+		if (d < 1) {
+	        double xi = pow((1.5e13/5.0e7), 1/144); //sneo
+		blocks[b].minSpatialExtents[d] = ((5.0e7*pow(xi,(b%144)));
+	        blocks[b].maxSpatialExtents[d] = ((5.0e7*pow(xi,((b+1)%144)));
+	        }	
+		
+		else {
                 blocks[b].minSpatialExtents[d] = bbox_line[d*2 + 0];
                 blocks[b].maxSpatialExtents[d] = bbox_line[d*2 + 1];
-    
-                if (blocks[b].minSpatialExtents[d] < minSpatialExtents[d])
+		} //sneo: if else 
+                
+		if (blocks[b].minSpatialExtents[d] < minSpatialExtents[d])
                     minSpatialExtents[d] = blocks[b].minSpatialExtents[d];
     
                 if (blocks[b].maxSpatialExtents[d] > maxSpatialExtents[d])
@@ -2414,6 +2428,8 @@ void avtFLASHFileFormat::ReadSimulationParameters(hid_t file_id,
     {
         EXCEPTION1(InvalidFilesException, filename.c_str());
     }
+    
+    //sneo: change stuff below
 
     if (simParams.nxb == 1)
     {
